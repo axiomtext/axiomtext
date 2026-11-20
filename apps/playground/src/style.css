@@ -1,0 +1,108 @@
+:root {
+  --ax-bg: #ffffff;
+  --ax-fg: #1d1d1f;
+  --ax-muted: #6b7280;
+  --ax-border: #e5e7eb;
+  --ax-accent: #4f46e5;
+  --ax-surface: #f9fafb;
+  color-scheme: light dark;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    'Noto Sans',
+    'Noto Sans Bengali',
+    sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ax-bg: #111113;
+    --ax-fg: #ededed;
+    --ax-muted: #9ca3af;
+    --ax-border: #2e2e33;
+    --ax-surface: #18181b;
+  }
+}
+body {
+  margin: 0;
+  background: var(--ax-bg);
+  color: var(--ax-fg);
+}
+.app-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--ax-border);
+}
+.muted {
+  color: var(--ax-muted);
+}
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+  padding: 20px;
+}
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+.editor-shell {
+  border: 1px solid var(--ax-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px;
+  border-bottom: 1px solid var(--ax-border);
+  background: var(--ax-surface);
+}
+.toolbar button {
+  font: inherit;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.toolbar button:hover {
+  border-color: var(--ax-border);
+}
+.toolbar button:focus-visible {
+  outline: 2px solid var(--ax-accent);
+  outline-offset: 1px;
+}
+.axiomtext-content {
+  min-height: 320px;
+  padding: 16px 20px;
+  outline: none;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+.axiomtext-content:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--ax-accent);
+}
+.axiomtext-placeholder::before {
+  content: attr(data-placeholder);
+  color: var(--ax-muted);
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+.output pre {
+  background: var(--ax-surface);
+  border: 1px solid var(--ax-border);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 12px;
+  overflow: auto;
+  max-height: 260px;
+}
+.output h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: var(--ax-muted);
+}

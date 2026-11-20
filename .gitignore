@@ -1,0 +1,18 @@
+node_modules/
+dist/
+coverage/
+.turbo/
+*.tsbuildinfo
+.DS_Store
+.env
+.env.*
+!.env.example
+playwright-report/
+test-results/
+# Flutter / Dart
+packages/flutter/.dart_tool/
+packages/flutter/build/
+packages/flutter/.packages
+packages/flutter/pubspec.lock
+# Private business docs (move these to the axiomtext/internal repo)
+_internal/

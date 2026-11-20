@@ -1,0 +1,31 @@
+name: axiomtext
+description: >-
+  Free, open-source rich text editor with a built-in math equation editor for
+  Flutter. Android, iOS, Web and desktop. Same editor as the AxiomText web SDK.
+version: 0.0.1
+homepage: https://axiomtext.dev
+repository: https://github.com/axiomtext/axiomtext/tree/main/packages/flutter
+issue_tracker: https://github.com/axiomtext/axiomtext/issues
+topics:
+  - editor
+  - rich-text
+  - math
+  - latex
+  - wysiwyg
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  assets:
+    - assets/editor/

@@ -1,0 +1,15 @@
+[
+  {
+    "name": "@axiomtext/core",
+    "path": "packages/core/dist/index.js",
+    "limit": "40 KB",
+    "gzip": true
+  },
+  {
+    "name": "@axiomtext/view (core + view incl. ProseMirror engine)",
+    "path": "packages/view/dist/index.js",
+    "import": "{ createEditor }",
+    "limit": "70 KB",
+    "gzip": true
+  }
+]

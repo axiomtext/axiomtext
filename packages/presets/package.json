@@ -1,0 +1,31 @@
+{
+  "name": "@axiomtext/presets",
+  "version": "0.0.0",
+  "description": "Ready-made editor builds: classic, inline, balloon, document.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "homepage": "https://axiomtext.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/axiomtext/axiomtext.git",
+    "directory": "packages/presets"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "private": true
+}

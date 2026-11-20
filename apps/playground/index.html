@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' ws:"
+    />
+    <title>AxiomText Playground</title>
+  </head>
+  <body>
+    <header class="app-header">
+      <strong>AxiomText</strong> <span class="muted">playground · M0</span>
+    </header>
+    <main class="layout">
+      <section class="editor-shell" aria-label="Editor">
+        <div class="toolbar" role="toolbar" aria-label="Formatting" id="toolbar"></div>
+        <div id="editor"></div>
+      </section>
+      <aside class="output">
+        <h2>JSON</h2>
+        <pre id="json" data-testid="json"></pre>
+        <h2>HTML</h2>
+        <pre id="html" data-testid="html"></pre>
+      </aside>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

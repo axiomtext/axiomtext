@@ -1,0 +1,6 @@
+# Default owner for everything
+*                       @sakibulrasel
+# Engine and security-sensitive code need maintainer review
+/packages/core/         @sakibulrasel
+/packages/view/         @sakibulrasel
+/.github/               @sakibulrasel

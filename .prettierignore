@@ -1,0 +1,11 @@
+dist
+coverage
+node_modules
+.turbo
+pnpm-lock.yaml
+packages/flutter
+playwright-report
+test-results
+docs
+_internal
+corpora

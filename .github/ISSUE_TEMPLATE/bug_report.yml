@@ -1,0 +1,45 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [bug, triage]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Steps to reproduce, expected vs actual behaviour.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: AxiomText version
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      multiple: true
+      options:
+        [
+          Chrome,
+          Firefox,
+          Safari,
+          Edge,
+          iOS Safari,
+          Android Chrome,
+          Flutter Android,
+          Flutter iOS,
+          Flutter Web,
+          Flutter desktop,
+        ]
+  - type: input
+    id: input-method
+    attributes:
+      label: Keyboard / input method (if relevant)
+      placeholder: e.g. Bangla (Avro), Japanese IME, GBoard
+  - type: textarea
+    id: content
+    attributes:
+      label: Document JSON or pasted content (optional)
+      render: json

@@ -1,0 +1,53 @@
+{
+  "name": "axiomtext-monorepo",
+  "private": true,
+  "description": "AxiomText \u2014 free, open-source rich text & math editor",
+  "license": "MIT",
+  "homepage": "https://axiomtext.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/axiomtext/axiomtext.git"
+  },
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter @axiomtext/playground dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "size": "pnpm build && size-limit",
+    "test:e2e": "playwright test",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm size && pnpm check:licenses",
+    "changeset": "changeset",
+    "release": "pnpm build && changeset publish",
+    "check:licenses": "node scripts/check-licenses.mjs"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^3.0.3",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.1",
+    "@size-limit/preset-small-lib": "^14.3.0",
+    "@vitest/coverage-v8": "^5.1.1",
+    "eslint": "^10.15.0",
+    "eslint-config-prettier": "^10.1.8",
+    "happy-dom": "^21.0.4",
+    "prettier": "^3.10.1",
+    "size-limit": "^14.3.0",
+    "tsup": "^9.0.0",
+    "turbo": "^2.11.13",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.73.0",
+    "vitest": "^5.1.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
