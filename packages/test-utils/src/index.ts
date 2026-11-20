@@ -21,3 +21,6 @@ export function mountPoint(): HTMLElement {
   document.body.appendChild(el);
   return el;
 }
+
+export { createTestView } from './engine';
+export type { TestView } from './engine';

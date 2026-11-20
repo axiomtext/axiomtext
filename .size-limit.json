@@ -18,5 +18,21 @@
     "import": "{ createClassicEditor }",
     "limit": "75 KB",
     "gzip": true
+  },
+  {
+    "name": "@axiomtext/math (plugin only \u2014 KaTeX is lazy-loaded when a document has math)",
+    "path": "packages/math/dist/index.js",
+    "import": "{ MathPlugin }",
+    "ignore": [
+      "katex",
+      "prosemirror-model",
+      "prosemirror-state",
+      "prosemirror-view",
+      "prosemirror-inputrules",
+      "prosemirror-transform",
+      "@axiomtext/core"
+    ],
+    "limit": "10 KB",
+    "gzip": true
   }
 ]

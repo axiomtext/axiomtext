@@ -29,6 +29,9 @@
   },
   "private": true,
   "dependencies": {
-    "@axiomtext/core": "workspace:*"
+    "@axiomtext/core": "workspace:*",
+    "prosemirror-keymap": "^1.2.3",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.43.0"
   }
 }

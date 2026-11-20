@@ -8,6 +8,9 @@ import {
 import type { AxiomPlugin, CommandFactory, DocumentJSON, EditorCommand } from '@axiomtext/core';
 import { baseKeymap, chainCommands, exitCode } from 'prosemirror-commands';
 import { closeHistory, history, redo, undo } from 'prosemirror-history';
+import { dropCursor } from 'prosemirror-dropcursor';
+import { gapCursor } from 'prosemirror-gapcursor';
+import { undoInputRule } from 'prosemirror-inputrules';
 import { keymap } from 'prosemirror-keymap';
 import { DOMSerializer, Node as PMNode } from 'prosemirror-model';
 import type { Schema } from 'prosemirror-model';
@@ -66,8 +69,16 @@ export interface Editor {
    * of the given type (e.g. `heading` with `{ level: 2 }`).
    */
   isActive(name: string, attrs?: Record<string, unknown>): boolean;
+  /** Whether the selection is inside a node of this type at any depth (e.g. `blockquote`). */
+  isAncestor(name: string): boolean;
+  /** Attributes of a mark at the selection (e.g. `getMarkAttrs('link')?.href`), or null. */
+  getMarkAttrs(name: string): Record<string, unknown> | null;
   /** Word and character counts. */
   getStats(): EditorStats;
+  /** Screen rectangle of the current selection (for positioning popovers). */
+  getSelectionRect(): { top: number; bottom: number; left: number; right: number };
+  /** Whether the editable area currently has focus. */
+  hasFocus(): boolean;
   undo(): boolean;
   redo(): boolean;
   canUndo(): boolean;
@@ -162,8 +173,12 @@ export function createEditor(options: EditorOptions): Editor {
           'Shift-Mod-z': redo,
           'Mod-y': redo,
           'Shift-Enter': chainCommands(exitCode, hardBreak),
+          // Backspace right after an autoformat reverts it ("# " → heading → "# ").
+          Backspace: undoInputRule,
         }),
         keymap(baseKeymap),
+        dropCursor({ color: 'var(--ax-accent, #4f46e5)', width: 2 }),
+        gapCursor(),
         ...plugins.flatMap((p) => p.enginePlugins?.(schema) ?? []),
         ...(options.placeholder ? [placeholderPlugin(options.placeholder)] : []),
         new Plugin({
@@ -247,6 +262,40 @@ export function createEditor(options: EditorOptions): Editor {
       if (parent.type.name !== name) return false;
       return Object.entries(attrs ?? {}).every(([key, value]) => parent.attrs[key] === value);
     },
+    isAncestor(name) {
+      const { $from } = view.state.selection;
+      for (let depth = $from.depth; depth > 0; depth--) {
+        if ($from.node(depth).type.name === name) return true;
+      }
+      return false;
+    },
+    getMarkAttrs(name) {
+      const { state } = view;
+      const type = state.schema.marks[name];
+      if (!type) return null;
+      const { from, to, empty, $from } = state.selection;
+      if (empty) return type.isInSet(state.storedMarks ?? $from.marks())?.attrs ?? null;
+      let found: Record<string, unknown> | null = null;
+      state.doc.nodesBetween(from, to, (node) => {
+        if (found) return false;
+        const mark = type.isInSet(node.marks);
+        if (mark) found = mark.attrs;
+        return true;
+      });
+      return found;
+    },
+    getSelectionRect() {
+      const { from, to } = view.state.selection;
+      const start = view.coordsAtPos(from);
+      const end = view.coordsAtPos(to);
+      return {
+        top: Math.min(start.top, end.top),
+        bottom: Math.max(start.bottom, end.bottom),
+        left: Math.min(start.left, end.left),
+        right: Math.max(start.right, end.right),
+      };
+    },
+    hasFocus: () => view.hasFocus(),
     getStats: () =>
       countStats(view.state.doc.textBetween(0, view.state.doc.content.size, ' ', ' ')),
     undo: () => undo(view.state, view.dispatch),

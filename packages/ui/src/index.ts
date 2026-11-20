@@ -7,3 +7,5 @@ export type { BlockStyleDropdown } from './block-style';
 export { icon } from './icons';
 export type { IconName } from './icons';
 export { formatShortcut, isApplePlatform } from './shortcuts';
+export { createLinkUI } from './link-popover';
+export type { LinkUI } from './link-popover';

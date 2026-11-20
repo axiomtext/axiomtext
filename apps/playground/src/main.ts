@@ -1,4 +1,8 @@
+import { MathPlugin } from '@axiomtext/math';
 import { BasicStyles } from '@axiomtext/plugin-basic-styles';
+import { Blockquote } from '@axiomtext/plugin-blockquote';
+import { Link } from '@axiomtext/plugin-link';
+import { List } from '@axiomtext/plugin-list';
 import { Heading } from '@axiomtext/plugin-heading';
 import { createClassicEditor } from '@axiomtext/ui';
 import { Braces, Moon, Sun, X, createElement } from 'lucide';
@@ -62,7 +66,7 @@ themeToggle.addEventListener('click', () => {
 const params = new URLSearchParams(location.search);
 const { editor } = createClassicEditor({
   element: $('editor'),
-  plugins: [BasicStyles, Heading],
+  plugins: [BasicStyles, Heading, List, Blockquote, Link, MathPlugin],
   document: true,
   placeholder: 'Start writing…',
   ariaLabel: 'Document body',
@@ -119,6 +123,8 @@ function render(): void {
   htmlOut.textContent = editor.getHTML();
 }
 editor.on('change', render);
+// Handy for debugging in the browser console: window.axiomEditor
+(window as unknown as { axiomEditor: typeof editor }).axiomEditor = editor;
 render();
 if (params.has('panel')) setPanel(true);
 editor.focus();

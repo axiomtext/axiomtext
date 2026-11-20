@@ -55,7 +55,10 @@ describe('classic editor UI', () => {
   it('hides buttons whose plugin is not installed', () => {
     const { element } = mount([BasicStyles]);
     expect(element.querySelector('button[aria-label="Text style"]')).toBeNull();
-    expect(element.querySelectorAll('.ax-toolbar__separator').length).toBe(1);
+    expect(element.querySelector('button[aria-label="Bulleted list"]')).toBeNull();
+    expect(element.querySelector('button[aria-label="Equation"]')).toBeNull();
+    // undo/redo | inline styles | sub/sup/clear — no doubled or trailing separators
+    expect(element.querySelectorAll('.ax-toolbar__separator').length).toBe(2);
   });
 
   it('has exactly one tab stop (roving tabindex)', () => {

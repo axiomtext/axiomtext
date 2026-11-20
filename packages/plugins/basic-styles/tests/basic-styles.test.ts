@@ -24,3 +24,30 @@ describe('basic-styles', () => {
     expect(textNode?.marks.map((m) => m.type.name)).toEqual(['bold']);
   });
 });
+
+describe('markdown shortcuts', () => {
+  it.each([
+    ['**bold** ', 'strong'],
+    ['*italic* ', 'em'],
+    ['~~gone~~ ', 's'],
+    ['`code` ', 'code'],
+  ])('%s', async (input, tag) => {
+    const { createTestView } = await import('@axiomtext/test-utils');
+    const t = createTestView([BasicStyles]);
+    t.type(input);
+    expect(t.html()).toContain(`<${tag}>`);
+    expect(t.view.state.doc.textContent).not.toContain('*');
+    t.destroy();
+  });
+
+  it('clears formatting', async () => {
+    const { createTestView } = await import('@axiomtext/test-utils');
+    const { clearFormatting } = await import('../src');
+    const t = createTestView([BasicStyles]);
+    t.type('**bold** ');
+    t.select(1, 5);
+    expect(clearFormatting()(t.view.state, t.view.dispatch)).toBe(true);
+    expect(t.html()).not.toContain('<strong>');
+    t.destroy();
+  });
+});

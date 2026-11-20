@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "prosemirror-model": "^1.25.13",
-    "prosemirror-state": "^1.4.4"
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-inputrules": "^1.7.0"
   }
 }

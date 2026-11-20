@@ -1,6 +1,8 @@
 import { createEditor } from '@axiomtext/view';
 import type { Editor, EditorOptions } from '@axiomtext/view';
 import { h } from './dom';
+import { createLinkUI } from './link-popover';
+import type { LinkUI } from './link-popover';
 import { createToolbar } from './toolbar';
 import type { Toolbar, ToolbarItemName } from './toolbar';
 
@@ -39,7 +41,13 @@ export function createClassicEditor(options: ClassicEditorOptions): ClassicEdito
   host.append(root);
 
   const editor = createEditor({ ...editorOptions, element: body });
-  const toolbar = createToolbar(editor, toolbarItems ? { items: toolbarItems } : {});
+  const linkUI: LinkUI | undefined = editor.commandNames.includes('setLink')
+    ? createLinkUI(editor)
+    : undefined;
+  const toolbar = createToolbar(editor, {
+    ...(toolbarItems ? { items: toolbarItems } : {}),
+    ...(linkUI ? { onLink: linkUI.open } : {}),
+  });
   root.append(toolbar.element, body);
 
   let unsubscribeStats: (() => void) | undefined;
@@ -67,6 +75,7 @@ export function createClassicEditor(options: ClassicEditorOptions): ClassicEdito
     element: root,
     destroy() {
       unsubscribeStats?.();
+      linkUI?.destroy();
       toolbar.destroy();
       editor.destroy();
       root.remove();

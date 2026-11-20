@@ -80,3 +80,69 @@ test('theme toggle switches to dark mode', async ({ page }) => {
   await page.getByRole('button', { name: /Switch to (dark|light) mode/ }).click();
   await expect(html).not.toHaveAttribute('data-theme', before ?? '');
 });
+
+test.describe('M1 features', () => {
+  test('markdown shortcuts create lists and quotes', async ({ page }) => {
+    await openEmpty(page);
+    await editorBox(page).click();
+    await page.keyboard.type('- first');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('second');
+    await expect(page.getByTestId('html')).toHaveText(
+      '<ul><li><p>first</p></li><li><p>second</p></li></ul>',
+    );
+    await expect(page.getByRole('button', { name: 'Bulleted list' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
+
+  test('to-do checkbox can be ticked', async ({ page }) => {
+    await openEmpty(page);
+    await editorBox(page).click();
+    await page.keyboard.type('[ ] ship M1');
+    const box = page.getByRole('checkbox', { name: 'Done' });
+    await box.click();
+    await expect(box).toBeChecked();
+    await expect(page.getByTestId('html')).toContainText('data-checked="true"');
+  });
+
+  test('Ctrl/Cmd+K adds a link and rejects javascript: URLs', async ({ page }) => {
+    await openEmpty(page);
+    await editorBox(page).click();
+    await page.keyboard.type('AxiomText');
+    await page.keyboard.press(`${modifier}+a`);
+    await page.keyboard.press(`${modifier}+k`);
+    const url = page.getByRole('textbox', { name: 'Link URL' });
+    await url.fill('javascript:alert(1)');
+    await page.keyboard.press('Enter');
+    await expect(page.getByText("This link isn't allowed")).toBeVisible();
+    await url.fill('axiomtext.dev');
+    await page.keyboard.press('Enter');
+    await expect(page.getByTestId('html')).toContainText('href="https://axiomtext.dev"');
+  });
+
+  test('typing $...$ creates an equation that can be edited', async ({ page }) => {
+    await openEmpty(page);
+    await editorBox(page).click();
+    await page.keyboard.type('Area $\\pi r^2$ ');
+    const eq = page.locator('.axiomtext-content .ax-math').first();
+    await expect(eq.locator('.katex')).toBeVisible();
+    await eq.click();
+    const latex = page.getByRole('textbox', { name: 'LaTeX' });
+    await expect(latex).toHaveValue('\\pi r^2');
+    await latex.fill('\\pi r^2 h');
+    await page.keyboard.press('Enter');
+    await expect(page.getByTestId('html')).toContainText('data-latex="\\pi r^2 h"');
+  });
+
+  test('toolbar inserts a block equation', async ({ page }) => {
+    await openEmpty(page);
+    await editorBox(page).click();
+    await page.getByRole('button', { name: 'Block equation' }).click();
+    const latex = page.getByRole('textbox', { name: 'LaTeX' });
+    await latex.fill('\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}');
+    await page.getByRole('button', { name: 'Done' }).click();
+    await expect(page.locator('.ax-math--block .katex-display')).toBeVisible();
+  });
+});
