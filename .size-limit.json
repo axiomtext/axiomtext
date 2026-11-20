@@ -18,5 +18,22 @@
     "import": "{ createClassicEditor }",
     "limit": "75 KB",
     "gzip": true
+  },
+  {
+    "name": "@axiomtext/math (plugin only \u2014 KaTeX and MathLive load on demand)",
+    "path": "packages/math/dist/index.js",
+    "import": "{ MathPlugin }",
+    "ignore": [
+      "katex",
+      "prosemirror-model",
+      "prosemirror-state",
+      "prosemirror-view",
+      "prosemirror-inputrules",
+      "prosemirror-transform",
+      "@axiomtext/core",
+      "mathlive"
+    ],
+    "limit": "10 KB",
+    "gzip": true
   }
 ]

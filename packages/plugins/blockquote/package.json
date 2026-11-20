@@ -1,0 +1,44 @@
+{
+  "name": "@axiomtext/plugin-blockquote",
+  "version": "0.0.0",
+  "description": "Block quotes and horizontal rules.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "homepage": "https://axiomtext.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/axiomtext/axiomtext.git",
+    "directory": "packages/plugins/blockquote"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@axiomtext/core": "workspace:*",
+    "prosemirror-model": "^1.25.13",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-commands": "^1.7.2",
+    "prosemirror-inputrules": "^1.7.0"
+  },
+  "devDependencies": {
+    "@axiomtext/test-utils": "workspace:*"
+  }
+}

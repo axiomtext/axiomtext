@@ -11,10 +11,15 @@
   },
   "dependencies": {
     "@axiomtext/core": "workspace:*",
+    "@axiomtext/math": "workspace:*",
     "@axiomtext/plugin-basic-styles": "workspace:*",
+    "@axiomtext/plugin-blockquote": "workspace:*",
     "@axiomtext/plugin-heading": "workspace:*",
+    "@axiomtext/plugin-link": "workspace:*",
+    "@axiomtext/plugin-list": "workspace:*",
     "@axiomtext/ui": "workspace:*",
     "@axiomtext/view": "workspace:*",
+    "katex": "^0.19.1",
     "lucide": "^1.77.0"
   },
   "devDependencies": {

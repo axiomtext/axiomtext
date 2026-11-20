@@ -7,7 +7,26 @@ import type { IconName } from './icons';
 import { formatShortcut } from './shortcuts';
 
 export type ToolbarItemName =
-  'undo' | 'redo' | 'blockStyle' | 'bold' | 'italic' | 'underline' | 'strikethrough' | 'code' | '|';
+  | 'undo'
+  | 'redo'
+  | 'blockStyle'
+  | 'bold'
+  | 'italic'
+  | 'underline'
+  | 'strikethrough'
+  | 'code'
+  | 'subscript'
+  | 'superscript'
+  | 'clearFormatting'
+  | 'link'
+  | 'bulletedList'
+  | 'numberedList'
+  | 'todoList'
+  | 'blockquote'
+  | 'horizontalRule'
+  | 'math'
+  | 'mathBlock'
+  | '|';
 
 export const DEFAULT_TOOLBAR: readonly ToolbarItemName[] = [
   'undo',
@@ -20,6 +39,21 @@ export const DEFAULT_TOOLBAR: readonly ToolbarItemName[] = [
   'underline',
   'strikethrough',
   'code',
+  '|',
+  'link',
+  'math',
+  '|',
+  'bulletedList',
+  'numberedList',
+  'todoList',
+  '|',
+  'blockquote',
+  'horizontalRule',
+  'mathBlock',
+  '|',
+  'subscript',
+  'superscript',
+  'clearFormatting',
 ];
 
 interface ButtonSpec {
@@ -89,10 +123,97 @@ const BUTTONS: Record<Exclude<ToolbarItemName, '|' | 'blockStyle'>, ButtonSpec> 
     run: (e) => e.execute('toggleCode'),
     active: (e) => e.isActive('code'),
   },
+  subscript: {
+    label: 'Subscript',
+    icon: 'subscript',
+    shortcut: 'Mod-,',
+    requires: 'toggleSubscript',
+    run: (e) => e.execute('toggleSubscript'),
+    active: (e) => e.isActive('subscript'),
+  },
+  superscript: {
+    label: 'Superscript',
+    icon: 'superscript',
+    shortcut: 'Mod-.',
+    requires: 'toggleSuperscript',
+    run: (e) => e.execute('toggleSuperscript'),
+    active: (e) => e.isActive('superscript'),
+  },
+  clearFormatting: {
+    label: 'Clear formatting',
+    icon: 'clearFormatting',
+    shortcut: 'Mod-\\',
+    requires: 'clearFormatting',
+    run: (e) => e.execute('clearFormatting'),
+    enabled: (e) => e.can('clearFormatting'),
+  },
+  link: {
+    label: 'Link',
+    icon: 'link',
+    shortcut: 'Mod-k',
+    requires: 'setLink',
+    run: () => false,
+    active: (e) => e.isActive('link'),
+  },
+  bulletedList: {
+    label: 'Bulleted list',
+    icon: 'bulletedList',
+    shortcut: 'Mod-Shift-8',
+    requires: 'toggleBulletList',
+    run: (e) => e.execute('toggleBulletList'),
+    active: (e) => e.isAncestor('bullet_list'),
+  },
+  numberedList: {
+    label: 'Numbered list',
+    icon: 'numberedList',
+    shortcut: 'Mod-Shift-7',
+    requires: 'toggleOrderedList',
+    run: (e) => e.execute('toggleOrderedList'),
+    active: (e) => e.isAncestor('ordered_list'),
+  },
+  todoList: {
+    label: 'To-do list',
+    icon: 'todoList',
+    shortcut: 'Mod-Shift-9',
+    requires: 'toggleTaskList',
+    run: (e) => e.execute('toggleTaskList'),
+    active: (e) => e.isAncestor('task_list'),
+  },
+  blockquote: {
+    label: 'Quote',
+    icon: 'quote',
+    shortcut: 'Mod-Shift-.',
+    requires: 'toggleBlockquote',
+    run: (e) => e.execute('toggleBlockquote'),
+    active: (e) => e.isAncestor('blockquote'),
+  },
+  horizontalRule: {
+    label: 'Horizontal line',
+    icon: 'horizontalRule',
+    shortcut: '',
+    requires: 'insertHorizontalRule',
+    run: (e) => e.execute('insertHorizontalRule'),
+  },
+  math: {
+    label: 'Equation',
+    icon: 'math',
+    shortcut: 'Mod-Shift-m',
+    requires: 'insertMath',
+    run: (e) => e.execute('insertMath'),
+  },
+  mathBlock: {
+    label: 'Block equation',
+    icon: 'mathBlock',
+    shortcut: 'Mod-Alt-m',
+    requires: 'insertMathBlock',
+    run: (e) => e.execute('insertMathBlock'),
+  },
 };
 
 export interface ToolbarOptions {
   items?: readonly ToolbarItemName[];
+  /** Called by the Link button (the classic editor opens its link popover). */
+  onLink?: () => void;
   /** Accessible name of the toolbar. */
   ariaLabel?: string;
 }
@@ -151,15 +272,17 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
       continue;
     }
     const spec = BUTTONS[item];
-    const shortcut = formatShortcut(spec.shortcut);
+    const shortcut = spec.shortcut ? formatShortcut(spec.shortcut) : '';
     const button = h(
       'button',
       {
         type: 'button',
         class: 'ax-button',
         'aria-label': spec.label,
-        'aria-keyshortcuts': spec.shortcut.replace('Mod', 'Control').replace(/-/g, '+'),
-        'data-tooltip': `${spec.label}  ${shortcut}`,
+        'aria-keyshortcuts': spec.shortcut
+          ? spec.shortcut.replace('Mod', 'Control').replace(/-/g, '+')
+          : undefined,
+        'data-tooltip': shortcut ? `${spec.label}  ${shortcut}` : spec.label,
         'data-item': item,
         ...(spec.active ? { 'aria-pressed': 'false' } : {}),
       },
@@ -168,6 +291,10 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
     // Keep the text selection when clicking.
     button.addEventListener('mousedown', (e) => e.preventDefault());
     button.addEventListener('click', () => {
+      if (item === 'link') {
+        options.onLink?.();
+        return;
+      }
       spec.run(editor);
       editor.focus();
     });

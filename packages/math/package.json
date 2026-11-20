@@ -1,7 +1,7 @@
 {
   "name": "@axiomtext/math",
   "version": "0.0.0",
-  "description": "Math equation editor: inline/block equations, LaTeX + visual editing.",
+  "description": "Math equation editor for AxiomText: inline and block equations with LaTeX, live preview and KaTeX rendering.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -27,5 +27,20 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
   },
-  "private": true
+  "dependencies": {
+    "@axiomtext/core": "workspace:*",
+    "katex": "^0.19.1",
+    "mathlive": "^0.111.4",
+    "prosemirror-inputrules": "^1.7.0",
+    "prosemirror-model": "^1.25.13",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.43.0"
+  },
+  "devDependencies": {
+    "@axiomtext/test-utils": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
 }

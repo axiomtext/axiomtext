@@ -1,3 +1,4 @@
+@import 'katex/dist/katex.min.css';
 @import '@axiomtext/ui/styles.css';
 
 * {
@@ -134,6 +135,11 @@ body {
 }
 #theme-toggle.is-switching svg {
   transform: rotate(90deg) scale(0.6);
+}
+
+/* Keep the sticky editor toolbar below the app bar while scrolling. */
+.ax-toolbar {
+  top: 60px;
 }
 
 /* Stage */

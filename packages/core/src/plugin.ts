@@ -1,6 +1,7 @@
 import type { MarkSpec, NodeSpec } from 'prosemirror-model';
 import type { Command, Plugin as StatePlugin } from 'prosemirror-state';
 import type { Schema } from 'prosemirror-model';
+import type { InputRule } from 'prosemirror-inputrules';
 
 /**
  * Engine-level types. They are ProseMirror types today; plugin authors should import them
@@ -11,6 +12,7 @@ export type MarkDefinition = MarkSpec;
 export type EditorCommand = Command;
 export type EngineSchema = Schema;
 export type EnginePlugin = StatePlugin;
+export type EngineInputRule = InputRule;
 
 /** A command factory: `toggleBold()` or `setHeading(2)` both return an EditorCommand. */
 export type CommandFactory = (...args: never[]) => EditorCommand;

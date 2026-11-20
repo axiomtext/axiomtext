@@ -5,6 +5,7 @@ export type { DocumentJSON, NodeJSON, MarkJSON } from './document';
 export { definePlugin } from './plugin';
 export type {
   AxiomPlugin,
+  EngineInputRule,
   CommandFactory,
   EditorCommand,
   EnginePlugin,
@@ -15,3 +16,4 @@ export type {
 } from './plugin';
 export { buildSchema } from './schema';
 export { sanitizeUrl, DEFAULT_ALLOWED_PROTOCOLS } from './url';
+export { markInputRule } from './input-rules';

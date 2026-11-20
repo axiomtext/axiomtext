@@ -17,3 +17,14 @@ describe('heading', () => {
     expect(state.doc.firstChild?.type.name).toBe('paragraph');
   });
 });
+
+describe('heading markdown shortcut', () => {
+  it('"## " creates heading 2', async () => {
+    const { createTestView } = await import('@axiomtext/test-utils');
+    const t = createTestView([Heading]);
+    t.type('## Title');
+    expect(t.view.state.doc.firstChild?.type.name).toBe('heading');
+    expect(t.view.state.doc.firstChild?.attrs['level']).toBe(2);
+    t.destroy();
+  });
+});
