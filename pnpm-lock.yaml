@@ -122,6 +122,9 @@ importers:
       katex:
         specifier: ^0.19.1
         version: 0.19.1
+      mathlive:
+        specifier: ^0.111.4
+        version: 0.111.4
       prosemirror-inputrules:
         specifier: ^1.7.0
         version: 1.7.0
@@ -1598,6 +1601,9 @@ packages:
 
   magicast@0.5.5:
     resolution: {integrity: sha512-UicdXN8zQ3JHlxVq+28afMXPr1z7WNY6+7EJnzTdQWkTAlMLF5fNCCKxJHBQwGaNGR11581EiQmQzx73+MvszA==}
+
+  mathlive@0.111.4:
+    resolution: {integrity: sha512-1E5EOQnUHWn+KfEXaDTmuyxRWZrZw4WlQFyZLzJmjKEPdaX4WAnFqVfZb36mhulykcIl7/W7gKkTmutP2/9wjQ==}
 
   minimatch@11.0.9:
     resolution: {integrity: sha512-KCFkfyjqerNlSstjlhIGNXIKZGA/6O4V4RlhZ+Dsr621SPPw0mzlypE9D9ZOoPiVefHID+j7/XuMMlqfD/F60Q==}
@@ -3126,6 +3132,8 @@ snapshots:
       '@babel/parser': 7.29.15
       '@babel/types': 7.29.15
       source-map-js: 1.2.4
+
+  mathlive@0.111.4: {}
 
   minimatch@11.0.9:
     dependencies:

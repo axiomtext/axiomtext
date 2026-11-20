@@ -137,6 +137,11 @@ body {
   transform: rotate(90deg) scale(0.6);
 }
 
+/* Keep the sticky editor toolbar below the app bar while scrolling. */
+.ax-toolbar {
+  top: 60px;
+}
+
 /* Stage */
 .stage {
   max-width: 920px;

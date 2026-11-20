@@ -27,7 +27,10 @@ Remaining small items carried into M1: performance benchmark harness, growing co
 | LNK-002 Auto-link | ✅ | typing and pasting URLs / e-mails |
 | MATH-001 Inline & block equations | ✅ | toolbar, `Mod-Shift-M`, `Mod-Alt-M` |
 | MATH-002 LaTeX input with live preview | ✅ | popover editor, quick templates |
-| MATH-004 Palettes | 🟡 | 14 quick templates; full palettes with MathLive ⏳ |
+| MATH-003 Visual (WYSIWYG) equation editor | ✅ | click any part of an equation and type; caret lands where you click; no LaTeX needed (MathLive, lazy-loaded) |
+| MATH-004 Palettes | ✅ | Structures / Symbols / Greek tabs with rendered previews and fill-in slots |
+| MATH-005 Virtual math keyboard | ✅ | Keyboard button; equation stays visible above it |
+| MATH-038 Keyboard navigation in equations | ✅ | arrows/Tab move through slots and out of the equation; Enter saves; Esc cancels; Enter on a selected equation edits it |
 | MATH-006 Markdown triggers | 🟡 | `$…$`, `$$`; `\(…\)` ⏳ |
 | MATH-011…020 Notation coverage | ✅ | KaTeX: algebra, calculus, matrices, cases, aligned, vectors, sets, statistics, trig, accents |
 | MATH-029 Copy as LaTeX | ✅ | button + `$latex$` on plain-text clipboard |
@@ -39,6 +42,6 @@ Remaining small items carried into M1: performance benchmark harness, growing co
 
 ### Next batches
 - ⏳ Batch 2: tables (insert grid, rows/cols, merge/split), images (upload adapters, paste, resize, alt, caption), alignment, indent, font family/size, colors, page break
-- ⏳ Batch 3: MathLive visual equation editor, full palettes, virtual math keyboard, AsciiMath, paste LaTeX/MathML, keyboard navigation in equations
+- ⏳ Batch 3: AsciiMath input, paste LaTeX/MathML, equation numbering prep
 - ⏳ Batch 4: Markdown import/export, autosave, shortcut help dialog, inline/balloon editor types, 10 UI languages, IME test matrix
 - ⏳ Batch 5: React + Vue packages, CDN build, docs site, benchmarks, v0.1 release

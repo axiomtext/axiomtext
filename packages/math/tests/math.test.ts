@@ -1,7 +1,16 @@
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { createTestView } from '@axiomtext/test-utils';
 import type { TestView } from '@axiomtext/test-utils';
-import { insertMath, loadKatex, MathPlugin, renderLatex } from '../src';
+import {
+  GREEK_TEMPLATES,
+  insertMath,
+  loadKatex,
+  MathPlugin,
+  openMathEditor,
+  renderLatex,
+  STRUCTURE_TEMPLATES,
+  SYMBOL_TEMPLATES,
+} from '../src';
 
 let t: TestView | undefined;
 afterEach(() => {
@@ -74,41 +83,58 @@ describe('math plugin', () => {
     ).toBe('$a+b$');
   });
 
-  it('insertMath opens the editor and Enter saves', () => {
+  it('insertMath inserts an empty equation and selects it for editing', () => {
     t = createTestView([MathPlugin]);
     insertMath()(t.view.state, t.view.dispatch, t.view);
-    const input = document.querySelector<HTMLTextAreaElement>('.ax-math-editor textarea');
-    if (!input) throw new Error('editor not open');
-    input.value = 'e^{i\\pi} + 1 = 0';
-    input.dispatchEvent(new Event('input'));
-    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-    expect(document.querySelector('.ax-math-editor')).toBeNull();
-    let latex = '';
-    t.view.state.doc.descendants((n) => {
-      if (n.type.name === 'math_inline') latex = n.attrs['latex'] as string;
-    });
-    expect(latex).toBe('e^{i\\pi} + 1 = 0');
+    const sel = t.view.state.selection as unknown as { node?: { type: { name: string } } };
+    expect(sel.node?.type.name).toBe('math_inline');
   });
+});
 
-  it('blocks saving invalid LaTeX and Escape removes an empty equation', () => {
-    t = createTestView([MathPlugin]);
-    insertMath()(t.view.state, t.view.dispatch, t.view);
+describe('LaTeX fallback editor', () => {
+  const open = (latex = '') => {
+    const anchor = document.createElement('span');
+    document.body.append(anchor);
+    const result: { committed?: string; cancelled?: boolean } = {};
+    openMathEditor({
+      latex,
+      displayMode: false,
+      anchor,
+      onCommit: (value) => (result.committed = value),
+      onCancel: () => (result.cancelled = true),
+    });
     const input = document.querySelector<HTMLTextAreaElement>('.ax-math-editor textarea');
     const done = [...document.querySelectorAll<HTMLButtonElement>('.ax-math-editor button')].find(
       (b) => b.textContent === 'Done',
     );
     if (!input || !done) throw new Error('editor not open');
+    return { input, done, result };
+  };
+
+  it('saves with Enter', () => {
+    const { input, result } = open();
+    input.value = 'e^{i\\pi} + 1 = 0';
+    input.dispatchEvent(new Event('input'));
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    expect(result.committed).toBe('e^{i\\pi} + 1 = 0');
+    expect(document.querySelector('.ax-math-editor')).toBeNull();
+  });
+
+  it('blocks invalid LaTeX and cancels with Escape', () => {
+    const { input, done, result } = open('x');
     input.value = '\\frac{1}{';
     input.dispatchEvent(new Event('input'));
     expect(done.disabled).toBe(true);
     expect(document.querySelector('.ax-math-editor__error')?.textContent).not.toBe('');
-    input.value = '';
-    input.dispatchEvent(new Event('input'));
     input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-    let count = 0;
-    t.view.state.doc.descendants((n) => {
-      if (n.type.name === 'math_inline') count++;
-    });
-    expect(count).toBe(0);
+    expect(result.cancelled).toBe(true);
+  });
+});
+
+describe('visual templates', () => {
+  it('every template renders with KaTeX', () => {
+    for (const template of [...STRUCTURE_TEMPLATES, ...SYMBOL_TEMPLATES, ...GREEK_TEMPLATES]) {
+      expect(renderLatex(template.label, false).error, template.title).toBeNull();
+    }
   });
 });

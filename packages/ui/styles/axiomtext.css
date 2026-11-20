@@ -666,6 +666,214 @@
   text-decoration: underline wavy #d92d20;
 }
 
+/* Visual equation editing (MathLive in place) */
+.ax-math.is-editing {
+  background: var(--ax-surface);
+  box-shadow:
+    0 0 0 2px var(--ax-accent),
+    0 0 0 6px var(--ax-ring);
+  cursor: text;
+  padding: 2px 4px;
+}
+.ax-math.is-loading-editor {
+  opacity: 0.6;
+}
+.ax-math--block.is-editing {
+  padding: 12px;
+}
+math-field.ax-math-field {
+  display: inline-block;
+  min-width: 2.5em;
+  padding: 0 2px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ax-fg);
+  font-size: 1.08em;
+  vertical-align: middle;
+  --caret-color: var(--ax-accent);
+  --primary: var(--ax-accent);
+  --selection-background-color: var(--ax-selection);
+  --selection-color: var(--ax-fg);
+  --contains-highlight-background-color: var(--ax-accent-soft);
+  --placeholder-color: var(--ax-accent);
+  --placeholder-opacity: 0.5;
+  --smart-fence-color: var(--ax-fg-subtle);
+}
+/* Same size and position as the rendered equation, so clicks land on the right spot. */
+math-field.ax-math-field.is-block {
+  font-size: 1.08em;
+}
+.ax-math--block.is-editing {
+  text-align: center;
+}
+math-field.ax-math-field::part(menu-toggle),
+math-field.ax-math-field::part(virtual-keyboard-toggle) {
+  display: none;
+}
+math-field.ax-math-field:focus-within {
+  outline: none;
+}
+
+.ax-math-bar {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  box-sizing: border-box;
+  font-family: var(--ax-font);
+  color: var(--ax-fg);
+  background: var(--ax-surface-raised);
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-radius-lg);
+  box-shadow: var(--ax-shadow-lg);
+  opacity: 0;
+  transform: translateY(-4px) scale(0.98);
+  transform-origin: top left;
+  transition:
+    opacity var(--ax-duration-fast) var(--ax-ease),
+    transform var(--ax-duration) var(--ax-ease-spring);
+}
+.ax-math-bar.is-open {
+  opacity: 1;
+  transform: none;
+}
+.ax-math-bar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ax-math-bar__tabs {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border-radius: var(--ax-radius);
+  background: var(--ax-canvas);
+}
+.ax-math-bar__tab {
+  padding: 5px 10px;
+  border: 0;
+  border-radius: var(--ax-radius-sm);
+  background: transparent;
+  color: var(--ax-fg-muted);
+  font: 600 12.5px var(--ax-font);
+  cursor: pointer;
+  transition:
+    background-color var(--ax-duration) var(--ax-ease),
+    color var(--ax-duration) var(--ax-ease),
+    box-shadow var(--ax-duration) var(--ax-ease);
+}
+.ax-math-bar__tab[aria-selected='true'] {
+  background: var(--ax-surface);
+  color: var(--ax-fg);
+  box-shadow: var(--ax-shadow);
+}
+.ax-math-bar__actions {
+  display: flex;
+  gap: 6px;
+}
+.ax-math-bar__action {
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-radius);
+  background: var(--ax-surface);
+  color: var(--ax-fg);
+  font: 600 12.5px var(--ax-font);
+  cursor: pointer;
+  transition:
+    background-color var(--ax-duration-fast) var(--ax-ease),
+    transform var(--ax-duration-fast) var(--ax-ease);
+}
+.ax-math-bar__action:hover {
+  background: var(--ax-surface-hover);
+}
+.ax-math-bar__action:active {
+  transform: scale(0.95);
+}
+.ax-math-bar__action[aria-pressed='true'] {
+  background: var(--ax-accent-soft);
+  color: var(--ax-accent-soft-fg);
+  border-color: transparent;
+}
+.ax-math-bar__action.is-primary {
+  background: var(--ax-accent);
+  border-color: var(--ax-accent);
+  color: var(--ax-accent-fg);
+}
+.ax-math-bar__action.is-primary:hover {
+  background: var(--ax-accent-hover);
+}
+.ax-math-bar__panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+  gap: 4px;
+  animation: ax-fade-in var(--ax-duration) var(--ax-ease);
+}
+.ax-math-bar__item {
+  display: grid;
+  place-items: center;
+  height: 44px;
+  padding: 0 4px;
+  overflow: hidden;
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-radius);
+  background: var(--ax-surface);
+  color: var(--ax-fg);
+  cursor: pointer;
+  transition:
+    background-color var(--ax-duration-fast) var(--ax-ease),
+    border-color var(--ax-duration-fast) var(--ax-ease),
+    transform var(--ax-duration-fast) var(--ax-ease);
+}
+.ax-math-bar__item .katex {
+  font-size: 0.95em;
+  pointer-events: none;
+}
+.ax-math-bar__item .katex .mtable {
+  font-size: 0.8em;
+}
+.ax-math-bar__item:hover {
+  background: var(--ax-accent-soft);
+  border-color: transparent;
+  color: var(--ax-accent-soft-fg);
+}
+.ax-math-bar__item:active {
+  transform: scale(0.92);
+}
+.ax-math-bar__item:focus-visible,
+.ax-math-bar__tab:focus-visible,
+.ax-math-bar__action:focus-visible {
+  outline: 2px solid var(--ax-accent);
+  outline-offset: 1px;
+}
+.ax-math-bar__latex {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  resize: vertical;
+  border: 1px solid var(--ax-border-strong);
+  border-radius: var(--ax-radius);
+  background: var(--ax-canvas);
+  color: var(--ax-fg);
+  font: 13px/1.5 var(--ax-font-mono);
+  outline: none;
+}
+.ax-math-bar__latex:focus {
+  border-color: var(--ax-accent);
+  box-shadow: 0 0 0 3px var(--ax-ring);
+}
+.ax-math-bar__error:empty {
+  display: none;
+}
+.ax-math-bar__error {
+  color: #d92d20;
+  font-size: 12.5px;
+}
+
 /* Popovers (math editor, link form, link balloon) */
 .ax-popover,
 .ax-math-editor {
@@ -977,6 +1185,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ax-math-bar,
   .ax-popover,
   .ax-math-editor,
   .ax-editor,
