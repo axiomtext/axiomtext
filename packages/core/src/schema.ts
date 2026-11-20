@@ -1,7 +1,13 @@
 import { Schema } from 'prosemirror-model';
-import type { MarkSpec, NodeSpec } from 'prosemirror-model';
+import type {
+  DOMOutputSpec,
+  MarkSpec,
+  Node as PMNode,
+  NodeSpec,
+  TagParseRule,
+} from 'prosemirror-model';
 import { AxiomError } from './errors';
-import type { AxiomPlugin } from './plugin';
+import type { AxiomPlugin, GlobalAttribute } from './plugin';
 
 /** Nodes every document has, regardless of plugins. */
 const baseNodes: Record<string, NodeSpec> = {
@@ -53,5 +59,85 @@ export function buildSchema(plugins: readonly AxiomPlugin[]): Schema {
     }
   }
 
+  // Apply attributes that plugins add to other plugins' nodes.
+  const globals = new Map<string, Record<string, GlobalAttribute>>();
+  for (const plugin of plugins) {
+    for (const group of plugin.globalAttributes ?? []) {
+      for (const type of group.types) {
+        globals.set(type, { ...(globals.get(type) ?? {}), ...group.attributes });
+      }
+    }
+  }
+  for (const [type, attributes] of globals) {
+    const spec = nodes[type];
+    if (spec) nodes[type] = withGlobalAttributes(spec, attributes);
+  }
+
   return new Schema({ nodes, marks });
+}
+
+const isAttrsObject = (value: unknown): value is Record<string, string> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value) && !('nodeType' in value);
+
+/** Merges rendered attribute sets; `style` values are concatenated. */
+function mergeAttrs(
+  base: Record<string, string>,
+  extra: Record<string, string>,
+): Record<string, string> {
+  const out = { ...base };
+  for (const [key, value] of Object.entries(extra)) {
+    out[key] = key === 'style' && out[key] ? `${out[key].replace(/;?\s*$/, ';')} ${value}` : value;
+  }
+  return out;
+}
+
+function withGlobalAttributes(
+  spec: NodeSpec,
+  attributes: Record<string, GlobalAttribute>,
+): NodeSpec {
+  const attrs = { ...(spec.attrs ?? {}) };
+  for (const [name, attr] of Object.entries(attributes)) attrs[name] = { default: attr.default };
+
+  const parseDOM = spec.parseDOM?.map((rule) => {
+    if (!('tag' in rule) || !rule.tag) return rule;
+    const tagRule = rule as TagParseRule;
+    const original = tagRule.getAttrs;
+    return {
+      ...tagRule,
+      getAttrs: (dom: HTMLElement) => {
+        const base = original ? original(dom) : (tagRule.attrs ?? {});
+        if (base === false) return false;
+        const extra: Record<string, unknown> = {};
+        for (const [name, attr] of Object.entries(attributes)) {
+          const value = attr.parseHTML(dom);
+          if (value !== null && value !== undefined) extra[name] = value;
+        }
+        return { ...(base ?? {}), ...extra };
+      },
+    } satisfies TagParseRule;
+  });
+
+  const toDOM = spec.toDOM;
+  return {
+    ...spec,
+    attrs,
+    ...(parseDOM ? { parseDOM } : {}),
+    ...(toDOM
+      ? {
+          toDOM: (node: PMNode): DOMOutputSpec => {
+            const out = toDOM(node);
+            let extra: Record<string, string> = {};
+            for (const [name, attr] of Object.entries(attributes)) {
+              const rendered = attr.renderHTML(node.attrs[name]);
+              if (rendered) extra = mergeAttrs(extra, rendered);
+            }
+            if (Object.keys(extra).length === 0 || !Array.isArray(out)) return out;
+            const [tag, ...rest] = out as [string, ...unknown[]];
+            if (isAttrsObject(rest[0]))
+              return [tag, mergeAttrs(rest[0], extra), ...rest.slice(1)] as DOMOutputSpec;
+            return [tag, extra, ...rest] as DOMOutputSpec;
+          },
+        }
+      : {}),
+  };
 }

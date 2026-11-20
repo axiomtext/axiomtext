@@ -65,18 +65,33 @@ importers:
       '@axiomtext/plugin-basic-styles':
         specifier: workspace:*
         version: link:../../packages/plugins/basic-styles
+      '@axiomtext/plugin-block-format':
+        specifier: workspace:*
+        version: link:../../packages/plugins/block-format
       '@axiomtext/plugin-blockquote':
         specifier: workspace:*
         version: link:../../packages/plugins/blockquote
+      '@axiomtext/plugin-columns':
+        specifier: workspace:*
+        version: link:../../packages/plugins/columns
+      '@axiomtext/plugin-font':
+        specifier: workspace:*
+        version: link:../../packages/plugins/font
       '@axiomtext/plugin-heading':
         specifier: workspace:*
         version: link:../../packages/plugins/heading
+      '@axiomtext/plugin-image':
+        specifier: workspace:*
+        version: link:../../packages/plugins/image
       '@axiomtext/plugin-link':
         specifier: workspace:*
         version: link:../../packages/plugins/link
       '@axiomtext/plugin-list':
         specifier: workspace:*
         version: link:../../packages/plugins/list
+      '@axiomtext/plugin-table':
+        specifier: workspace:*
+        version: link:../../packages/plugins/table
       '@axiomtext/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -164,6 +179,25 @@ importers:
         specifier: workspace:*
         version: link:../../test-utils
 
+  packages/plugins/block-format:
+    dependencies:
+      '@axiomtext/core':
+        specifier: workspace:*
+        version: link:../../core
+      prosemirror-commands:
+        specifier: ^1.7.2
+        version: 1.7.2
+      prosemirror-model:
+        specifier: ^1.25.13
+        version: 1.25.13
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+    devDependencies:
+      '@axiomtext/test-utils':
+        specifier: workspace:*
+        version: link:../../test-utils
+
   packages/plugins/blockquote:
     dependencies:
       '@axiomtext/core':
@@ -175,6 +209,44 @@ importers:
       prosemirror-inputrules:
         specifier: ^1.7.0
         version: 1.7.0
+      prosemirror-model:
+        specifier: ^1.25.13
+        version: 1.25.13
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+    devDependencies:
+      '@axiomtext/test-utils':
+        specifier: workspace:*
+        version: link:../../test-utils
+
+  packages/plugins/columns:
+    dependencies:
+      '@axiomtext/core':
+        specifier: workspace:*
+        version: link:../../core
+      prosemirror-model:
+        specifier: ^1.25.13
+        version: 1.25.13
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+      prosemirror-view:
+        specifier: ^1.43.0
+        version: 1.43.0
+    devDependencies:
+      '@axiomtext/test-utils':
+        specifier: workspace:*
+        version: link:../../test-utils
+
+  packages/plugins/font:
+    dependencies:
+      '@axiomtext/core':
+        specifier: workspace:*
+        version: link:../../core
+      prosemirror-commands:
+        specifier: ^1.7.2
+        version: 1.7.2
       prosemirror-model:
         specifier: ^1.25.13
         version: 1.25.13
@@ -204,6 +276,31 @@ importers:
         specifier: ^1.4.4
         version: 1.4.4
     devDependencies:
+      '@axiomtext/test-utils':
+        specifier: workspace:*
+        version: link:../../test-utils
+
+  packages/plugins/image:
+    dependencies:
+      '@axiomtext/core':
+        specifier: workspace:*
+        version: link:../../core
+      prosemirror-commands:
+        specifier: ^1.7.2
+        version: 1.7.2
+      prosemirror-model:
+        specifier: ^1.25.13
+        version: 1.25.13
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+      prosemirror-view:
+        specifier: ^1.43.0
+        version: 1.43.0
+    devDependencies:
+      '@axiomtext/plugin-columns':
+        specifier: workspace:*
+        version: link:../columns
       '@axiomtext/test-utils':
         specifier: workspace:*
         version: link:../../test-utils
@@ -267,6 +364,34 @@ importers:
         specifier: workspace:*
         version: link:../../view
 
+  packages/plugins/table:
+    dependencies:
+      '@axiomtext/core':
+        specifier: workspace:*
+        version: link:../../core
+      prosemirror-commands:
+        specifier: ^1.7.2
+        version: 1.7.2
+      prosemirror-keymap:
+        specifier: ^1.2.3
+        version: 1.2.3
+      prosemirror-model:
+        specifier: ^1.25.13
+        version: 1.25.13
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+      prosemirror-tables:
+        specifier: ^1.8.5
+        version: 1.8.5
+      prosemirror-view:
+        specifier: ^1.43.0
+        version: 1.43.0
+    devDependencies:
+      '@axiomtext/test-utils':
+        specifier: workspace:*
+        version: link:../../test-utils
+
   packages/presets: {}
 
   packages/react: {}
@@ -303,9 +428,21 @@ importers:
       '@axiomtext/plugin-basic-styles':
         specifier: workspace:*
         version: link:../plugins/basic-styles
+      '@axiomtext/plugin-block-format':
+        specifier: workspace:*
+        version: link:../plugins/block-format
+      '@axiomtext/plugin-font':
+        specifier: workspace:*
+        version: link:../plugins/font
       '@axiomtext/plugin-heading':
         specifier: workspace:*
         version: link:../plugins/heading
+      '@axiomtext/plugin-image':
+        specifier: workspace:*
+        version: link:../plugins/image
+      '@axiomtext/plugin-table':
+        specifier: workspace:*
+        version: link:../plugins/table
 
   packages/view:
     dependencies:
@@ -1747,6 +1884,9 @@ packages:
 
   prosemirror-state@1.4.4:
     resolution: {integrity: sha512-6jiYHH2CIGbCfnxdHbXZ12gySFY/fz/ulZE333G6bPqIZ4F+TXo9ifiR86nAHpWnfoNjOb3o5ESi7J8Uz1jXHw==}
+
+  prosemirror-tables@1.8.5:
+    resolution: {integrity: sha512-V/0cDCsHKHe/tfWkeCmthNUcEp1IVO3p6vwN8XtwE9PZQLAZJigbw3QoraAdfJPir4NKJtNvOB8oYGKRl+t0Dw==}
 
   prosemirror-transform@1.12.7:
     resolution: {integrity: sha512-/e87cbxcM5WJOJrL1IrM9gJqO3EK8LdQoPvs+r4ss1lRO5t5QeqkU0SlmDvcitCSDUbm8s/MxbBB6ds4pY6Xlg==}
@@ -3278,6 +3418,14 @@ snapshots:
   prosemirror-state@1.4.4:
     dependencies:
       prosemirror-model: 1.25.13
+      prosemirror-transform: 1.12.7
+      prosemirror-view: 1.43.0
+
+  prosemirror-tables@1.8.5:
+    dependencies:
+      prosemirror-keymap: 1.2.3
+      prosemirror-model: 1.25.13
+      prosemirror-state: 1.4.4
       prosemirror-transform: 1.12.7
       prosemirror-view: 1.43.0
 

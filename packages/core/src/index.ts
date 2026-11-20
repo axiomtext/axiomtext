@@ -9,6 +9,8 @@ export type {
   CommandFactory,
   EditorCommand,
   EnginePlugin,
+  GlobalAttribute,
+  GlobalAttributes,
   EngineSchema,
   MarkDefinition,
   NodeDefinition,
@@ -17,3 +19,4 @@ export type {
 export { buildSchema } from './schema';
 export { sanitizeUrl, DEFAULT_ALLOWED_PROTOCOLS } from './url';
 export { markInputRule } from './input-rules';
+export { sanitizeColor, sanitizeFontFamily, sanitizeFontSize } from './css';

@@ -77,3 +77,30 @@ describe('sanitizeUrl', () => {
     expect(sanitizeUrl(input)).toBeNull();
   });
 });
+
+describe('CSS value sanitizers', async () => {
+  const { sanitizeColor, sanitizeFontFamily, sanitizeFontSize } = await import('../src');
+  it('accepts safe values', () => {
+    expect(sanitizeColor('#FF0000')).toBe('#ff0000');
+    expect(sanitizeColor('rgb(10, 20, 30)')).toBe('rgb(10, 20, 30)');
+    expect(sanitizeColor('rebeccapurple')).toBe('rebeccapurple');
+    expect(sanitizeFontSize('18px')).toBe('18px');
+    expect(sanitizeFontSize('1.25em')).toBe('1.25em');
+    expect(sanitizeFontFamily('Georgia, "Times New Roman", serif')).toBe(
+      'Georgia, "Times New Roman", serif',
+    );
+  });
+  it.each([
+    'red; background: url(x)',
+    'expression(alert(1))',
+    'url(javascript:alert(1))',
+    '#12345z',
+    'inherit',
+  ])('rejects color %s', (v) => expect(sanitizeColor(v)).toBeNull());
+  it('rejects unsafe sizes and families', () => {
+    expect(sanitizeFontSize('10px; color: red')).toBeNull();
+    expect(sanitizeFontSize('9999px')).toBeNull();
+    expect(sanitizeFontFamily('Arial; } body { display:none')).toBeNull();
+    expect(sanitizeFontFamily('url(evil)')).toBeNull();
+  });
+});

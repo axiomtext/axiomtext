@@ -1,4 +1,27 @@
 import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
+  Baseline,
+  BetweenHorizontalEnd,
+  BetweenHorizontalStart,
+  BetweenVerticalEnd,
+  BetweenVerticalStart,
+  Ellipsis,
+  Highlighter,
+  Image as ImageIcon,
+  IndentDecrease,
+  IndentIncrease,
+  PanelTop,
+  ScissorsLineDashed,
+  Table as TableIcon,
+  TableCellsMerge,
+  TableCellsSplit,
+  Trash2,
+  Upload,
+  X,
+  RectangleHorizontal,
   Bold,
   ExternalLink,
   Link,
@@ -60,6 +83,29 @@ const icons = {
   subscript: Subscript,
   superscript: Superscript,
   clearFormatting: RemoveFormatting,
+  alignLeft: AlignLeft,
+  alignCenter: AlignCenter,
+  alignRight: AlignRight,
+  alignJustify: AlignJustify,
+  indent: IndentIncrease,
+  outdent: IndentDecrease,
+  textColor: Baseline,
+  highlight: Highlighter,
+  image: ImageIcon,
+  upload: Upload,
+  table: TableIcon,
+  rowAbove: BetweenHorizontalStart,
+  rowBelow: BetweenHorizontalEnd,
+  colLeft: BetweenVerticalStart,
+  colRight: BetweenVerticalEnd,
+  merge: TableCellsMerge,
+  split: TableCellsSplit,
+  headerRow: PanelTop,
+  trash: Trash2,
+  pageBreak: ScissorsLineDashed,
+  more: Ellipsis,
+  close: X,
+  fullWidth: RectangleHorizontal,
 } as const;
 
 export type IconName = keyof typeof icons;
@@ -74,5 +120,71 @@ export function icon(name: IconName, size = 18): SVGElement {
     focusable: 'false',
     class: 'ax-icon',
   });
+  return svg;
+}
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+type Shape = ['path', string] | ['rect', number, number, number, number];
+
+/** Layout icons for image text wrapping (drawn to match the Lucide style). */
+const WRAP_ICONS: Record<string, Shape[]> = {
+  wrapInline: [
+    ['path', 'M3 5h18M3 19h18M3 12h3M18 12h3'],
+    ['rect', 8, 8.5, 8, 7],
+  ],
+  wrapLeft: [
+    ['rect', 3, 5, 8, 8],
+    ['path', 'M14 6h7M14 10h7M14 14h7M3 18h18'],
+  ],
+  wrapRight: [
+    ['rect', 13, 5, 8, 8],
+    ['path', 'M3 6h7M3 10h7M3 14h7M3 18h18'],
+  ],
+  wrapBlock: [
+    ['path', 'M3 4h18M3 20h18'],
+    ['rect', 7, 8, 10, 8],
+  ],
+  wrapBoth: [
+    ['rect', 8, 7, 8, 10],
+    ['path', 'M2 7h3M2 12h3M2 17h3M19 7h3M19 12h3M19 17h3'],
+  ],
+  caption: [
+    ['rect', 4, 4, 16, 11],
+    ['path', 'M7 19h10'],
+  ],
+};
+
+export type WrapIconName = keyof typeof WRAP_ICONS;
+
+export function wrapIcon(name: WrapIconName, size = 18): SVGElement {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  for (const [k, v] of Object.entries({
+    width: String(size),
+    height: String(size),
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    'stroke-width': '2',
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round',
+    'aria-hidden': 'true',
+    focusable: 'false',
+    class: 'ax-icon',
+  })) {
+    svg.setAttribute(k, v);
+  }
+  for (const shape of WRAP_ICONS[name] ?? []) {
+    const el = document.createElementNS(SVG_NS, shape[0]);
+    if (shape[0] === 'path') el.setAttribute('d', shape[1]);
+    else {
+      const [, x, y, w, hgt] = shape;
+      el.setAttribute('x', String(x));
+      el.setAttribute('y', String(y));
+      el.setAttribute('width', String(w));
+      el.setAttribute('height', String(hgt));
+      el.setAttribute('rx', '1.5');
+    }
+    svg.append(el);
+  }
   return svg;
 }

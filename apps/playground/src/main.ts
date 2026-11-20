@@ -1,6 +1,11 @@
 import { MathPlugin } from '@axiomtext/math';
 import { BasicStyles } from '@axiomtext/plugin-basic-styles';
-import { Blockquote } from '@axiomtext/plugin-blockquote';
+import { TextAlignment, Indent } from '@axiomtext/plugin-block-format';
+import { Blockquote, PageBreak } from '@axiomtext/plugin-blockquote';
+import { FontFamily, FontSize, Highlight, TextColor } from '@axiomtext/plugin-font';
+import { Image } from '@axiomtext/plugin-image';
+import { Columns } from '@axiomtext/plugin-columns';
+import { Table } from '@axiomtext/plugin-table';
 import { Link } from '@axiomtext/plugin-link';
 import { List } from '@axiomtext/plugin-list';
 import { Heading } from '@axiomtext/plugin-heading';
@@ -66,7 +71,24 @@ themeToggle.addEventListener('click', () => {
 const params = new URLSearchParams(location.search);
 const { editor } = createClassicEditor({
   element: $('editor'),
-  plugins: [BasicStyles, Heading, List, Blockquote, Link, MathPlugin],
+  plugins: [
+    BasicStyles,
+    Heading,
+    List,
+    Blockquote,
+    PageBreak,
+    Link,
+    MathPlugin,
+    Table,
+    Image,
+    Columns,
+    FontFamily,
+    FontSize,
+    TextColor,
+    Highlight,
+    TextAlignment,
+    Indent,
+  ],
   document: true,
   placeholder: 'Start writing…',
   ariaLabel: 'Document body',

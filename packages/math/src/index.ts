@@ -1,7 +1,7 @@
 import { definePlugin } from '@axiomtext/core';
 import type { EditorCommand, NodeDefinition } from '@axiomtext/core';
 import { InputRule, inputRules } from 'prosemirror-inputrules';
-import type { Node as PMNode } from 'prosemirror-model';
+import type { DOMOutputSpec, Node as PMNode } from 'prosemirror-model';
 import { NodeSelection, Plugin, PluginKey, TextSelection } from 'prosemirror-state';
 import type { EditorView, NodeView } from 'prosemirror-view';
 import { openMathEditor } from './editor-popover';
@@ -21,6 +21,29 @@ export { loadMathLive } from './mathlive';
 
 const latexAttr = { latex: { default: '', validate: 'string' } } as const;
 
+/**
+ * HTML for saved documents (MATH-035): when KaTeX is loaded the equation is pre-rendered, so a
+ * website only needs `katex.min.css` to show it — no JavaScript. The LaTeX source is kept in
+ * `data-latex` so pasting the HTML back into AxiomText restores the editable equation.
+ */
+function mathToDOM(node: PMNode, display: boolean): DOMOutputSpec {
+  const latex = node.attrs['latex'] as string;
+  const attrs = {
+    'data-type': display ? 'math-block' : 'math-inline',
+    'data-latex': latex,
+    class: display ? 'ax-math ax-math--block' : 'ax-math',
+  };
+  const rendered =
+    isKatexLoaded() && typeof document !== 'undefined' ? renderLatex(latex, display).html : null;
+  if (rendered) {
+    const el = document.createElement(display ? 'div' : 'span');
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    el.innerHTML = rendered; // KaTeX output, trust:false
+    return el;
+  }
+  return [display ? 'div' : 'span', attrs, display ? `\\[${latex}\\]` : `\\(${latex}\\)`];
+}
+
 const nodes: Record<string, NodeDefinition> = {
   math_inline: {
     group: 'inline',
@@ -36,11 +59,7 @@ const nodes: Record<string, NodeDefinition> = {
         getAttrs: (dom) => ({ latex: (dom as HTMLElement).getAttribute('data-latex') ?? '' }),
       },
     ],
-    toDOM: (node) => [
-      'span',
-      { 'data-type': 'math-inline', 'data-latex': node.attrs['latex'] as string, class: 'ax-math' },
-      `\\(${node.attrs['latex'] as string}\\)`,
-    ],
+    toDOM: (node) => mathToDOM(node, false),
   },
   math_block: {
     group: 'block',
@@ -54,15 +73,7 @@ const nodes: Record<string, NodeDefinition> = {
         getAttrs: (dom) => ({ latex: (dom as HTMLElement).getAttribute('data-latex') ?? '' }),
       },
     ],
-    toDOM: (node) => [
-      'div',
-      {
-        'data-type': 'math-block',
-        'data-latex': node.attrs['latex'] as string,
-        class: 'ax-math ax-math--block',
-      },
-      `\\[${node.attrs['latex'] as string}\\]`,
-    ],
+    toDOM: (node) => mathToDOM(node, true),
   },
 };
 

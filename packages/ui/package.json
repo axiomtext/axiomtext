@@ -18,7 +18,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./styles.css": "./styles/axiomtext.css"
+    "./styles.css": "./styles/axiomtext.css",
+    "./content.css": "./styles/content.css"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -38,7 +39,11 @@
   "devDependencies": {
     "@axiomtext/core": "workspace:*",
     "@axiomtext/plugin-basic-styles": "workspace:*",
-    "@axiomtext/plugin-heading": "workspace:*"
+    "@axiomtext/plugin-heading": "workspace:*",
+    "@axiomtext/plugin-block-format": "workspace:*",
+    "@axiomtext/plugin-font": "workspace:*",
+    "@axiomtext/plugin-table": "workspace:*",
+    "@axiomtext/plugin-image": "workspace:*"
   },
   "publishConfig": {
     "access": "public",

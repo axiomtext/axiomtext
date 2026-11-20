@@ -13,10 +13,10 @@
     "gzip": true
   },
   {
-    "name": "@axiomtext/ui (classic editor: core + view + toolbar, excl. plugins)",
+    "name": "@axiomtext/ui (classic editor: engine + full toolbar UI, excl. feature plugins)",
     "path": "packages/ui/dist/index.js",
     "import": "{ createClassicEditor }",
-    "limit": "75 KB",
+    "limit": "85 KB",
     "gzip": true
   },
   {

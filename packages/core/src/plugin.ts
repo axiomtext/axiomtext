@@ -20,6 +20,21 @@ export type CommandFactory = (...args: never[]) => EditorCommand;
 /** Translation strings contributed by a plugin, keyed by locale then message id. */
 export type PluginMessages = Record<string, Record<string, string>>;
 
+/** An attribute a plugin adds to nodes owned by other plugins (e.g. `textAlign` on paragraphs). */
+export interface GlobalAttribute {
+  default: string | number | null;
+  /** Reads the value from an element while parsing HTML; return null for the default. */
+  parseHTML: (element: HTMLElement) => string | number | null;
+  /** Attributes to render for a value (`style` values are merged); return null to render nothing. */
+  renderHTML: (value: unknown) => Record<string, string> | null;
+}
+
+export interface GlobalAttributes {
+  /** Node type names, e.g. `['paragraph', 'heading']`. Missing types are ignored. */
+  types: readonly string[];
+  attributes: Record<string, GlobalAttribute>;
+}
+
 /** The contract every AxiomText feature implements (ADR-0004). */
 export interface AxiomPlugin {
   /** Unique, kebab-case name, e.g. "basic-styles". */
@@ -28,6 +43,8 @@ export interface AxiomPlugin {
   nodes?: Record<string, NodeDefinition>;
   /** Marks this plugin adds to the schema. */
   marks?: Record<string, MarkDefinition>;
+  /** Attributes this plugin adds to other plugins' nodes (alignment, indentation, …). */
+  globalAttributes?: readonly GlobalAttributes[];
   /** Commands exposed as `editor.execute(name, ...args)`. */
   commands?: Record<string, CommandFactory>;
   /** Keyboard shortcuts, e.g. `{ 'Mod-b': toggleBold }`. Receives the final schema. */

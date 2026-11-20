@@ -138,3 +138,19 @@ describe('visual templates', () => {
     }
   });
 });
+
+describe('saved HTML', () => {
+  it('contains pre-rendered KaTeX plus the LaTeX source', async () => {
+    const { DOMSerializer } = await import('prosemirror-model');
+    t = createTestView([MathPlugin]);
+    t.type('$a^2+b^2=c^2$');
+    const fragment = DOMSerializer.fromSchema(t.view.state.schema).serializeFragment(
+      t.view.state.doc.content,
+    );
+    const div = document.createElement('div');
+    div.append(fragment);
+    const math = div.querySelector('[data-type="math-inline"]');
+    expect(math?.getAttribute('data-latex')).toBe('a^2+b^2=c^2');
+    expect(math?.querySelector('.katex')).not.toBeNull();
+  });
+});

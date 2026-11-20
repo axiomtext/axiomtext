@@ -63,3 +63,44 @@ export const Blockquote = definePlugin({
   },
   messages: { en: { 'blockquote.quote': 'Quote', 'blockquote.hr': 'Horizontal line' } },
 });
+
+/** Inserts a page break (CORE-021); shown as a dashed line, starts a new page when printing. */
+export const insertPageBreak = (): EditorCommand => (state, dispatch) => {
+  const type = state.schema.nodes['page_break'];
+  if (!type) return false;
+  dispatch?.(state.tr.replaceSelectionWith(type.create()).scrollIntoView());
+  return true;
+};
+
+/** CORE-021: page breaks (`Mod-Enter`). */
+export const PageBreak = definePlugin({
+  name: 'page-break',
+  nodes: {
+    page_break: {
+      group: 'block',
+      atom: true,
+      selectable: true,
+      parseDOM: [
+        { tag: 'div[data-type="page-break"]' },
+        {
+          tag: 'div',
+          getAttrs: (dom) =>
+            ((dom as HTMLElement).style.pageBreakAfter === 'always' ||
+              (dom as HTMLElement).style.breakAfter === 'page') &&
+            null,
+        },
+      ],
+      toDOM: () => [
+        'div',
+        {
+          'data-type': 'page-break',
+          class: 'ax-page-break',
+          style: 'break-after: page; page-break-after: always;',
+        },
+      ],
+    },
+  },
+  commands: { insertPageBreak },
+  keymap: () => ({ 'Mod-Enter': insertPageBreak() }),
+  messages: { en: { 'page-break.insert': 'Page break' } },
+});

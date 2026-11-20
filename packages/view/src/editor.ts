@@ -79,6 +79,16 @@ export interface Editor {
   getSelectionRect(): { top: number; bottom: number; left: number; right: number };
   /** Whether the editable area currently has focus. */
   hasFocus(): boolean;
+  /** Attributes of the text block around the cursor (e.g. `textAlign`). */
+  getBlockAttrs(): Record<string, unknown>;
+  /** The node selected as a whole (e.g. an image), or null. */
+  getSelectedNode(): {
+    type: string;
+    attrs: Record<string, unknown>;
+    element: HTMLElement | null;
+  } | null;
+  /** The DOM element containing the cursor (for positioning contextual toolbars). */
+  getSelectionElement(): HTMLElement | null;
   undo(): boolean;
   redo(): boolean;
   canUndo(): boolean;
@@ -296,6 +306,22 @@ export function createEditor(options: EditorOptions): Editor {
       };
     },
     hasFocus: () => view.hasFocus(),
+    getBlockAttrs: () => ({ ...view.state.selection.$from.parent.attrs }),
+    getSelectedNode() {
+      const sel = view.state.selection as { node?: PMNode; from: number };
+      if (!sel.node) return null;
+      const element = view.nodeDOM(sel.from);
+      return {
+        type: sel.node.type.name,
+        attrs: { ...sel.node.attrs },
+        element: element instanceof HTMLElement ? element : null,
+      };
+    },
+    getSelectionElement() {
+      const { node } = view.domAtPos(view.state.selection.from);
+      const el = node.nodeType === 1 ? (node as HTMLElement) : node.parentElement;
+      return el && view.dom.contains(el) ? el : null;
+    },
     getStats: () =>
       countStats(view.state.doc.textBetween(0, view.state.doc.content.size, ' ', ' ')),
     undo: () => undo(view.state, view.dispatch),

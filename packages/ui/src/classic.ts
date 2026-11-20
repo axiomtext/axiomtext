@@ -1,6 +1,7 @@
 import { createEditor } from '@axiomtext/view';
 import type { Editor, EditorOptions } from '@axiomtext/view';
 import { h } from './dom';
+import { createImageBalloon, createTableBalloon } from './image-ui';
 import { createLinkUI } from './link-popover';
 import type { LinkUI } from './link-popover';
 import { createToolbar } from './toolbar';
@@ -48,6 +49,12 @@ export function createClassicEditor(options: ClassicEditorOptions): ClassicEdito
     ...(toolbarItems ? { items: toolbarItems } : {}),
     ...(linkUI ? { onLink: linkUI.open } : {}),
   });
+  const imageBalloon = editor.commandNames.includes('updateImage')
+    ? createImageBalloon(editor)
+    : undefined;
+  const tableBalloon = editor.commandNames.includes('insertTable')
+    ? createTableBalloon(editor)
+    : undefined;
   root.append(toolbar.element, body);
 
   let unsubscribeStats: (() => void) | undefined;
@@ -76,6 +83,8 @@ export function createClassicEditor(options: ClassicEditorOptions): ClassicEdito
     destroy() {
       unsubscribeStats?.();
       linkUI?.destroy();
+      imageBalloon?.destroy();
+      tableBalloon?.destroy();
       toolbar.destroy();
       editor.destroy();
       root.remove();
