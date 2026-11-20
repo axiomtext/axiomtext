@@ -1,0 +1,575 @@
+/* AxiomText UI — design tokens, components and content typography.
+ * Theme: set data-theme="light" | "dark" on <html> (or any ancestor); default follows the OS.
+ * Override any --ax-* variable to brand the editor. */
+
+/* ───────────────────────── Tokens ───────────────────────── */
+:root,
+[data-theme='light'] {
+  --ax-font:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Noto Sans Bengali',
+    'Noto Sans Arabic', 'Helvetica Neue', Arial, sans-serif;
+  --ax-font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+
+  --ax-bg: #ffffff;
+  --ax-canvas: #f6f7f9;
+  --ax-surface: #ffffff;
+  --ax-surface-raised: #ffffff;
+  --ax-surface-hover: #f1f3f6;
+  --ax-fg: #17181c;
+  --ax-fg-muted: #5f6672;
+  --ax-fg-subtle: #8a909b;
+  --ax-border: #e4e7ec;
+  --ax-border-strong: #d0d5dd;
+
+  --ax-accent: #4f46e5;
+  --ax-accent-hover: #4338ca;
+  --ax-accent-fg: #ffffff;
+  --ax-accent-soft: #eef0ff;
+  --ax-accent-soft-fg: #3730a3;
+  --ax-ring: rgb(79 70 229 / 0.16);
+  --ax-selection: rgb(79 70 229 / 0.18);
+
+  --ax-code-bg: #f3f4f7;
+  --ax-code-fg: #c0265e;
+  --ax-tooltip-bg: #17181c;
+  --ax-tooltip-fg: #f5f6f8;
+
+  --ax-radius-sm: 6px;
+  --ax-radius: 8px;
+  --ax-radius-lg: 14px;
+
+  --ax-shadow-sm: 0 1px 2px rgb(16 24 40 / 0.05);
+  --ax-shadow: 0 1px 3px rgb(16 24 40 / 0.06), 0 1px 2px rgb(16 24 40 / 0.04);
+  --ax-shadow-lg: 0 12px 32px -8px rgb(16 24 40 / 0.16), 0 4px 8px -4px rgb(16 24 40 / 0.06);
+
+  --ax-ease: cubic-bezier(0.2, 0, 0, 1);
+  --ax-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ax-duration-fast: 120ms;
+  --ax-duration: 200ms;
+  --ax-duration-slow: 320ms;
+
+  --ax-content-width: 72ch;
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --ax-bg: #0f1013;
+  --ax-canvas: #0b0c0e;
+  --ax-surface: #15161a;
+  --ax-surface-raised: #1c1d22;
+  --ax-surface-hover: #23252b;
+  --ax-fg: #ececf1;
+  --ax-fg-muted: #a3a8b3;
+  --ax-fg-subtle: #737985;
+  --ax-border: #26282e;
+  --ax-border-strong: #33363d;
+  --ax-accent: #8b85ff;
+  --ax-accent-hover: #a29dff;
+  --ax-accent-fg: #0f1013;
+  --ax-accent-soft: rgb(139 133 255 / 0.16);
+  --ax-accent-soft-fg: #c7c4ff;
+  --ax-ring: rgb(139 133 255 / 0.28);
+  --ax-selection: rgb(139 133 255 / 0.3);
+  --ax-code-bg: #22242a;
+  --ax-code-fg: #ff8fb3;
+  --ax-tooltip-bg: #f1f2f5;
+  --ax-tooltip-fg: #15161a;
+  --ax-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --ax-shadow: 0 1px 3px rgb(0 0 0 / 0.45);
+  --ax-shadow-lg: 0 16px 40px -8px rgb(0 0 0 / 0.6), 0 4px 10px -4px rgb(0 0 0 / 0.4);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ax-bg: #0f1013;
+    --ax-canvas: #0b0c0e;
+    --ax-surface: #15161a;
+    --ax-surface-raised: #1c1d22;
+    --ax-surface-hover: #23252b;
+    --ax-fg: #ececf1;
+    --ax-fg-muted: #a3a8b3;
+    --ax-fg-subtle: #737985;
+    --ax-border: #26282e;
+    --ax-border-strong: #33363d;
+    --ax-accent: #8b85ff;
+    --ax-accent-hover: #a29dff;
+    --ax-accent-fg: #0f1013;
+    --ax-accent-soft: rgb(139 133 255 / 0.16);
+    --ax-accent-soft-fg: #c7c4ff;
+    --ax-ring: rgb(139 133 255 / 0.28);
+    --ax-selection: rgb(139 133 255 / 0.3);
+    --ax-code-bg: #22242a;
+    --ax-code-fg: #ff8fb3;
+    --ax-tooltip-bg: #f1f2f5;
+    --ax-tooltip-fg: #15161a;
+    --ax-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+    --ax-shadow: 0 1px 3px rgb(0 0 0 / 0.45);
+    --ax-shadow-lg: 0 16px 40px -8px rgb(0 0 0 / 0.6), 0 4px 10px -4px rgb(0 0 0 / 0.4);
+    color-scheme: dark;
+  }
+}
+
+/* ───────────────────────── Editor frame ───────────────────────── */
+.ax-editor {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--ax-font);
+  color: var(--ax-fg);
+  background: var(--ax-surface);
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-radius-lg);
+  box-shadow: var(--ax-shadow);
+  transition:
+    border-color var(--ax-duration) var(--ax-ease),
+    box-shadow var(--ax-duration) var(--ax-ease);
+  animation: ax-enter var(--ax-duration-slow) var(--ax-ease) both;
+}
+
+.ax-editor:focus-within {
+  border-color: var(--ax-border-strong);
+  box-shadow:
+    var(--ax-shadow-lg),
+    0 0 0 3px var(--ax-ring);
+}
+
+.ax-editor__body {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ───────────────────────── Toolbar ───────────────────────── */
+.ax-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--ax-border);
+  border-radius: var(--ax-radius-lg) var(--ax-radius-lg) 0 0;
+  background: color-mix(in srgb, var(--ax-surface) 85%, transparent);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+}
+
+.ax-toolbar__separator {
+  width: 1px;
+  height: 20px;
+  margin: 0 6px;
+  background: var(--ax-border);
+}
+
+.ax-button,
+.ax-dropdown__trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--ax-radius);
+  background: transparent;
+  color: var(--ax-fg-muted);
+  font: 500 13.5px/1 var(--ax-font);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--ax-duration-fast) var(--ax-ease),
+    color var(--ax-duration-fast) var(--ax-ease),
+    transform var(--ax-duration-fast) var(--ax-ease),
+    box-shadow var(--ax-duration-fast) var(--ax-ease);
+}
+
+.ax-button:hover:not(:disabled),
+.ax-dropdown__trigger:hover {
+  background: var(--ax-surface-hover);
+  color: var(--ax-fg);
+}
+
+.ax-button:active:not(:disabled),
+.ax-dropdown__trigger:active {
+  transform: scale(0.92);
+}
+
+.ax-button:focus-visible,
+.ax-dropdown__trigger:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--ax-surface),
+    0 0 0 4px var(--ax-accent);
+}
+
+.ax-button.is-active {
+  background: var(--ax-accent-soft);
+  color: var(--ax-accent-soft-fg);
+}
+
+.ax-button.is-active .ax-icon {
+  animation: ax-pop var(--ax-duration) var(--ax-ease-spring);
+}
+
+.ax-button:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.ax-icon {
+  flex: none;
+  display: block;
+}
+
+/* Tooltips (pure CSS, delayed so they don't flicker while moving the mouse) */
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  z-index: 10;
+  padding: 6px 9px;
+  border-radius: var(--ax-radius-sm);
+  background: var(--ax-tooltip-bg);
+  color: var(--ax-tooltip-fg);
+  font: 500 12px/1.2 var(--ax-font);
+  white-space: pre;
+  pointer-events: none;
+  box-shadow: var(--ax-shadow-lg);
+  opacity: 0;
+  transform: translate(-50%, -4px) scale(0.96);
+  transition:
+    opacity var(--ax-duration-fast) var(--ax-ease),
+    transform var(--ax-duration-fast) var(--ax-ease);
+}
+
+[data-tooltip]:hover::after,
+.ax-toolbar:not(:hover) [data-tooltip]:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+  transition-delay: 450ms;
+}
+
+.ax-dropdown.is-open [data-tooltip]::after {
+  display: none;
+}
+
+/* ───────────────────────── Dropdown ───────────────────────── */
+.ax-dropdown {
+  position: relative;
+}
+
+.ax-dropdown__trigger {
+  min-width: 132px;
+  justify-content: space-between;
+  color: var(--ax-fg);
+}
+
+.ax-dropdown__trigger .ax-icon {
+  color: var(--ax-fg-subtle);
+  transition: transform var(--ax-duration) var(--ax-ease);
+}
+
+.ax-dropdown.is-open .ax-dropdown__trigger {
+  background: var(--ax-surface-hover);
+}
+
+.ax-dropdown.is-open .ax-dropdown__trigger .ax-icon {
+  transform: rotate(180deg);
+}
+
+.ax-dropdown__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  min-width: 240px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-radius-lg);
+  background: var(--ax-surface-raised);
+  box-shadow: var(--ax-shadow-lg);
+  outline: none;
+  transform-origin: top left;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px) scale(0.97);
+  transition:
+    opacity var(--ax-duration-fast) var(--ax-ease),
+    transform var(--ax-duration) var(--ax-ease),
+    visibility 0s linear var(--ax-duration);
+}
+
+.ax-dropdown.is-open .ax-dropdown__menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  transition:
+    opacity var(--ax-duration-fast) var(--ax-ease),
+    transform var(--ax-duration) var(--ax-ease-spring),
+    visibility 0s;
+}
+
+.ax-dropdown__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--ax-radius);
+  color: var(--ax-fg);
+  cursor: pointer;
+  transition: background-color var(--ax-duration-fast) var(--ax-ease);
+}
+
+.ax-dropdown__option .ax-icon {
+  color: var(--ax-fg-subtle);
+}
+
+.ax-dropdown__option.is-highlighted {
+  background: var(--ax-surface-hover);
+}
+
+.ax-dropdown__option[aria-selected='true'] {
+  color: var(--ax-accent-soft-fg);
+}
+
+.ax-dropdown__option[aria-selected='true'] .ax-icon {
+  color: var(--ax-accent);
+}
+
+.ax-dropdown__option-label {
+  flex: 1;
+}
+
+.ax-dropdown__option.is-paragraph .ax-dropdown__option-label {
+  font-size: 14px;
+}
+.ax-dropdown__option.is-h1 .ax-dropdown__option-label {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.ax-dropdown__option.is-h2 .ax-dropdown__option-label {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.ax-dropdown__option.is-h3 .ax-dropdown__option-label {
+  font-size: 15px;
+  font-weight: 650;
+}
+.ax-dropdown__option.is-h4 .ax-dropdown__option-label {
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.ax-kbd {
+  padding: 2px 6px;
+  border: 1px solid var(--ax-border);
+  border-radius: 5px;
+  color: var(--ax-fg-subtle);
+  font: 500 11px/1.4 var(--ax-font);
+  background: var(--ax-canvas);
+}
+
+/* ───────────────────────── Status bar ───────────────────────── */
+.ax-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--ax-border);
+  color: var(--ax-fg-subtle);
+  font: 500 12px/1 var(--ax-font);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ───────────────────────── Content ───────────────────────── */
+.axiomtext-content {
+  min-height: 320px;
+  padding: 28px 32px 40px;
+  outline: none;
+  font: 400 16px/1.7 var(--ax-font);
+  color: var(--ax-fg);
+  caret-color: var(--ax-accent);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  white-space: break-spaces;
+  -webkit-font-variant-ligatures: none;
+  font-variant-ligatures: none;
+}
+
+.ax-editor--document .axiomtext-content {
+  max-width: var(--ax-content-width);
+  margin: 0 auto;
+  padding: 48px 56px 64px;
+}
+
+@media (max-width: 640px) {
+  .ax-dropdown__trigger {
+    min-width: 116px;
+  }
+  .axiomtext-content,
+  .ax-editor--document .axiomtext-content {
+    padding: 20px 18px 32px;
+  }
+}
+
+.axiomtext-content ::selection {
+  background: var(--ax-selection);
+}
+
+.axiomtext-content > * + * {
+  margin-top: 0.75em;
+}
+
+.axiomtext-content p {
+  margin: 0;
+}
+
+.axiomtext-content p + p {
+  margin-top: 0.85em;
+}
+
+.axiomtext-content h1,
+.axiomtext-content h2,
+.axiomtext-content h3,
+.axiomtext-content h4,
+.axiomtext-content h5,
+.axiomtext-content h6 {
+  margin: 1.4em 0 0.4em;
+  line-height: 1.25;
+  font-weight: 700;
+  color: var(--ax-fg);
+}
+
+.axiomtext-content > :first-child {
+  margin-top: 0;
+}
+
+.axiomtext-content h1 {
+  font-size: 2.1em;
+  letter-spacing: -0.025em;
+}
+.axiomtext-content h2 {
+  font-size: 1.6em;
+  letter-spacing: -0.02em;
+}
+.axiomtext-content h3 {
+  font-size: 1.3em;
+  letter-spacing: -0.01em;
+}
+.axiomtext-content h4 {
+  font-size: 1.1em;
+}
+.axiomtext-content h5 {
+  font-size: 1em;
+}
+.axiomtext-content h6 {
+  font-size: 0.9em;
+  color: var(--ax-fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.axiomtext-content strong {
+  font-weight: 700;
+}
+.axiomtext-content u {
+  text-underline-offset: 0.18em;
+}
+.axiomtext-content s {
+  color: var(--ax-fg-muted);
+}
+
+.axiomtext-content code {
+  padding: 0.15em 0.4em;
+  border-radius: 5px;
+  background: var(--ax-code-bg);
+  color: var(--ax-code-fg);
+  font: 0.88em/1 var(--ax-font-mono);
+}
+
+.axiomtext-content a {
+  color: var(--ax-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+/* Placeholder */
+.axiomtext-placeholder::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  color: var(--ax-fg-subtle);
+  pointer-events: none;
+  animation: ax-fade-in var(--ax-duration-slow) var(--ax-ease);
+}
+
+/* Right-to-left */
+.axiomtext-content[dir='rtl'] .axiomtext-placeholder::before,
+[dir='rtl'] .axiomtext-placeholder::before {
+  float: right;
+}
+
+/* ProseMirror requirements */
+.axiomtext-content .ProseMirror-hideselection *::selection {
+  background: transparent;
+}
+.axiomtext-content .ProseMirror-hideselection {
+  caret-color: transparent;
+}
+.ProseMirror-gapcursor {
+  display: none;
+  pointer-events: none;
+  position: absolute;
+}
+
+/* ───────────────────────── Motion ───────────────────────── */
+@keyframes ax-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ax-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ax-pop {
+  0% {
+    transform: scale(0.8);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ax-editor,
+  .ax-editor *,
+  .ax-editor *::before,
+  .ax-editor *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+}

@@ -1,52 +1,124 @@
 import { BasicStyles } from '@axiomtext/plugin-basic-styles';
 import { Heading } from '@axiomtext/plugin-heading';
-import { createEditor } from '@axiomtext/view';
+import { createClassicEditor } from '@axiomtext/ui';
+import { Braces, Moon, Sun, X, createElement } from 'lucide';
+import type { IconNode } from 'lucide';
+import { sampleDocument } from './sample';
 import './style.css';
 
-const element = document.getElementById('editor');
-const toolbar = document.getElementById('toolbar');
-const jsonOut = document.getElementById('json');
-const htmlOut = document.getElementById('html');
-if (!element || !toolbar || !jsonOut || !htmlOut) throw new Error('Playground markup missing');
+const $ = <T extends HTMLElement>(id: string): T => {
+  const el = document.getElementById(id);
+  if (!el) throw new Error(`#${id} missing`);
+  return el as T;
+};
+const svg = (node: IconNode): SVGElement =>
+  createElement(node, { width: 18, height: 18, 'aria-hidden': 'true', focusable: 'false' });
 
-const editor = createEditor({
-  element,
-  plugins: [BasicStyles, Heading],
-  placeholder: 'Start writing… (Ctrl/Cmd+B bold, Ctrl/Cmd+Alt+1 heading)',
-  ariaLabel: 'Document body',
+// ── Theme ──────────────────────────────────────────────
+type Theme = 'light' | 'dark';
+const THEME_KEY = 'axiomtext-playground-theme';
+const storage = {
+  get(): string | null {
+    try {
+      return localStorage.getItem(THEME_KEY);
+    } catch {
+      return null;
+    }
+  },
+  set(value: string): void {
+    try {
+      localStorage.setItem(THEME_KEY, value);
+    } catch {
+      /* storage may be unavailable (private mode) */
+    }
+  },
+};
+const systemTheme = (): Theme =>
+  matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+let theme: Theme =
+  storage.get() === 'dark' || storage.get() === 'light' ? (storage.get() as Theme) : systemTheme();
+
+const themeToggle = $<HTMLButtonElement>('theme-toggle');
+const applyTheme = (): void => {
+  document.documentElement.dataset['theme'] = theme;
+  themeToggle.replaceChildren(svg(theme === 'dark' ? Sun : Moon));
+  themeToggle.setAttribute(
+    'aria-label',
+    theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
+  );
+};
+applyTheme();
+themeToggle.addEventListener('click', () => {
+  themeToggle.classList.add('is-switching');
+  window.setTimeout(() => {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    storage.set(theme);
+    applyTheme();
+    themeToggle.classList.remove('is-switching');
+  }, 140);
 });
 
-const buttons: [label: string, run: () => boolean][] = [
-  ['B', () => editor.execute('toggleBold')],
-  ['I', () => editor.execute('toggleItalic')],
-  ['U', () => editor.execute('toggleUnderline')],
-  ['S', () => editor.execute('toggleStrikethrough')],
-  ['Code', () => editor.execute('toggleCode')],
-  ['H1', () => editor.execute('setHeading', 1)],
-  ['H2', () => editor.execute('setHeading', 2)],
-  ['¶', () => editor.execute('setParagraph')],
-  ['Undo', () => editor.undo()],
-  ['Redo', () => editor.redo()],
-];
+// ── Editor ─────────────────────────────────────────────
+const params = new URLSearchParams(location.search);
+const { editor } = createClassicEditor({
+  element: $('editor'),
+  plugins: [BasicStyles, Heading],
+  document: true,
+  placeholder: 'Start writing…',
+  ariaLabel: 'Document body',
+  ...(params.has('empty') ? {} : { content: sampleDocument }),
+});
 
-for (const [label, run] of buttons) {
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.textContent = label;
-  button.setAttribute('aria-label', label);
-  // Keep the selection in the editor when clicking toolbar buttons.
-  button.addEventListener('mousedown', (e) => e.preventDefault());
-  button.addEventListener('click', () => {
-    run();
-    editor.focus();
+// ── Developer panel ────────────────────────────────────
+const panel = $('dev-panel');
+const panelToggle = $<HTMLButtonElement>('panel-toggle');
+const panelClose = $<HTMLButtonElement>('panel-close');
+const jsonOut = $('out-json');
+const htmlOut = $('out-html');
+panelToggle.append(svg(Braces));
+panelClose.append(svg(X));
+
+const setPanel = (open: boolean): void => {
+  document.body.classList.toggle('panel-open', open);
+  panel.setAttribute('aria-hidden', String(!open));
+  panelToggle.setAttribute('aria-expanded', String(open));
+  if (open) render();
+};
+panelToggle.addEventListener('click', () =>
+  setPanel(!document.body.classList.contains('panel-open')),
+);
+panelClose.addEventListener('click', () => {
+  setPanel(false);
+  panelToggle.focus();
+});
+
+const tabs = [...panel.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+const selectTab = (tab: HTMLButtonElement): void => {
+  for (const t of tabs) {
+    const selected = t === tab;
+    t.setAttribute('aria-selected', String(selected));
+    t.tabIndex = selected ? 0 : -1;
+    const target = document.getElementById(t.getAttribute('aria-controls') ?? '');
+    if (target) target.hidden = !selected;
+  }
+};
+tabs.forEach((tab, i) => {
+  tab.addEventListener('click', () => selectTab(tab));
+  tab.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+    if (next) {
+      selectTab(next);
+      next.focus();
+    }
   });
-  toolbar.appendChild(button);
-}
+});
 
-const render = (): void => {
+function render(): void {
   jsonOut.textContent = JSON.stringify(editor.getJSON(), null, 2);
   htmlOut.textContent = editor.getHTML();
-};
+}
 editor.on('change', render);
 render();
+if (params.has('panel')) setPanel(true);
 editor.focus();

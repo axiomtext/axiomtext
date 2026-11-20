@@ -30,7 +30,20 @@ export interface EditorOptions {
   ariaLabel?: string;
 }
 
-export type EditorEvent = 'change' | 'selectionChange' | 'focus' | 'blur';
+/**
+ * - `change`: document content changed
+ * - `selectionChange`: selection moved or content changed
+ * - `update`: any state change (incl. stored marks) — use it to refresh toolbars
+ * - `focus` / `blur`
+ */
+export type EditorEvent = 'change' | 'selectionChange' | 'update' | 'focus' | 'blur';
+
+export interface EditorStats {
+  /** Words, counted with Intl.Segmenter when available (handles Bangla, CJK, Arabic). */
+  words: number;
+  /** User-perceived characters (grapheme clusters), excluding line breaks. */
+  characters: number;
+}
 type Listener = () => void;
 
 export interface Editor {
@@ -48,8 +61,19 @@ export interface Editor {
   can(command: string, ...args: unknown[]): boolean;
   /** Names of all registered commands. */
   readonly commandNames: readonly string[];
+  /**
+   * Whether a mark (e.g. `bold`) is active at the selection, or the selection is inside a block
+   * of the given type (e.g. `heading` with `{ level: 2 }`).
+   */
+  isActive(name: string, attrs?: Record<string, unknown>): boolean;
+  /** Word and character counts. */
+  getStats(): EditorStats;
   undo(): boolean;
   redo(): boolean;
+  canUndo(): boolean;
+  canRedo(): boolean;
+  /** The editable DOM element (for focus management by UI components). */
+  readonly dom: HTMLElement;
   focus(): void;
   setEditable(editable: boolean): void;
   /** Subscribe to an event. Returns an unsubscribe function. */
@@ -65,6 +89,39 @@ function collectCommands(plugins: readonly AxiomPlugin[]): Map<string, CommandFa
     }
   }
   return commands;
+}
+
+type SegmenterLike = {
+  segment(input: string): Iterable<{ segment: string; isWordLike?: boolean }>;
+};
+type SegmenterCtor = new (
+  locale: string | undefined,
+  options: { granularity: 'word' | 'grapheme' },
+) => SegmenterLike;
+
+function getSegmenter(granularity: 'word' | 'grapheme'): SegmenterLike | null {
+  const Ctor = (Intl as unknown as { Segmenter?: SegmenterCtor }).Segmenter;
+  return Ctor ? new Ctor(undefined, { granularity }) : null;
+}
+
+const wordSegmenter = getSegmenter('word');
+const graphemeSegmenter = getSegmenter('grapheme');
+
+/** Counts words and characters in a language-aware way. */
+export function countStats(text: string): EditorStats {
+  const trimmed = text.trim();
+  if (trimmed === '') return { words: 0, characters: 0 };
+  let words = 0;
+  if (wordSegmenter) {
+    for (const part of wordSegmenter.segment(trimmed)) if (part.isWordLike) words++;
+  } else {
+    words = trimmed.split(/\s+/).length;
+  }
+  const visible = text.replace(/[\n\r]/g, '');
+  const characters = graphemeSegmenter
+    ? Array.from(graphemeSegmenter.segment(visible)).length
+    : [...visible].length;
+  return { words, characters };
 }
 
 export function createEditor(options: EditorOptions): Editor {
@@ -134,6 +191,7 @@ export function createEditor(options: EditorOptions): Editor {
       view.updateState(next);
       if (tr.docChanged) emit('change');
       if (tr.selectionSet || tr.docChanged) emit('selectionChange');
+      emit('update');
     },
   });
 
@@ -177,8 +235,27 @@ export function createEditor(options: EditorOptions): Editor {
       return resolve(name, args)(view.state, undefined, view);
     },
     commandNames: [...commands.keys()],
+    isActive(name, attrs) {
+      const { state } = view;
+      const markType = state.schema.marks[name];
+      if (markType) {
+        const { from, to, empty, $from } = state.selection;
+        if (empty) return markType.isInSet(state.storedMarks ?? $from.marks()) !== undefined;
+        return state.doc.rangeHasMark(from, to, markType);
+      }
+      const parent = state.selection.$from.parent;
+      if (parent.type.name !== name) return false;
+      return Object.entries(attrs ?? {}).every(([key, value]) => parent.attrs[key] === value);
+    },
+    getStats: () =>
+      countStats(view.state.doc.textBetween(0, view.state.doc.content.size, ' ', ' ')),
     undo: () => undo(view.state, view.dispatch),
     redo: () => redo(view.state, view.dispatch),
+    canUndo: () => undo(view.state),
+    canRedo: () => redo(view.state),
+    get dom() {
+      return view.dom;
+    },
     focus: () => view.focus(),
     setEditable(value) {
       editable = value;

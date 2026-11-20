@@ -91,3 +91,34 @@ describe('createEditor', () => {
     editor = undefined;
   });
 });
+
+describe('UI state helpers', () => {
+  it('reports active marks and undo availability', () => {
+    const e = mount({ content });
+    expect(e.isActive('bold')).toBe(false);
+    expect(e.canUndo()).toBe(false);
+    expect(e.isActive('paragraph')).toBe(true);
+    expect(e.isActive('heading')).toBe(false);
+  });
+
+  it('emits update events', () => {
+    const e = mount({ content });
+    const onUpdate = vi.fn();
+    e.on('update', onUpdate);
+    e.execute('toggleBold');
+    expect(onUpdate).toHaveBeenCalled();
+    expect(e.isActive('bold')).toBe(true); // stored mark on empty selection
+  });
+});
+
+describe('countStats', () => {
+  it('counts English, Bangla and empty text', async () => {
+    const { countStats } = await import('../src');
+    expect(countStats('')).toEqual({ words: 0, characters: 0 });
+    expect(countStats('Hello free editor')).toEqual({ words: 3, characters: 17 });
+    // "আমি বাংলায় লিখি" = 3 words; grapheme clusters, not code points
+    const bn = countStats('আমি বাংলায় লিখি');
+    expect(bn.words).toBe(3);
+    expect(bn.characters).toBeLessThan('আমি বাংলায় লিখি'.length);
+  });
+});

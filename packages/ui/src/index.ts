@@ -1,5 +1,9 @@
-/**
- * @axiomtext/ui — Web Components UI kit: toolbar, balloons, dialogs, themes.
- * Planned for milestone M1. See docs/goal-1/02-development-guide.md.
- */
-export const status = 'planned:M1' as const;
+export { createClassicEditor } from './classic';
+export type { ClassicEditor, ClassicEditorOptions } from './classic';
+export { createToolbar, DEFAULT_TOOLBAR } from './toolbar';
+export type { Toolbar, ToolbarItemName, ToolbarOptions } from './toolbar';
+export { createBlockStyleDropdown } from './block-style';
+export type { BlockStyleDropdown } from './block-style';
+export { icon } from './icons';
+export type { IconName } from './icons';
+export { formatShortcut, isApplePlatform } from './shortcuts';

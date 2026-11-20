@@ -8,5 +8,5 @@ One file per significant decision. Copy `0000-template.md`, number it, open a PR
 - [ADR-0004: MIT license and permissive dependencies only](0004-mit-only-dependencies.md)
 - [ADR-0005: Math editing with MathLive, KaTeX and MathJax](0005-math-stack.md)
 - [ADR-0006: Flutter SDK hosts the web engine](0006-flutter-webview-engine.md)
-- [ADR-0007: UI as Web Components with CSS variables](0007-ui-web-components.md)
+- [ADR-0007: UI as framework-free DOM components with CSS variables](0007-ui-web-components.md)
 - [ADR-0008: Bundle size budgets](0008-bundle-budgets.md)

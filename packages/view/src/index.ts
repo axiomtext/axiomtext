@@ -1,2 +1,2 @@
-export { createEditor } from './editor';
-export type { Editor, EditorEvent, EditorOptions } from './editor';
+export { createEditor, countStats } from './editor';
+export type { Editor, EditorEvent, EditorOptions, EditorStats } from './editor';

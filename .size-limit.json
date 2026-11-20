@@ -11,5 +11,12 @@
     "import": "{ createEditor }",
     "limit": "70 KB",
     "gzip": true
+  },
+  {
+    "name": "@axiomtext/ui (classic editor: core + view + toolbar, excl. plugins)",
+    "path": "packages/ui/dist/index.js",
+    "import": "{ createClassicEditor }",
+    "limit": "75 KB",
+    "gzip": true
   }
 ]

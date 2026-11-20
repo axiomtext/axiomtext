@@ -13,7 +13,9 @@
     "@axiomtext/core": "workspace:*",
     "@axiomtext/plugin-basic-styles": "workspace:*",
     "@axiomtext/plugin-heading": "workspace:*",
-    "@axiomtext/view": "workspace:*"
+    "@axiomtext/ui": "workspace:*",
+    "@axiomtext/view": "workspace:*",
+    "lucide": "^1.77.0"
   },
   "devDependencies": {
     "vite": "^8.3.8"

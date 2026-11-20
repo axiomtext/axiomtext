@@ -65,9 +65,15 @@ importers:
       '@axiomtext/plugin-heading':
         specifier: workspace:*
         version: link:../../packages/plugins/heading
+      '@axiomtext/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@axiomtext/view':
         specifier: workspace:*
         version: link:../../packages/view
+      lucide:
+        specifier: ^1.77.0
+        version: 1.77.0
     devDependencies:
       vite:
         specifier: ^8.3.8
@@ -134,7 +140,24 @@ importers:
         specifier: workspace:*
         version: link:../core
 
-  packages/ui: {}
+  packages/ui:
+    dependencies:
+      '@axiomtext/view':
+        specifier: workspace:*
+        version: link:../view
+      lucide:
+        specifier: ^1.77.0
+        version: 1.77.0
+    devDependencies:
+      '@axiomtext/core':
+        specifier: workspace:*
+        version: link:../core
+      '@axiomtext/plugin-basic-styles':
+        specifier: workspace:*
+        version: link:../plugins/basic-styles
+      '@axiomtext/plugin-heading':
+        specifier: workspace:*
+        version: link:../plugins/heading
 
   packages/view:
     dependencies:
@@ -1401,6 +1424,9 @@ packages:
   locate-path@6.0.0:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
+
+  lucide@1.77.0:
+    resolution: {integrity: sha512-DqoScWUEDcTC0KXPKKlZIIdOE++crPcGAQ60KfBNiT+Aq0sgQtxY/1sBCKBzLLo2yLLhYUperyUGHV5PwlBaIQ==}
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
@@ -2904,6 +2930,8 @@ snapshots:
   locate-path@6.0.0:
     dependencies:
       p-locate: 5.0.0
+
+  lucide@1.77.0: {}
 
   magic-string@0.30.21:
     dependencies:
