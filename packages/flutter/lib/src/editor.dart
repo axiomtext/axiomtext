@@ -99,6 +99,8 @@ class AxiomTextEditor extends StatefulWidget {
     this.markTypes = const [],
     this.markFilter,
     this.showMarkLegend = true,
+    this.markStateStyles = const {},
+    this.markStates = const {},
     this.onMarkTap,
     this.selectionActions = const [],
     this.onSelectionAction,
@@ -203,6 +205,15 @@ class AxiomTextEditor extends StatefulWidget {
 
   /// Show the legend of [markTypes] above read-only content.
   final bool showMarkLegend;
+
+  /// How a reader's own states look, e.g.
+  /// `{'learned': AxiomMarkStateStyle(fade: true, badge: '✓')}`.
+  final Map<String, AxiomMarkStateStyle> markStateStyles;
+
+  /// This reader's states when the editor opens, by mark id (e.g. `{'m42': 'learned'}`).
+  /// Change them later with [AxiomTextController.setMarkState]. They're never saved in the
+  /// document: keep them per reader in your app.
+  final Map<String, String> markStates;
 
   /// A reader tapped a mark (read-only): show your own sheet, e.g. questions to practise.
   final void Function(AxiomMark mark)? onMarkTap;
@@ -424,6 +435,12 @@ class _AxiomTextEditorState extends State<AxiomTextEditor> {
             if (widget.markFilter != null)
               'filter': widget.markFilter!.toJson(),
             if (!widget.showMarkLegend) 'legend': false,
+            if (widget.markStateStyles.isNotEmpty)
+              'states': {
+                for (final e in widget.markStateStyles.entries)
+                  e.key: e.value.toMap(),
+              },
+            if (widget.markStates.isNotEmpty) 'initialStates': widget.markStates,
           },
         if (widget.selectionActions.isNotEmpty)
           'selectionActions': [

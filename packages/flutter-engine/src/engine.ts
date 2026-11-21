@@ -25,7 +25,9 @@ import {
   listCommentThreads,
   listMarks,
   listPages,
-  createMarkId,
+  parseMarkFilter,
+  parseMarkStateStyles,
+  parseMarkStates,
   migrateDocument,
   setImagePicker,
   setLanguage,
@@ -238,7 +240,12 @@ function create(params: InitParams, content: DocumentJSON | { html: string } | n
       ? {
           marks: {
             types: params.marks.types as MarkTypeDef[],
-            ...(params.marks.filter ? { filter: params.marks.filter as MarkFilter } : {}),
+            ...(params.marks.filter !== undefined
+              ? { filter: parseMarkFilter(params.marks.filter) }
+              : {}),
+            ...(params.marks.states !== undefined
+              ? { states: parseMarkStateStyles(params.marks.states) }
+              : {}),
             ...(params.marks.legend === false ? { legend: false } : {}),
             onClick: (event) => emit('markTap', event as unknown as Record<string, JsonValue>),
           },
@@ -253,6 +260,9 @@ function create(params: InitParams, content: DocumentJSON | { html: string } | n
       : {}),
   });
   if (content && 'html' in content) setContent(content);
+  if (params.marks?.initialStates !== undefined) {
+    classic.editor.execute('setMarkStates', parseMarkStates(params.marks.initialStates), true);
+  }
   wireEvents(classic.editor);
 }
 
@@ -625,15 +635,16 @@ const methods: Record<
     (await classic?.reader)?.setHighlights(items as unknown as ReaderHighlight[]);
   },
   setMark(p) {
-    const id = typeof p['id'] === 'string' ? p['id'] : createMarkId();
+    // Without an id, re-marking or extending a mark keeps its id; a new mark gets a new one.
     const ok = editor().execute('setMark', str(p['type'], 'type'), {
-      id,
+      ...(typeof p['id'] === 'string' ? { id: p['id'] } : {}),
       ...(isObject(p['data']) ? { data: p['data'] } : {}),
       ...(typeof p['badge'] === 'string' || typeof p['badge'] === 'number'
         ? { badge: p['badge'] }
         : {}),
     });
-    return ok ? id : null;
+    const id = ok ? editor().getMarkAttrs('marker')?.['id'] : null;
+    return typeof id === 'string' ? id : null;
   },
   removeMark: (p) =>
     editor().execute('removeMark', ...(typeof p['id'] === 'string' ? [p['id']] : [])),
@@ -654,16 +665,12 @@ const methods: Record<
     return typeof n === 'number' && editor().execute('scrollToPage', n);
   },
   async setMarkFilter(p) {
-    const f = p['filter'];
-    const filter: MarkFilter =
-      f === 'marked'
-        ? 'marked'
-        : Array.isArray(f)
-          ? f.filter((x): x is string => typeof x === 'string')
-          : 'all';
+    const filter: MarkFilter = parseMarkFilter(p['filter']);
     editor().execute('setMarkFilter', filter);
     (await classic?.reader)?.setMarkFilter(filter);
   },
+  setMarkStates: (p) =>
+    editor().execute('setMarkStates', parseMarkStates(p['states']), p['replace'] === true),
   async getNotebook() {
     return ((await classic?.reader)?.notebook() ?? []) as unknown as JsonValue;
   },
@@ -720,6 +727,7 @@ const methods: Record<
     );
   },
   getPdfAnnotations: () => (pdf?.annotations ?? []) as unknown as JsonValue,
+  getPdfMarks: () => (pdf?.getMarks() ?? []) as unknown as JsonValue,
   pdfScrollToPage(p) {
     const n = p['page'];
     if (typeof n === 'number') pdf?.scrollToPage(n);

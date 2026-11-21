@@ -26,7 +26,7 @@ import {
   sanitizeBadge,
   sanitizeMarkData,
 } from '@axiomtext/plugin-marks/data';
-import type { MarkData, MarkTypeDef } from '@axiomtext/plugin-marks/data';
+import type { MarkData, MarkInfo, MarkTypeDef } from '@axiomtext/plugin-marks/data';
 import { describe, offsetOf, textModel } from '@axiomtext/viewer/anchor';
 import type { TextAnchor } from '@axiomtext/viewer/anchor';
 import { createColorPicker } from '@axiomtext/viewer/picker';
@@ -135,6 +135,8 @@ export interface PdfAnnotator {
   readonly pageCount: number;
   readonly annotations: PdfAnnotation[];
   setAnnotations(items: readonly PdfAnnotation[]): void;
+  /** The marks (not readers' highlights) as `{ id, type, text, page, data, … }`; see `listPdfMarks`. */
+  getMarks(): MarkInfo[];
   /** Shows a page (1-based). */
   scrollToPage(page: number): void;
   /** Scrolls to an annotation. */
@@ -156,6 +158,31 @@ const el = <K extends keyof HTMLElementTagNameMap>(
 };
 
 const clamp01 = (n: number): number => Math.min(1, Math.max(0, n));
+
+/**
+ * The marks among saved PDF annotations, in the same shape as `editor.getMarks()`
+ * (`{ id, type, text, page, data, badge, anchor }`), in reading order: by page, then top to
+ * bottom. Readers' highlights are left out. Works on the server too.
+ */
+export function listPdfMarks(annotations: readonly unknown[]): MarkInfo[] {
+  return sanitizeAnnotations(annotations)
+    .filter((a) => a.kind === 'mark' && !!a.type)
+    .map((a) => ({
+      a,
+      top: Math.min(1, ...a.rects.map((r) => r.y)),
+      left: Math.min(1, ...a.rects.map((r) => r.x)),
+    }))
+    .sort((x, y) => x.a.page - y.a.page || x.top - y.top || x.left - y.left)
+    .map(({ a }) => ({
+      id: a.id,
+      type: a.type ?? '',
+      text: a.anchor.exact,
+      page: a.page,
+      data: a.data ?? null,
+      badge: a.badge ?? null,
+      anchor: { exact: a.anchor.exact, prefix: a.anchor.prefix, suffix: a.anchor.suffix },
+    }));
+}
 
 /** Valid stored annotations only. */
 export function sanitizeAnnotations(items: readonly unknown[]): PdfAnnotation[] {
@@ -698,6 +725,7 @@ export async function createPdfAnnotator(
       items = sanitizeAnnotations(next);
       drawAll();
     },
+    getMarks: () => listPdfMarks(items),
     scrollToPage(n) {
       pages[Math.min(Math.max(n, 1), pages.length) - 1]?.box.scrollIntoView({
         block: 'start',

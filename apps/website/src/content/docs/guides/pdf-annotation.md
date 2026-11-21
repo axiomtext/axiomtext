@@ -62,6 +62,12 @@ Each annotation is plain JSON, ready for your database:
 the text with some context, so a new edition of the file can be matched again. Highlights have
 `kind: "highlight"`, a `color` and an optional `note`.
 
+To turn the marks into rows, `annotator.getMarks()` (or `listPdfMarks(annotations)` on your server)
+gives them in the same [mark format](/guides/marked-books/#the-mark-format) as documents:
+`{ id, type, text, page, data, badge, anchor }`, in reading order, without readers' highlights.
+The text is `anchor.exact` and the page is `page`, so a server in another language can also read
+them straight from this JSON.
+
 ## Flutter
 
 ```dart

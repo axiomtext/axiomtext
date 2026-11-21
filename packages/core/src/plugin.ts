@@ -2,6 +2,7 @@ import type { MarkSpec, NodeSpec } from 'prosemirror-model';
 import type { Command, Plugin as StatePlugin } from 'prosemirror-state';
 import type { Schema } from 'prosemirror-model';
 import type { InputRule } from 'prosemirror-inputrules';
+import type { DocumentJSON } from './document';
 
 /**
  * Engine-level types. They are ProseMirror types today; plugin authors should import them
@@ -53,6 +54,11 @@ export interface AxiomPlugin {
   enginePlugins?: (schema: EngineSchema) => EnginePlugin[];
   /** UI strings. */
   messages?: PluginMessages;
+  /**
+   * Read-only views of a document, e.g. `{ marks: listMarks }`, behind editor methods such as
+   * `editor.getMarks()`.
+   */
+  readers?: Record<string, (doc: DocumentJSON) => unknown>;
 }
 
 /** Identity helper that gives plugin authors full type checking. */

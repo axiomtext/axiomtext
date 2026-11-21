@@ -332,7 +332,7 @@ test.describe('Flutter engine', () => {
     const ready = await call(page, 'init', {
       markdown: 'Plants make food by photosynthesis.',
       toolbar: 'none',
-      marks: { types },
+      marks: { types, states: { learned: { fade: true, badge: '✓' } } },
     });
     expect((ready.value as { marks: boolean }).marks).toBe(true);
 
@@ -364,15 +364,36 @@ test.describe('Flutter engine', () => {
     });
     expect((await call(page, 'getPages')).value).toEqual([{ number: 23, index: 0 }]);
 
+    // Changing the type of the same text keeps the mark's id and data.
+    await page.evaluate(() => {
+      const mark = document.querySelector('mark.ax-mark');
+      const range = document.createRange();
+      range.selectNodeContents(mark as Node);
+      getSelection()?.removeAllRanges();
+      getSelection()?.addRange(range);
+    });
+    await page.waitForTimeout(50);
+    expect((await call(page, 'setMark', { type: 'pyq' })).value).toBe(id);
+    expect(((await call(page, 'getMarks')).value as Record<string, unknown>[])[0]).toMatchObject({
+      id,
+      type: 'pyq',
+      data: { questionIds: ['q1'] },
+    });
+
+    // A reader's state: faded, with the state's badge, and "not learned yet" folds it away.
+    await call(page, 'setMarkStates', { states: { [id]: 'learned' } });
+    await expect(page.locator('[data-mark-state="learned"]')).toHaveText('photosynthesis');
+
     // Read-only: a tap sends markTap.
     await call(page, 'setEditable', { editable: false });
     await page.locator('mark.ax-mark').click();
     await expect.poll(async () => (await events(page, 'markTap')).length).toBe(1);
     expect((await events(page, 'markTap'))[0]?.data).toMatchObject({
       id,
-      type: 'important',
+      type: 'pyq',
       page: 23,
     });
+    await expect(page.locator('.ax-mark-badge')).toHaveText('1 ✓');
   });
 
   test('long chapters: equations render near the screen; reported height also shrinks', async ({

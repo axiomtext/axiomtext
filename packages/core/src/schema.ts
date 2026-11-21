@@ -6,6 +6,7 @@ import type {
   NodeSpec,
   TagParseRule,
 } from 'prosemirror-model';
+import type { DocumentJSON } from './document';
 import { AxiomError } from './errors';
 import type { AxiomPlugin, GlobalAttribute } from './plugin';
 
@@ -81,7 +82,20 @@ export function buildSchema(
 
   const schema = new Schema({ nodes, marks });
   schema.cached[CONFIG_KEY] = config;
+  schema.cached[READERS_KEY] = Object.assign({}, ...plugins.map((p) => p.readers ?? {})) as Record<
+    string,
+    (doc: DocumentJSON) => unknown
+  >;
   return schema;
+}
+
+const READERS_KEY = 'axReaders';
+
+/** Runs a plugin's document reader (see `AxiomPlugin.readers`), or returns undefined. */
+export function readDocument(schema: Schema, name: string, doc: DocumentJSON): unknown {
+  const readers = schema.cached[READERS_KEY] as
+    Record<string, (doc: DocumentJSON) => unknown> | undefined;
+  return readers?.[name]?.(doc);
 }
 
 const CONFIG_KEY = 'axConfig';

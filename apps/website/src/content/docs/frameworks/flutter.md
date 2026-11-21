@@ -170,9 +170,20 @@ AxiomTextEditor(
 );
 ```
 
-Writers get `AxiomToolbarItem.mark` and `AxiomToolbarItem.page` on the toolbar. The controller has
+Mark type ids are stored in documents, so keep them stable; labels and colours can change.
+`AxiomMarkType.defaults` gives Important, Marked and Past exam question if you don't need your
+own. Writers get `AxiomToolbarItem.mark` (a marker pen; the sheet shows Alt+1, Alt+2… next to each
+type) and `AxiomToolbarItem.page`. Pick the buttons per screen with `toolbarItems`: for example
+marks without `AxiomToolbarItem.comment` and `AxiomToolbarItem.commentsPanel` while a teacher
+drafts. Read-only editors show no toolbar. The controller has
 `setMark`, `removeMark`, `setMarkData`, `getMarkData`, `setMarkBadge`, `getMarks`, `getPages`,
-`insertPage`, `scrollToPage`, `setMarkFilter`, `notebook()` and `revealHighlight`. See
+`insertPage`, `scrollToPage`, `setMarkFilter`, `setMarkState`, `setMarkStates`, `getPdfMarks`,
+`notebook()` and `revealHighlight`. `getMarks()` returns every mark in document order
+(`id`, `type`, `text`, `page`, `data`) for saving them as rows; ids stay the same while the text
+is edited, and a pasted copy gets a new one. A student's own states show with
+`markStateStyles: {'learned': AxiomMarkStateStyle(fade: true, badge: '✓')}` and
+`markStates`, and `AxiomMarkFilter.query(excludeStates: ['learned'])` shows only what's not
+learned yet. See
 [marked books](/guides/marked-books/).
 
 `AxiomPdfView(bytes: pdf, markTypes: …, markMode: isTeacher)` shows an existing PDF with the same

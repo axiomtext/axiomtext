@@ -549,6 +549,29 @@ class AxiomMarkSample extends StatelessWidget {
   }
 }
 
+/// The keyboard shortcut for the n-th mark type: ⌥1 on Apple devices, Alt+1 elsewhere.
+class _MarkShortcut extends StatelessWidget {
+  const _MarkShortcut(this.n);
+
+  final int n;
+
+  @override
+  Widget build(BuildContext context) {
+    final apple = switch (Theme.of(context).platform) {
+      TargetPlatform.iOS || TargetPlatform.macOS => true,
+      _ => false,
+    };
+    return Text(
+      apple ? '⌥$n' : 'Alt+$n',
+      style: TextStyle(
+        fontSize: 13,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        fontFeatures: const [FontFeature.tabularFigures()],
+      ),
+    );
+  }
+}
+
 /// Mark the selection with one of [types], or remove the mark there.
 Future<void> showMarkSheet(
   BuildContext context,
@@ -565,13 +588,22 @@ Future<void> showMarkSheet(
       builder: (context) => CupertinoActionSheet(
         title: Text(l('Mark')),
         actions: [
-          for (final type in types)
+          for (final (i, type) in types.indexed)
             CupertinoActionSheetAction(
               onPressed: () => Navigator.pop(context, _Picked<String?>(type.id)),
               child: DefaultTextStyle.merge(
                 style: TextStyle(
                     color: CupertinoColors.label.resolveFrom(context)),
-                child: AxiomMarkSample(type: type),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AxiomMarkSample(type: type),
+                    if (i < 9) ...[
+                      const SizedBox(width: 12),
+                      _MarkShortcut(i + 1),
+                    ],
+                  ],
+                ),
               ),
             ),
           CupertinoActionSheetAction(
@@ -604,13 +636,14 @@ Future<void> showMarkSheet(
                 child: Text(l('Mark'),
                     style: Theme.of(context).textTheme.titleMedium),
               ),
-              for (final type in types)
+              for (final (i, type) in types.indexed)
                 ListTile(
-                  leading: Icon(Icons.bookmark, color: type.color),
+                  leading: Icon(Icons.edit_note, color: type.color),
                   title: Align(
                     alignment: AlignmentDirectional.centerStart,
                     child: AxiomMarkSample(type: type),
                   ),
+                  trailing: i < 9 ? _MarkShortcut(i + 1) : null,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                   onTap: () =>

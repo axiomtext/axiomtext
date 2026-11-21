@@ -187,6 +187,8 @@ const messages: Messages = {
   // Comments and reader highlights
   Comment: '评论',
   Comments: '评论',
+  'Add comment': '添加评论',
+  'All comments': '所有评论',
   'Add a comment': '添加评论',
   'Add a comment…': '写下评论…',
   Reply: '回复',

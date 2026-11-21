@@ -25,6 +25,8 @@ class AxiomTextView extends StatefulWidget {
     super.key,
     required this.content,
     this.markTypes = const [],
+    this.markStates = const {},
+    this.markStateStyles = const {},
     this.onMarkTap,
     this.onLinkTap,
     this.style,
@@ -37,6 +39,12 @@ class AxiomTextView extends StatefulWidget {
 
   /// Your mark types, for their colours and styles.
   final List<AxiomMarkType> markTypes;
+
+  /// This reader's states by mark id, e.g. `{'m42': 'learned'}`.
+  final Map<String, String> markStates;
+
+  /// How states look, e.g. `{'learned': AxiomMarkStateStyle(fade: true, badge: '✓')}`.
+  final Map<String, AxiomMarkStateStyle> markStateStyles;
 
   /// A mark was tapped.
   final void Function(AxiomMark mark)? onMarkTap;
@@ -115,6 +123,8 @@ class _AxiomTextViewState extends State<AxiomTextView> {
       theme: theme,
       base: widget.style ?? theme.textTheme.bodyLarge ?? const TextStyle(fontSize: 16),
       types: {for (final t in widget.markTypes) t.id: t},
+      states: widget.markStates,
+      stateStyles: widget.markStateStyles,
       recognizers: _recognizers,
       onMarkTap: widget.onMarkTap,
       onLinkTap: widget.onLinkTap,
@@ -177,6 +187,8 @@ class _Renderer {
     required this.theme,
     required this.base,
     required this.types,
+    required this.states,
+    required this.stateStyles,
     required this.recognizers,
     required this.onMarkTap,
     required this.onLinkTap,
@@ -187,6 +199,8 @@ class _Renderer {
   final ThemeData theme;
   final TextStyle base;
   final Map<String, AxiomMarkType> types;
+  final Map<String, String> states;
+  final Map<String, AxiomMarkStateStyle> stateStyles;
   final List<GestureRecognizer> recognizers;
   final void Function(AxiomMark mark)? onMarkTap;
   final void Function(Uri uri)? onLinkTap;
@@ -633,7 +647,14 @@ class _Renderer {
         case 'marker':
           final id = a['id']?.toString();
           final type = types[a['type']?.toString()];
-          final color = type?.color ?? const Color(0xFFEAB308);
+          final faded = stateStyles[states[id]]?.fade ?? false;
+          final markColor = type?.color ?? const Color(0xFFEAB308);
+          final color = faded ? markColor.withValues(alpha: 0.45) : markColor;
+          if (faded) {
+            final textColor =
+                style.color ?? parent.color ?? theme.colorScheme.onSurface;
+            style = style.copyWith(color: textColor.withValues(alpha: 0.45));
+          }
           switch (type?.style ?? AxiomMarkStyle.fill) {
             case AxiomMarkStyle.fill:
               style = style.copyWith(backgroundColor: color.withValues(alpha: 0.26));
@@ -695,9 +716,13 @@ class _Renderer {
       final left = (_partsLeft[markId] ?? 0) - 1;
       _partsLeft[markId] = left;
       final info = _marks[markId];
-      final badge = info?.badge;
-      if (left == 0 && badge != null && badge.isNotEmpty) {
-        final color = types[info!.type]?.color ?? const Color(0xFFEAB308);
+      final stateBadge = stateStyles[states[markId]]?.badge;
+      final badge = [info?.badge, stateBadge]
+          .whereType<String>()
+          .where((b) => b.isNotEmpty)
+          .join(' ');
+      if (left == 0 && info != null && badge.isNotEmpty) {
+        final color = types[info.type]?.color ?? const Color(0xFFEAB308);
         spans.add(WidgetSpan(
           alignment: PlaceholderAlignment.top,
           child: Container(

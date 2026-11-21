@@ -63,11 +63,13 @@ export const METHODS = [
   'insertPage',
   'scrollToPage',
   'setMarkFilter',
+  'setMarkStates',
   'getNotebook',
   'revealHighlight',
   'openPdf',
   'setPdfAnnotations',
   'getPdfAnnotations',
+  'getPdfMarks',
   'pdfScrollToPage',
 ] as const;
 export type Method = (typeof METHODS)[number];
@@ -167,8 +169,13 @@ export interface InitParams {
   /** Marked books: the app's mark types (`markTap` events), reading filter and legend. */
   marks?: {
     types: { id: string; label: string; color: string; style?: string }[];
-    filter?: 'all' | 'marked' | string[];
+    /** `'all'`, `'marked'`, type ids, or `{ types?, states?, excludeStates? }`. */
+    filter?: JsonValue;
     legend?: boolean;
+    /** How readers' states look: `{ learned: { fade: true, badge: '✓' } }`. */
+    states?: JsonValue;
+    /** Starting states by mark id. */
+    initialStates?: JsonValue;
   };
   /** Read-only: your items in the menu for selected text (`selectionAction` events). */
   selectionActions?: { id: string; label: string }[];

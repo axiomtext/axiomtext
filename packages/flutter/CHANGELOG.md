@@ -1,3 +1,17 @@
+## 0.2.1
+
+- The Mark button is a marker pen (a bookmark looked like "save"), and its sheet shows each
+  type's shortcut (Alt+1… / ⌥1…).
+- `AxiomMarkType.defaults`: Important, Marked and Past exam question, as a starting set.
+- Comment buttons are labelled "Add comment" and "All comments" (tooltip and screen reader).
+- `controller.getMarks()` is a documented, stable format (id, type, text, page, data), and
+  `getPdfMarks()` gives PDF marks in the same shape.
+- Mark ids stay the same through edits, undo and redo, and when a mark is re-marked or retyped;
+  a pasted copy or the second half of a split mark gets a new id.
+- Readers' states: `controller.setMarkState(id, 'learned')`, `markStateStyles` (fade, badge),
+  `markStates`, and `AxiomMarkFilter.query(excludeStates: ['learned'])`; also in
+  `AxiomTextView`.
+
 ## 0.2.0
 
 - **Marked books:** your own mark types (`markTypes`: label, colour, fill / underline / double /

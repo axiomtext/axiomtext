@@ -24,6 +24,37 @@ export interface DocumentJSON {
   doc: NodeJSON & { type: 'doc' };
 }
 
+/** Any JSON object an app keeps on a mark (question ids, a note, …). */
+export type MarkData = Record<string, unknown>;
+
+/**
+ * A mark in a document (marked books), as `editor.getMarks()` and `listMarks()` return it. This
+ * shape is a stable format: fields may be added, never renamed or removed.
+ */
+export interface MarkInfo {
+  /** Unique id of this mark; stays the same while the text is edited. */
+  id: string;
+  /** The mark type's id (the app's, e.g. `PREVIOUS_YEAR`). */
+  type: string;
+  /** The marked text (parts in different paragraphs joined with a space). */
+  text: string;
+  /** Number of the page block before it, or null when there's none. */
+  page: number | null;
+  /** The app's data, or null. */
+  data: MarkData | null;
+  /** Small label shown on the mark (e.g. a number), or null. */
+  badge: string | null;
+  /** The quote with some context, to find it again (W3C TextQuoteSelector). */
+  anchor: { exact: string; prefix: string; suffix: string };
+}
+
+/** A page-number block. */
+export interface PageInfo {
+  number: number;
+  /** Index among the document's top-level blocks. */
+  index: number;
+}
+
 export function createEmptyDocument(): DocumentJSON {
   return {
     version: DOCUMENT_VERSION,

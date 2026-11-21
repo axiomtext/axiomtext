@@ -699,6 +699,9 @@ importers:
       prosemirror-state:
         specifier: ^1.4.4
         version: 1.4.4
+      prosemirror-transform:
+        specifier: ^1.10.0
+        version: 1.12.7
       prosemirror-view:
         specifier: ^1.43.0
         version: 1.43.0
@@ -709,6 +712,9 @@ importers:
       '@axiomtext/view':
         specifier: workspace:*
         version: link:../../view
+      prosemirror-history:
+        specifier: ^1.5.2
+        version: 1.5.2
 
   packages/plugins/table:
     dependencies:

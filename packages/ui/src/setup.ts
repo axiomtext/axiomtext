@@ -1,6 +1,12 @@
 import type { ViewerOptions } from '@axiomtext/viewer';
 import type { CommentThreadSummary } from '@axiomtext/plugin-comments/data';
-import type { MarkClickEvent, MarkFilter, MarkTypeDef } from '@axiomtext/plugin-marks';
+import type {
+  MarkClickEvent,
+  MarkFilter,
+  MarkStateStyle,
+  MarkTypeDef,
+} from '@axiomtext/plugin-marks';
+import { DEFAULT_MARK_TYPES } from '@axiomtext/plugin-marks/data';
 import { getLanguage, setLanguage, t } from '@axiomtext/i18n';
 import type { Messages } from '@axiomtext/i18n';
 import { createAutosave, loadDraft } from '@axiomtext/view';
@@ -61,14 +67,24 @@ export interface CommonEditorOptions extends Omit<EditorOptions, 'element'> {
 
 /** Marks settings (marked books). */
 export interface MarksOptions {
-  /** The kinds of marks you offer, e.g. `{ id: 'important', label: 'Important', color: '#16a34a', style: 'fill' }`. */
-  types: readonly MarkTypeDef[];
+  /**
+   * The kinds of marks you offer, e.g.
+   * `{ id: 'PREVIOUS_YEAR', label: 'পূর্বের বছরের প্রশ্ন', color: '#b45309', style: 'box' }`.
+   * The id is stored in documents, so keep it stable; labels and colours can change.
+   * Default: `DEFAULT_MARK_TYPES` (Important, Marked, Past exam question).
+   */
+  types?: readonly MarkTypeDef[];
   /** A reader clicked or tapped a mark (read-only editors): show your own popup. */
   onClick?: (event: MarkClickEvent) => void;
   /** Which marks to show while reading; other paragraphs fold away. Default: `'all'`. */
   filter?: MarkFilter;
   /** Show the legend of mark types above read-only content. Default: true. */
   legend?: boolean;
+  /**
+   * How readers' own states look, e.g. `{ learned: { fade: true, badge: '✓' } }`. Set them on a
+   * read-only editor with `editor.execute('setMarkState', 'm42', 'learned')`.
+   */
+  states?: Record<string, MarkStateStyle>;
 }
 
 /** Comments settings (COL-001…006). */
@@ -94,7 +110,8 @@ export interface Prepared {
   editorOptions: Omit<EditorOptions, 'element'>;
   comments: CommentsOptions | null;
   highlights: NonNullable<ViewerOptions['highlights']> | null;
-  marks: MarksOptions | null;
+  /** With `types` filled in (the defaults when the app gave none). */
+  marks: (MarksOptions & { types: readonly MarkTypeDef[] }) | null;
   selectionActions: Pick<ViewerOptions, 'selectionActions' | 'onSelectionAction'>;
 }
 
@@ -116,9 +133,10 @@ export function prepare(options: CommonEditorOptions): Prepared {
     editorOptions.config = {
       ...editorOptions.config,
       marks: {
-        types: marks.types,
+        types: marks.types ?? DEFAULT_MARK_TYPES,
         ...(marks.onClick ? { onClick: marks.onClick } : {}),
         ...(marks.filter ? { filter: marks.filter } : {}),
+        ...(marks.states ? { states: marks.states } : {}),
       },
     };
   }
@@ -136,7 +154,7 @@ export function prepare(options: CommonEditorOptions): Prepared {
     editorOptions,
     comments: comments ?? null,
     highlights: highlights ?? null,
-    marks: marks ?? null,
+    marks: marks ? { ...marks, types: marks.types ?? DEFAULT_MARK_TYPES } : null,
     selectionActions: {
       ...(selectionActions ? { selectionActions } : {}),
       ...(onSelectionAction ? { onSelectionAction } : {}),

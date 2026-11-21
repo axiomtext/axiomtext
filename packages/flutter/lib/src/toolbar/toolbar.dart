@@ -412,14 +412,14 @@ class AxiomToolbar extends StatelessWidget {
         return button(Icons.horizontal_rule, l('Horizontal line'),
             () => run(AxiomCommands.insertHorizontalRule));
       case AxiomToolbarItem.comment:
-        return button(Icons.add_comment_outlined, l('Comment'),
+        return button(Icons.add_comment_outlined, l('Add comment'),
             controller.openCommentComposer,
             enabled: !state.selectionEmpty);
       case AxiomToolbarItem.commentsPanel:
-        return button(Icons.forum_outlined, l('Comments'),
+        return button(Icons.forum_outlined, l('All comments'),
             () => controller.toggleCommentsPanel());
       case AxiomToolbarItem.mark:
-        return button(Icons.bookmark_border, l('Mark'),
+        return button(Icons.edit_note, l('Mark'),
             () => showMarkSheet(context, controller, markTypes, cupertino),
             enabled: !state.selectionEmpty);
       case AxiomToolbarItem.page:

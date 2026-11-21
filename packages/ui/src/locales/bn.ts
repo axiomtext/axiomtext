@@ -187,6 +187,11 @@ const messages: Messages = {
   // Comments and reader highlights
   Comment: 'মন্তব্য',
   Comments: 'মন্তব্যসমূহ',
+  'Add comment': 'মন্তব্য যোগ করুন',
+  'All comments': 'সব মন্তব্য',
+  Important: 'গুরুত্বপূর্ণ',
+  Marked: 'দাগানো',
+  'Past exam question': 'পূর্বের বছরের প্রশ্ন',
   'Add a comment': 'মন্তব্য যোগ করুন',
   'Add a comment…': 'মন্তব্য লিখুন…',
   Reply: 'উত্তর দিন',

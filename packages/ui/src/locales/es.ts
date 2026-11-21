@@ -187,6 +187,8 @@ const messages: Messages = {
   // Comments and reader highlights
   Comment: 'Comentar',
   Comments: 'Comentarios',
+  'Add comment': 'Añadir comentario',
+  'All comments': 'Todos los comentarios',
   'Add a comment': 'Añadir un comentario',
   'Add a comment…': 'Escribe un comentario…',
   Reply: 'Responder',

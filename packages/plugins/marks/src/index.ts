@@ -12,20 +12,32 @@ import { getLanguage, t } from '@axiomtext/i18n';
 import type { Mark, MarkType, Node as PMNode } from 'prosemirror-model';
 import { NodeSelection, Plugin, PluginKey, TextSelection } from 'prosemirror-state';
 import type { EditorState, Transaction } from 'prosemirror-state';
+import {
+  AddMarkStep,
+  Mapping,
+  RemoveMarkStep,
+  ReplaceAroundStep,
+  ReplaceStep,
+} from 'prosemirror-transform';
+import type { Step } from 'prosemirror-transform';
 import { Decoration, DecorationSet } from 'prosemirror-view';
 import type { EditorView } from 'prosemirror-view';
 
 import {
+  combinedBadge,
   createMarkId,
   isMarkId,
+  listMarks,
+  listPages,
   localizeNumber,
+  markMatches,
   markColorStyle,
   normalizeMarkTypes,
   parseMarkData,
   sanitizeBadge,
   sanitizeMarkData,
 } from './data';
-import type { MarkData, MarkTypeDef } from './data';
+import type { MarkData, MarkFilter, MarkStateStyle, MarkTypeDef } from './data';
 
 export * from './data';
 
@@ -43,12 +55,6 @@ export interface MarkClickEvent {
   rect: { top: number; bottom: number; left: number; right: number };
 }
 
-/**
- * Which marks to show while reading: `'all'`, `'marked'` (only paragraphs with a mark), or a list
- * of mark type ids. Paragraphs without a shown mark fold into "… 3 paragraphs".
- */
-export type MarkFilter = 'all' | 'marked' | readonly string[];
-
 /** `config.marks` of an editor. */
 export interface MarksConfig {
   types?: readonly MarkTypeDef[];
@@ -56,6 +62,8 @@ export interface MarksConfig {
   onClick?: (event: MarkClickEvent) => void;
   /** Starting filter for reading. Default: `'all'`. */
   filter?: MarkFilter;
+  /** How reader states look, e.g. `{ learned: { fade: true, badge: '✓' } }`. */
+  states?: Record<string, MarkStateStyle>;
 }
 
 const configOf = (schema: EngineSchema): MarksConfig =>
@@ -131,7 +139,15 @@ export const setMark =
     if (!type || empty || !isMarkId(typeId)) return false;
     if (known.length && !known.some((k) => k.id === typeId)) return false;
     if (!dispatch) return true;
-    const id = isMarkId(options.id) ? options.id : createMarkId();
+    // Re-marking or extending a mark keeps it (its id, data and badge); joining marks keeps the
+    // first one.
+    let existing: Mark | undefined;
+    state.doc.nodesBetween(from, to, (node) => {
+      existing ??= type.isInSet(node.marks);
+      return !existing;
+    });
+    const reused: unknown = existing?.attrs['id'];
+    const id = isMarkId(options.id) ? options.id : isMarkId(reused) ? reused : createMarkId();
     dispatch(
       state.tr
         .removeMark(from, to, type)
@@ -141,8 +157,14 @@ export const setMark =
           type.create({
             type: typeId,
             id,
-            data: sanitizeMarkData(options.data),
-            badge: sanitizeBadge(options.badge),
+            data:
+              options.data !== undefined
+                ? sanitizeMarkData(options.data)
+                : sanitizeMarkData(existing?.attrs['data']),
+            badge:
+              options.badge !== undefined
+                ? sanitizeBadge(options.badge)
+                : sanitizeBadge(existing?.attrs['badge']),
           }),
         )
         .setMeta('axMarkAdded', id),
@@ -283,17 +305,57 @@ export const scrollToPage =
 
 // ── Reading: filters, badges and taps ───────────────────────────
 
-const filterKey = new PluginKey<{ filter: MarkFilter; open: readonly number[] }>('axMarkFilter');
+interface ReadingState {
+  filter: MarkFilter;
+  /** Folded groups the reader opened. */
+  open: readonly number[];
+  /** Reader states by mark id, e.g. `learned`. */
+  states: ReadonlyMap<string, string>;
+}
+
+const filterKey = new PluginKey<ReadingState>('axMarkFilter');
+
+const reading = (state: EditorState): ReadingState =>
+  filterKey.getState(state) ?? { filter: 'all', open: [], states: new Map() };
 
 /** Which marks to show while reading; other paragraphs fold away. */
 export const setMarkFilter =
   (filter: MarkFilter): EditorCommand =>
   (state, dispatch) => {
-    dispatch?.(state.tr.setMeta(filterKey, { filter, open: [] }).setMeta('addToHistory', false));
+    dispatch?.(
+      state.tr
+        .setMeta(filterKey, { ...reading(state), filter, open: [] })
+        .setMeta('addToHistory', false),
+    );
     return true;
   };
 
-const blockHasShownMark = (node: PMNode, filter: MarkFilter): boolean => {
+/**
+ * Sets readers' states on marks, e.g. `{ m42: 'learned' }` (null clears one). With `replace`,
+ * marks not listed lose their state. States aren't saved in the document: they belong to the
+ * reader, so keep them in your app. They're shown with `config.marks.states` styles, a
+ * `data-mark-state` attribute for your CSS, and the `states` / `excludeStates` filters.
+ */
+export const setMarkStates =
+  (states: Readonly<Record<string, string | null>>, replace = false): EditorCommand =>
+  (state, dispatch) => {
+    const value = reading(state);
+    const next = new Map(replace ? [] : value.states);
+    for (const [id, markState] of Object.entries(states)) {
+      if (typeof markState === 'string' && markState) next.set(id, markState.slice(0, 64));
+      else next.delete(id);
+    }
+    dispatch?.(
+      state.tr.setMeta(filterKey, { ...value, states: next }).setMeta('addToHistory', false),
+    );
+    return true;
+  };
+
+/** Sets one reader state, e.g. `setMarkState('m42', 'learned')` (null clears it). */
+export const setMarkState = (id: string, markState: string | null): EditorCommand =>
+  setMarkStates({ [id]: markState });
+
+const blockHasShownMark = (node: PMNode, value: ReadingState): boolean => {
   if (node.type.name === 'page') return true;
   let found = false;
   node.descendants((child) => {
@@ -301,7 +363,11 @@ const blockHasShownMark = (node: PMNode, filter: MarkFilter): boolean => {
     for (const mark of child.marks) {
       if (
         mark.type.name === 'marker' &&
-        (filter === 'marked' || filter === 'all' || filter.includes(String(mark.attrs['type'])))
+        markMatches(
+          value.filter,
+          String(mark.attrs['type']),
+          value.states.get(String(mark.attrs['id'])) ?? null,
+        )
       ) {
         found = true;
       }
@@ -311,7 +377,8 @@ const blockHasShownMark = (node: PMNode, filter: MarkFilter): boolean => {
   return found;
 };
 
-function filterDecorations(doc: PMNode, filter: MarkFilter, open: readonly number[]): Decoration[] {
+function filterDecorations(doc: PMNode, value: ReadingState): Decoration[] {
+  const { filter, open } = value;
   if (filter === 'all') return [];
   const out: Decoration[] = [];
   let run: { from: number; count: number; positions: { from: number; to: number }[] } | null = null;
@@ -349,7 +416,7 @@ function filterDecorations(doc: PMNode, filter: MarkFilter, open: readonly numbe
     run = null;
   };
   doc.forEach((node, offset) => {
-    if (blockHasShownMark(node, filter)) {
+    if (blockHasShownMark(node, value)) {
       flush();
       return;
     }
@@ -361,14 +428,45 @@ function filterDecorations(doc: PMNode, filter: MarkFilter, open: readonly numbe
   return out;
 }
 
-function badgeDecorations(doc: PMNode, schema: EngineSchema): Decoration[] {
+/** Reader states: `data-mark-state` on the marked text, faded when its style says so. */
+function stateDecorations(
+  doc: PMNode,
+  value: ReadingState,
+  styles: Readonly<Record<string, MarkStateStyle>> | undefined,
+): Decoration[] {
+  if (!value.states.size) return [];
+  const out: Decoration[] = [];
+  doc.descendants((node, pos) => {
+    if (!node.isInline) return true;
+    for (const mark of node.marks) {
+      if (mark.type.name !== 'marker') continue;
+      const markState = value.states.get(String(mark.attrs['id']));
+      if (!markState) continue;
+      out.push(
+        Decoration.inline(pos, pos + node.nodeSize, {
+          class: styles?.[markState]?.fade ? 'ax-mark-state ax-mark-faded' : 'ax-mark-state',
+          'data-mark-state': markState,
+        }),
+      );
+    }
+    return false;
+  });
+  return out;
+}
+
+function badgeDecorations(doc: PMNode, schema: EngineSchema, value: ReadingState): Decoration[] {
   const types = typesOf(schema);
+  const styles = configOf(schema).states;
   const last = new Map<string, { to: number; badge: string; type: string }>();
   doc.descendants((node, pos) => {
     if (!node.isInline) return true;
     for (const mark of node.marks) {
       if (mark.type.name !== 'marker') continue;
-      const badge = sanitizeBadge(mark.attrs['badge']);
+      const badge = combinedBadge(
+        sanitizeBadge(mark.attrs['badge']),
+        value.states.get(String(mark.attrs['id'])) ?? null,
+        styles,
+      );
       if (badge) {
         last.set(String(mark.attrs['id']), {
           to: pos + node.nodeSize,
@@ -415,6 +513,118 @@ function clickEvent(view: EditorView, el: HTMLElement): MarkClickEvent | null {
     rect: { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right },
   };
 }
+
+// ── Unique, stable mark ids ─────────────────────────────────────
+//
+// A mark keeps its id while its text is edited, through undo and redo, and when it's re-marked,
+// extended or retyped as a whole. Only one part keeps an id: a pasted copy, or the second half of
+// a mark split in two, gets a new id (without the app data and badge, which belong to the
+// original). Joining marks with `setMark` keeps the first one's id.
+
+const uniqueKey = new PluginKey<null>('axMarkIds');
+
+type Range = { from: number; to: number };
+
+/** Whether a step can copy, split or join marks. */
+function touchesMarks(step: Step, marker: MarkType): boolean {
+  if (step instanceof AddMarkStep || step instanceof RemoveMarkStep)
+    return step.mark.type === marker;
+  if (step instanceof ReplaceStep || step instanceof ReplaceAroundStep) {
+    let found = false;
+    step.slice.content.descendants((node) => {
+      found ||= !!marker.isInSet(node.marks);
+      return !found;
+    });
+    return found;
+  }
+  return false;
+}
+
+/** Ranges of the final document that these transactions inserted. */
+function insertedRanges(trs: readonly Transaction[]): Range[] {
+  const maps = trs.flatMap((tr) => tr.mapping.maps);
+  const out: Range[] = [];
+  maps.forEach((map, i) => {
+    const rest = new Mapping(maps.slice(i + 1));
+    map.forEach((_oldStart, _oldEnd, newStart, newEnd) => {
+      if (newEnd <= newStart) return;
+      const from = rest.map(newStart, 1);
+      const to = rest.map(newEnd, -1);
+      if (to > from) out.push({ from, to });
+    });
+  });
+  return out;
+}
+
+interface Segment {
+  type: string;
+  /** Text offset where it ends (text and inline nodes counted, block boundaries not). */
+  end: number;
+  pieces: (Range & { mark: Mark })[];
+  /** Has text that was there before these transactions. */
+  old: boolean;
+}
+
+/**
+ * Pieces of the document that must get a new id: every part of an id except one (the first part
+ * that existed before, else the first part). A part is a run of text with the same id and type
+ * and nothing else in between.
+ */
+export function duplicateMarkParts(
+  doc: PMNode,
+  marker: MarkType,
+  inserted: readonly Range[] = [],
+): Segment[] {
+  const byId = new Map<string, Segment[]>();
+  let offset = 0;
+  doc.descendants((node, pos) => {
+    if (!node.isInline) return true;
+    const start = offset;
+    offset += node.isText ? node.nodeSize : 1;
+    const mark = marker.isInSet(node.marks);
+    if (!mark) return false;
+    const id = String(mark.attrs['id']);
+    const type = String(mark.attrs['type']);
+    const piece = { from: pos, to: pos + node.nodeSize, mark };
+    const old = !inserted.some((r) => r.from <= piece.from && r.to >= piece.to);
+    let list = byId.get(id);
+    if (!list) byId.set(id, (list = []));
+    const last = list[list.length - 1];
+    if (last && last.end === start && last.type === type) {
+      last.pieces.push(piece);
+      last.end = offset;
+      last.old ||= old;
+    } else {
+      list.push({ type, end: offset, pieces: [piece], old });
+    }
+    return false;
+  });
+  const out: Segment[] = [];
+  for (const list of byId.values()) {
+    if (list.length < 2) continue;
+    const keep = list.find((segment) => segment.old) ?? list[0];
+    out.push(...list.filter((segment) => segment !== keep));
+  }
+  return out;
+}
+
+const uniqueIdsPlugin = new Plugin({
+  key: uniqueKey,
+  appendTransaction(trs, _oldState, state) {
+    const marker = markerType(state);
+    if (!marker || trs.some((tr) => tr.getMeta(uniqueKey))) return null;
+    if (!trs.some((tr) => tr.steps.some((step) => touchesMarks(step, marker)))) return null;
+    const parts = duplicateMarkParts(state.doc, marker, insertedRanges(trs));
+    if (!parts.length) return null;
+    const tr = state.tr;
+    for (const part of parts) {
+      const mark = marker.create({ type: part.type, id: createMarkId(), data: null, badge: null });
+      for (const { from, to, mark: old } of part.pieces)
+        tr.removeMark(from, to, old).addMark(from, to, mark);
+    }
+    return tr.setMeta(uniqueKey, true);
+  },
+});
 
 /** Named mark types with app data, badges and taps (marked books). */
 export const Marks = definePlugin({
@@ -474,7 +684,10 @@ export const Marks = definePlugin({
     setMarkType,
     selectMark,
     setMarkFilter,
+    setMarkState,
+    setMarkStates,
   },
+  readers: { marks: listMarks },
   keymap: (schema) => {
     const keys: Record<string, EditorCommand> = { 'Alt-0': removeMark() };
     typesOf(schema)
@@ -485,10 +698,11 @@ export const Marks = definePlugin({
     return keys;
   },
   enginePlugins: (schema) => [
-    new Plugin<{ filter: MarkFilter; open: readonly number[] }>({
+    uniqueIdsPlugin,
+    new Plugin<ReadingState>({
       key: filterKey,
       state: {
-        init: () => ({ filter: configOf(schema).filter ?? 'all', open: [] }),
+        init: () => ({ filter: configOf(schema).filter ?? 'all', open: [], states: new Map() }),
         apply: (tr, value) => {
           const next = tr.getMeta(filterKey) as typeof value | undefined;
           if (next) return next;
@@ -498,10 +712,11 @@ export const Marks = definePlugin({
       },
       props: {
         decorations(state) {
-          const value = filterKey.getState(state);
+          const value = reading(state);
           const decorations = [
-            ...badgeDecorations(state.doc, schema),
-            ...(value ? filterDecorations(state.doc, value.filter, value.open) : []),
+            ...stateDecorations(state.doc, value, configOf(schema).states),
+            ...badgeDecorations(state.doc, schema, value),
+            ...filterDecorations(state.doc, value),
           ];
           return decorations.length ? DecorationSet.create(state.doc, decorations) : null;
         },
@@ -578,4 +793,5 @@ export const Pages = definePlugin({
     },
   },
   commands: { insertPage, setPageNumber, scrollToPage },
+  readers: { pages: listPages },
 });

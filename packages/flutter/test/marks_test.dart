@@ -97,6 +97,13 @@ void main() {
     });
     await controller.setMarkFilter(AxiomMarkFilter.marked);
     expect(engine.calls.last['params'], {'filter': 'marked'});
+    await controller.setMarkFilter(
+        AxiomMarkFilter.query(excludeStates: ['learned']));
+    expect(engine.calls.last['params'], {
+      'filter': {
+        'excludeStates': ['learned']
+      }
+    });
     final notes = await controller.notebook();
     expect(notes.single.text, 'leaves');
     expect(notes.single.page, 23);
@@ -173,5 +180,23 @@ void main() {
       'annotations': [saved.single.toMap()],
     });
     expect((await changes).single.id, 'a1');
+  });
+
+  test('readers\' states and PDF marks', () async {
+    final (controller, engine) = await started();
+    await controller.setMarkState('m1', 'learned');
+    expect(engine.calls.last['method'], 'setMarkStates');
+    expect(engine.calls.last['params'], {
+      'states': {'m1': 'learned'},
+      'replace': false,
+    });
+    await controller.setMarkStates({'m1': null, 'm2': 'learned'}, replace: true);
+    expect(engine.calls.last['params'], {
+      'states': {'m1': null, 'm2': 'learned'},
+      'replace': true,
+    });
+    expect(const AxiomMarkStateStyle(fade: true, badge: '✓').toMap(),
+        {'fade': true, 'badge': '✓'});
+    expect(await controller.getPdfMarks(), isEmpty);
   });
 }

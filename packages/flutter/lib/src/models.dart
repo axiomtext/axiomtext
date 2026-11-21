@@ -689,6 +689,22 @@ class AxiomMarkType {
   /// How it looks.
   final AxiomMarkStyle style;
 
+  /// A starting set: Important (green fill), Marked (blue underline) and Past exam question
+  /// (amber box). Most apps pass their own list instead, with their own labels and colours.
+  static const List<AxiomMarkType> defaults = [
+    AxiomMarkType(id: 'important', label: 'Important', color: Color(0xFF16A34A)),
+    AxiomMarkType(
+        id: 'marked',
+        label: 'Marked',
+        color: Color(0xFF2563EB),
+        style: AxiomMarkStyle.underline),
+    AxiomMarkType(
+        id: 'pyq',
+        label: 'Past exam question',
+        color: Color(0xFFB45309),
+        style: AxiomMarkStyle.box),
+  ];
+
   /// The parameters sent to the engine.
   Map<String, Object?> toMap() => {
         'id': id,
@@ -783,6 +799,26 @@ class AxiomPage {
   final int index;
 }
 
+/// How marks look for a reader state set with [AxiomTextController.setMarkState], e.g.
+/// `learned`.
+@immutable
+class AxiomMarkStateStyle {
+  /// Creates a style, e.g. `AxiomMarkStateStyle(fade: true, badge: '✓')`.
+  const AxiomMarkStateStyle({this.fade = false, this.badge});
+
+  /// Fade the mark and its text.
+  final bool fade;
+
+  /// A badge after the mark (after its own badge), e.g. `'✓'`.
+  final String? badge;
+
+  /// The parameters sent to the engine.
+  Map<String, Object?> toMap() => {
+        if (fade) 'fade': true,
+        if (badge != null) 'badge': badge,
+      };
+}
+
 /// Which marks to show while reading; other paragraphs fold into "… 3 paragraphs".
 @immutable
 class AxiomMarkFilter {
@@ -797,6 +833,20 @@ class AxiomMarkFilter {
   /// Only paragraphs with these mark types.
   factory AxiomMarkFilter.types(List<String> typeIds) =>
       AxiomMarkFilter._(List<String>.unmodifiable(typeIds));
+
+  /// Marks of [types] (any when null) whose reader state is in [states] and not in
+  /// [excludeStates]. "Not learned yet": `AxiomMarkFilter.query(excludeStates: ['learned'])`.
+  factory AxiomMarkFilter.query({
+    List<String>? types,
+    List<String>? states,
+    List<String>? excludeStates,
+  }) =>
+      AxiomMarkFilter._(Map<String, Object?>.unmodifiable({
+        if (types != null) 'types': List<String>.unmodifiable(types),
+        if (states != null) 'states': List<String>.unmodifiable(states),
+        if (excludeStates != null)
+          'excludeStates': List<String>.unmodifiable(excludeStates),
+      }));
 
   final Object _value;
 

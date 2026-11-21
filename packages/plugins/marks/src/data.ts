@@ -6,7 +6,7 @@
  * question"). Writers apply marks; readers see them and can tap them. Each marked range carries
  * `{ type, id }` and optional app data and a badge, saved inside the document.
  */
-import type { DocumentJSON, NodeJSON } from '@axiomtext/core';
+import type { DocumentJSON, MarkData, MarkInfo, NodeJSON, PageInfo } from '@axiomtext/core';
 
 /** How a mark looks. */
 export type MarkStyle = 'fill' | 'underline' | 'double' | 'box';
@@ -24,33 +24,18 @@ export interface MarkTypeDef {
   style?: MarkStyle;
 }
 
-/** Any JSON object your app keeps on a mark (question ids, a note, …). */
-export type MarkData = Record<string, unknown>;
+/**
+ * Used when the app turns marks on without its own types. They're only a starting point: give
+ * your own `types` with your labels and colours. Keep each `id` stable, since it's what documents
+ * store; labels and colours can change at any time.
+ */
+export const DEFAULT_MARK_TYPES: readonly MarkTypeDef[] = [
+  { id: 'important', label: 'Important', color: '#16a34a', style: 'fill' },
+  { id: 'marked', label: 'Marked', color: '#2563eb', style: 'underline' },
+  { id: 'pyq', label: 'Past exam question', color: '#b45309', style: 'box' },
+];
 
-/** A mark in the document. */
-export interface MarkInfo {
-  /** Unique id of this mark. */
-  id: string;
-  /** The mark type's id. */
-  type: string;
-  /** The marked text (parts in different paragraphs joined with a space). */
-  text: string;
-  /** Your app's data, or null. */
-  data: MarkData | null;
-  /** Small label shown on the mark (e.g. a number), or null. */
-  badge: string | null;
-  /** Number of the page block before it, or null when there's none. */
-  page: number | null;
-  /** The quote with some context, to find it again (W3C TextQuoteSelector). */
-  anchor: { exact: string; prefix: string; suffix: string };
-}
-
-/** A page-number block. */
-export interface PageInfo {
-  number: number;
-  /** Index among the document's top-level blocks. */
-  index: number;
-}
+export type { MarkData, MarkInfo, PageInfo } from '@axiomtext/core';
 
 const ID = /^[\w-]{1,64}$/;
 const COLOR = /^#[0-9a-f]{6}$/i;
@@ -143,18 +128,116 @@ export function localizeNumber(value: number, locale?: string): string {
   }
 }
 
+// ── Filters and reader states ────────────────────────────────────
+
+/**
+ * Which marks to show while reading; paragraphs without a shown mark fold into "… 3 paragraphs".
+ * - `'all'`: everything, no folding. `'marked'`: paragraphs with any mark.
+ * - A list of mark type ids: paragraphs with a mark of those types.
+ * - `{ types?, states?, excludeStates? }`: marks of those types (any when left out) whose reader
+ *   state is in `states` and not in `excludeStates`, e.g. `{ excludeStates: ['learned'] }` for
+ *   "not learned yet". A mark without a state has none of the states.
+ */
+export type MarkFilter = 'all' | 'marked' | readonly string[] | MarkFilterQuery;
+
+export interface MarkFilterQuery {
+  types?: readonly string[];
+  states?: readonly string[];
+  excludeStates?: readonly string[];
+}
+
+/**
+ * How marks look for a reader state set with `setMarkState(id, state)` (e.g. `learned`). The
+ * mark also gets `data-mark-state="learned"` for your own CSS.
+ */
+export interface MarkStateStyle {
+  /** Fade the mark and its text. */
+  fade?: boolean;
+  /** A badge after the mark, e.g. `'✓'` (shown after the mark's own badge). */
+  badge?: string;
+}
+
+/** Whether a mark of `type` with reader state `state` passes a filter. */
+export function markMatches(filter: MarkFilter, type: string, state: string | null): boolean {
+  if (filter === 'all' || filter === 'marked') return true;
+  if (isFilterList(filter)) return filter.includes(type);
+  if (filter.types && !filter.types.includes(type)) return false;
+  if (filter.states && (state === null || !filter.states.includes(state))) return false;
+  if (filter.excludeStates && state !== null && filter.excludeStates.includes(state)) return false;
+  return true;
+}
+
+const isFilterList = (filter: MarkFilter): filter is readonly string[] => Array.isArray(filter);
+
+const stringList = (value: unknown): string[] | undefined =>
+  Array.isArray(value) ? value.filter((x): x is string => typeof x === 'string') : undefined;
+
+/** A filter from untrusted JSON (the Flutter bridge, saved settings). */
+export function parseMarkFilter(value: unknown): MarkFilter {
+  if (value === 'marked') return 'marked';
+  if (Array.isArray(value)) return stringList(value) ?? [];
+  if (typeof value === 'object' && value !== null) {
+    const v = value as Record<string, unknown>;
+    const query: MarkFilterQuery = {};
+    const types = stringList(v['types']);
+    const states = stringList(v['states']);
+    const excludeStates = stringList(v['excludeStates']);
+    if (types) query.types = types;
+    if (states) query.states = states;
+    if (excludeStates) query.excludeStates = excludeStates;
+    return query;
+  }
+  return 'all';
+}
+
+/** Reader states from untrusted JSON: `{ markId: 'learned' }` (null or '' clears). */
+export function parseMarkStates(value: unknown): Record<string, string | null> {
+  const out: Record<string, string | null> = {};
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return out;
+  for (const [id, state] of Object.entries(value)) {
+    if (!isMarkId(id)) continue;
+    out[id] = typeof state === 'string' && state ? state.slice(0, 64) : null;
+  }
+  return out;
+}
+
+/** State styles from untrusted JSON. */
+export function parseMarkStateStyles(value: unknown): Record<string, MarkStateStyle> {
+  const out: Record<string, MarkStateStyle> = {};
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return out;
+  for (const [state, raw] of Object.entries(value)) {
+    if (typeof raw !== 'object' || raw === null) continue;
+    const r = raw as Record<string, unknown>;
+    const badge = sanitizeBadge(r['badge']);
+    out[state] = { ...(r['fade'] === true ? { fade: true } : {}), ...(badge ? { badge } : {}) };
+  }
+  return out;
+}
+
+/** The badge text for a mark: its own badge, then its state's badge. */
+export function combinedBadge(
+  badge: string | null,
+  state: string | null,
+  styles: Readonly<Record<string, MarkStateStyle>> | undefined,
+): string | null {
+  const extra = state ? (styles?.[state]?.badge ?? null) : null;
+  return [badge, extra].filter(Boolean).join(' ') || null;
+}
+
 // ── Reading documents ────────────────────────────────────────────
 
 interface Walk {
   text: string;
   pages: PageInfo[];
-  marks: Map<string, MarkInfo & { start: number; end: number; lastEnd: number }>;
+  marks: Map<string, MarkInfo & { start: number; end: number; lastEnd: number; block: number }>;
 }
 
 function walk(json: DocumentJSON | NodeJSON): Walk {
   const root = ('doc' in json ? json.doc : json) as NodeJSON;
   const state: Walk = { text: '', pages: [], marks: new Map() };
   let page: number | null = null;
+  // Counts container nodes, so parts of a mark in different paragraphs are joined with a space.
+  let block = 0;
 
   const visit = (node: NodeJSON, topIndex: number): void => {
     if (node.type === 'page') {
@@ -186,15 +269,22 @@ function walk(json: DocumentJSON | NodeJSON): Walk {
             start,
             end: state.text.length,
             lastEnd: state.text.length,
+            block,
           });
         } else {
-          found.text += found.lastEnd === start ? node.text : ` ${node.text}`;
+          const joined =
+            (found.lastEnd === start && found.block === block) ||
+            /\s$/.test(found.text) ||
+            /^\s/.test(node.text);
+          found.text += joined ? node.text : ` ${node.text}`;
           found.end = state.text.length;
           found.lastEnd = state.text.length;
+          found.block = block;
         }
       }
       return;
     }
+    if (node.content) block++;
     node.content?.forEach((child) => visit(child, topIndex));
   };
   root.content?.forEach((child, i) => visit(child, i));
@@ -204,7 +294,7 @@ function walk(json: DocumentJSON | NodeJSON): Walk {
 /** Every mark in the document, in reading order. Works on the server too. */
 export function listMarks(json: DocumentJSON | NodeJSON): MarkInfo[] {
   const { text, marks } = walk(json);
-  return [...marks.values()].map(({ start, end, lastEnd: _lastEnd, ...mark }) => ({
+  return [...marks.values()].map(({ start, end, lastEnd: _lastEnd, block: _block, ...mark }) => ({
     ...mark,
     anchor: {
       exact: text.slice(start, end),

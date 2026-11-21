@@ -187,6 +187,8 @@ const messages: Messages = {
   // Comments and reader highlights
   Comment: 'टिप्पणी',
   Comments: 'टिप्पणियाँ',
+  'Add comment': 'टिप्पणी जोड़ें',
+  'All comments': 'सभी टिप्पणियाँ',
   'Add a comment': 'टिप्पणी जोड़ें',
   'Add a comment…': 'टिप्पणी लिखें…',
   Reply: 'जवाब दें',

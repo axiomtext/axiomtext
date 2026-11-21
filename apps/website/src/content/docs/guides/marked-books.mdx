@@ -13,23 +13,29 @@ part of the document, so the same JSON works in the web editor, on your website 
 
 ## Mark types
 
-Your app defines the kinds of marks. Each has an id (stored in documents), a label, a colour and
-a style: `fill`, `underline`, `double` (double underline) or `box`.
+Your app defines the kinds of marks. Each has an id, a label, a colour and a style: `fill`,
+`underline`, `double` (double underline) or `box`. The id is what documents store, so keep it
+stable; you can rename a type or change its colour at any time without touching saved content.
 
 ```js
 import { createClassicEditor } from 'axiomtext';
 
 const markTypes = [
-  { id: 'important', label: 'গুরুত্বপূর্ণ', color: '#16a34a', style: 'fill' },
-  { id: 'marked', label: 'দাগানো', color: '#2563eb', style: 'underline' },
-  { id: 'pyq', label: 'পূর্বের বছরের প্রশ্ন', color: '#b45309', style: 'box' },
+  { id: 'IMPORTANT', label: 'গুরুত্বপূর্ণ', color: '#dc2626', style: 'fill' },
+  { id: 'MARKED', label: 'দাগানো', color: '#2563eb', style: 'underline' },
+  { id: 'PREVIOUS_YEAR', label: 'পূর্বের বছরের প্রশ্ন', color: '#ca8a04', style: 'box' },
 ];
 
 const { editor } = createClassicEditor({ element, marks: { types: markTypes } });
 ```
 
-Writers get a **Mark** menu on the toolbar. <kbd>Alt</kbd>+<kbd>1</kbd>…<kbd>9</kbd> apply the
-types in order and <kbd>Alt</kbd>+<kbd>0</kbd> removes the mark at the cursor. A mark is stored as
+Leave out `types` (`marks: {}`) to start with the defaults, `DEFAULT_MARK_TYPES`: Important (green
+fill), Marked (blue underline) and Past exam question (amber box). Without a `marks` option there
+is no Mark button.
+
+Writers get a **Mark** menu (the marker-pen button) on the toolbar. Each type in the menu shows its
+shortcut: <kbd>Alt</kbd>+<kbd>1</kbd>…<kbd>9</kbd> (<kbd>⌥</kbd>1… on a Mac) apply the types in
+order and <kbd>Alt</kbd>+<kbd>0</kbd> removes the mark at the cursor. A mark is stored as
 `{ type, id }` (plus optional data and badge) and survives copy and paste, undo and HTML.
 
 | Command | What it does |
@@ -43,12 +49,108 @@ types in order and <kbd>Alt</kbd>+<kbd>0</kbd> removes the mark at the cursor. A
 ```js
 editor.execute('setMark', 'pyq', { id: 'm42', data: { questionIds: ['q1', 'q2'] }, badge: 2 });
 
-import { listMarks } from 'axiomtext';
-listMarks(editor.getJSON());
-// [{ id: 'm42', type: 'pyq', text: '…', data: {…}, badge: '2', page: 23, anchor: {…} }]
+editor.getMarks();
+// [{ id: 'm42', type: 'pyq', text: '…', page: 23, data: {…}, badge: '2', anchor: {…} }]
 ```
 
-`listMarks` works on saved JSON without an editor, on your server too.
+### Reading every mark
+
+`editor.getMarks()` returns every mark in document order, in the [mark format](#the-mark-format)
+below, so saving a chapter can turn each mark into a row:
+
+```js
+const marks = editor.getMarks();
+await fetch('/api/chapters/12', {
+  method: 'PUT',
+  body: JSON.stringify({ document: editor.getJSON(), marks }),
+});
+```
+
+The same list comes from `listMarks(json)` on saved JSON without an editor (in Node too),
+`controller.getMarks()` in Flutter, and for PDFs from `annotator.getMarks()`,
+`listPdfMarks(annotations)` or `controller.getPdfMarks()`: the selected text and its page, in
+reading order. `editor.getPages()` lists the page blocks.
+
+### Mark ids
+
+A mark's id is how your app links things to it (questions, students' ticks), so it's kept stable
+and unique:
+
+| When the teacher… | The id |
+| --- | --- |
+| fixes a typo inside the mark, adds or deletes words in it | stays |
+| undoes or redoes | stays (redo brings back the same ids) |
+| re-marks the same text, changes its type, or extends it | stays, with its data and badge |
+| presses Enter inside it | stays: one mark across two paragraphs |
+| cuts it and pastes it somewhere else | stays |
+| copies and pastes it (the original is still there) | the copy gets a new id, without data or badge |
+| removes the mark from a middle part, leaving two halves | the first half keeps it; the second gets a new id, without data |
+| marks across two marks | the first one's id (and data) wins; the second disappears |
+
+Ids are letters, digits, `-` and `_`. Pass your own with `setMark(type, { id })`; otherwise
+they look like `m3f9a2c41d07`.
+
+### The mark format
+
+This format is stable: fields may be added, but none will be renamed or removed. A server in any
+language can read marks from it without running AxiomText.
+
+**A mark**, as `getMarks()` returns it:
+
+```json
+{
+  "id": "m3f9a2c41d07",
+  "type": "PREVIOUS_YEAR",
+  "text": "F = ma",
+  "page": 24,
+  "data": { "questionIds": ["q7"] },
+  "badge": "2",
+  "anchor": { "exact": "F = ma", "prefix": "second law: ", "suffix": " where F is" }
+}
+```
+
+`page` is the number of the last page block before the mark (`null` without one); `data` and
+`badge` are `null` when not set.
+
+**In the saved JSON**, a mark is a `marker` entry in the `marks` of each text node it covers, and
+a page is a `page` block:
+
+```json
+{ "type": "page", "attrs": { "number": 24 } }
+{ "type": "text", "text": "F = ma",
+  "marks": [{ "type": "marker",
+              "attrs": { "type": "PREVIOUS_YEAR", "id": "m3f9a2c41d07",
+                         "data": { "questionIds": ["q7"] }, "badge": "2" } }] }
+```
+
+To read marks yourself, walk the document depth first, remember the number of the last `page`
+block, and collect text nodes by `marker` id: the first one gives the mark's type, data, badge and
+page; join the texts of later ones, with a space between parts in different paragraphs. A mark
+can cover several text nodes (when part of it is bold, say) and several paragraphs.
+
+**In saved HTML**, a mark is
+`<mark class="ax-mark" data-mark-id="…" data-mark-type="…" data-mark='{"questionIds":["q7"]}' data-badge="2">`
+and a page is `<div class="ax-page" data-page="24">`.
+
+### Choosing the buttons per screen
+
+Every button is a toolbar item you can include or leave out: `mark` and `page` for marked books,
+`comment` (**Add comment**) and `commentsPanel` (**All comments**) for comments. For example, a
+teacher drafting a chapter gets marks without comments, a reviewer gets comments, and students
+read with no toolbar at all (read-only editors show none unless you ask for one):
+
+```js
+// Teacher drafting
+createClassicEditor({ element, marks: { types: markTypes },
+  toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'highlight', 'mark', '|', 'math', 'image'] });
+
+// Reviewer
+createClassicEditor({ element, comments: { author }, marks: { types: markTypes },
+  toolbar: ['comment', 'commentsPanel'] });
+
+// Student
+createClassicEditor({ element, editable: false, marks: { types: markTypes } });
+```
 
 ## Page numbers
 
@@ -93,7 +195,40 @@ createClassicEditor({
 ```
 
 `onClick` gives you the mark's data and its position on screen, so you can show your own chip
-("3 questions · Practise"). Selection actions add your buttons to the menu readers get when they
+("3 questions · Practise").
+
+### Readers' own states
+
+A student's progress on a mark (learned, needs review…) belongs to the student, not the
+document. Set it on the reader's screen and choose how each state looks; the filter can use it:
+
+```js
+const { editor } = createClassicEditor({
+  element,
+  content: chapter,
+  editable: false,
+  marks: {
+    types: markTypes,
+    states: { learned: { fade: true, badge: '✓' } },
+  },
+});
+editor.execute('setMarkStates', { m42: 'learned', m43: 'learned' }); // from your database
+editor.execute('setMarkState', 'm44', 'learned'); // the student ticked one
+editor.execute('setMarkState', 'm44', null); // and unticked it
+
+// "Not learned yet": paragraphs with only learned marks fold away.
+editor.execute('setMarkFilter', { excludeStates: ['learned'] });
+```
+
+A learned mark fades and gets a ✓ after its own badge. Marks with a state also get
+`data-mark-state="learned"` for your own CSS (on the mark on web pages, on its text inside an
+editor: style it with `mark.ax-mark:has([data-mark-state='learned'])`). States never change the
+document. Filters can be `{ types, states, excludeStates }`: for example
+`{ types: ['PREVIOUS_YEAR'], excludeStates: ['learned'] }`.
+
+On a web page with `axiomtext/viewer`, use
+`createViewer(root, { marks: { types, states, initialStates } })` with
+`viewer.setMarkState(id, state)` and `viewer.setMarkFilter(filter)`. Selection actions add your buttons to the menu readers get when they
 select text, with the same anchor (quote and context) as reader highlights.
 
 ## Flutter
@@ -108,14 +243,28 @@ AxiomTextEditor(
         style: AxiomMarkStyle.box),
   ],
   markFilter: AxiomMarkFilter.marked,
+  markStateStyles: const {'learned': AxiomMarkStateStyle(fade: true, badge: '✓')},
+  markStates: learnedByThisStudent, // {'m42': 'learned', …}
   onMarkTap: (mark) => showQuestions(mark.data?['questionIds']),
   selectionActions: const [AxiomSelectionAction(id: 'ask', label: 'Ask AI')],
   onSelectionAction: (event) => askAi(event.text),
 );
 
+// Per screen: the teacher drafts with marks, no comments.
+AxiomTextEditor(
+  markTypes: myMarkTypes, // or AxiomMarkType.defaults
+  toolbarItems: const [
+    AxiomToolbarItem.undo, AxiomToolbarItem.redo, AxiomToolbarItem.divider,
+    AxiomToolbarItem.bold, AxiomToolbarItem.highlight, AxiomToolbarItem.mark,
+    AxiomToolbarItem.page,
+  ],
+);
+
 await controller.setMark('important', data: {'questionIds': ['q1']});
 await controller.getMarks();       // List<AxiomMark>
 await controller.scrollToPage(23);
+await controller.setMarkState(mark.id, 'learned');
+await controller.setMarkFilter(AxiomMarkFilter.query(excludeStates: ['learned']));
 await controller.notebook();       // the reader's highlights in reading order, with pages
 ```
 

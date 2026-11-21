@@ -187,6 +187,8 @@ const messages: Messages = {
   // Comments and reader highlights
   Comment: 'コメント',
   Comments: 'コメント一覧',
+  'Add comment': 'コメントを追加',
+  'All comments': 'すべてのコメント',
   'Add a comment': 'コメントを追加',
   'Add a comment…': 'コメントを入力…',
   Reply: '返信',

@@ -29,6 +29,7 @@ import { anchor, describe, offsetOf, rangeOf, textModel } from './anchor';
 import type { TextAnchor, TextModel } from './anchor';
 import { avatar, createColorPicker, setHighlightVars } from './picker';
 import {
+  applyStates,
   countMarks,
   createLegend,
   drawBadges,
@@ -37,7 +38,8 @@ import {
   pageOf,
   styleMarks,
 } from './marks';
-import type { MarkClickEvent, MarkFilter, MarkTypeDef } from './marks';
+import { DEFAULT_MARK_TYPES } from '@axiomtext/plugin-marks/data';
+import type { MarkClickEvent, MarkFilter, MarkStateStyle, MarkTypeDef } from './marks';
 import type { ColorChoice } from './picker';
 
 export type { TextAnchor } from './anchor';
@@ -45,7 +47,15 @@ export { anchor, describe as describeAnchor } from './anchor';
 export type { CommentColor, PresetColor } from '@axiomtext/plugin-comments/data';
 export { createColorPicker } from './picker';
 export type { ColorChoice, ColorPickerOptions } from './picker';
-export type { MarkClickEvent, MarkFilter, MarkTypeDef, MarkStyle, MarkData } from './marks';
+export type {
+  MarkClickEvent,
+  MarkData,
+  MarkFilter,
+  MarkFilterQuery,
+  MarkStateStyle,
+  MarkStyle,
+  MarkTypeDef,
+} from './marks';
 
 /** A reader's highlight, with an optional private note. Store these per reader. */
 export interface ReaderHighlight {
@@ -103,7 +113,8 @@ export interface ViewerOptions {
   };
   /** Marked books: the app's mark types, tap events, legend and reading filter. */
   marks?: {
-    types: readonly MarkTypeDef[];
+    /** Your mark types (the ids stored in documents). Default: `DEFAULT_MARK_TYPES`. */
+    types?: readonly MarkTypeDef[];
     /** A reader tapped a mark: show your own popup (questions to practise, a note…). */
     onClick?: (event: MarkClickEvent) => void;
     /** Show the legend above the content (or put it in your own element). Default: true. */
@@ -112,6 +123,15 @@ export interface ViewerOptions {
     filter?: MarkFilter;
     /** Called when the reader changes the filter in the legend. */
     onFilterChange?: (filter: MarkFilter) => void;
+    /**
+     * How readers' states look, e.g. `{ learned: { fade: true, badge: '✓' } }`. Set states with
+     * `viewer.setMarkStates({ m42: 'learned' })`.
+     */
+    states?: Record<string, MarkStateStyle>;
+    /** Starting states by mark id, e.g. this student's learned marks. */
+    initialStates?: Readonly<Record<string, string>>;
+    /** Inside a read-only editor: passes state changes on to the editor. */
+    onStatesChange?: (states: Readonly<Record<string, string | null>>, replace: boolean) => void;
   };
   /**
    * Your own items in the menu shown when a reader selects text, e.g.
@@ -138,6 +158,13 @@ export interface Viewer {
   refresh(): void;
   /** Which marks to show while reading (see `ViewerOptions.marks.filter`). */
   setMarkFilter(filter: MarkFilter): void;
+  /**
+   * A reader's own state on a mark, e.g. `setMarkState('m42', 'learned')` (null clears it):
+   * styled by `marks.states`, `data-mark-state` for your CSS, and usable in filters.
+   */
+  setMarkState(id: string, state: string | null): void;
+  /** Several states at once; with `replace`, marks not listed lose theirs. */
+  setMarkStates(states: Readonly<Record<string, string | null>>, replace?: boolean): void;
   destroy(): void;
 }
 
@@ -336,12 +363,15 @@ export function createViewer(root: HTMLElement, options: ViewerOptions = {}): Vi
   // New highlights use the colour picked last.
   let lastChoice: ColorChoice = { color: colors[0] ?? 'yellow', fill: true };
   const canEdit = !!hl && hl.readOnly !== true;
-  const marksOptions = options.marks;
+  const marksOptions = options.marks
+    ? { ...options.marks, types: options.marks.types ?? DEFAULT_MARK_TYPES }
+    : undefined;
   const actions = (options.selectionActions ?? []).filter(
     (a) => typeof a.id === 'string' && typeof a.label === 'string',
   );
   const selecting = canEdit || actions.length > 0;
   let markFilter: MarkFilter = marksOptions?.filter ?? 'all';
+  let markStates = new Map<string, string>(Object.entries(marksOptions?.initialStates ?? {}));
   let undoMarks: (() => void)[] = [];
   // Inside the editor (read-only) the DOM belongs to the editor engine: never change it.
   const managedDom = !!root.closest('.ProseMirror') || root.classList.contains('ProseMirror');
@@ -395,7 +425,11 @@ export function createViewer(root: HTMLElement, options: ViewerOptions = {}): Vi
       // Plain pages: colours from the app's types, badges, and folding for the filter.
       undoMarks.forEach((undo) => undo());
       styleMarks(root, marksOptions.types);
-      undoMarks = [drawBadges(root), foldBlocks(root, markFilter)];
+      applyStates(root, markStates, marksOptions.states);
+      undoMarks = [
+        drawBadges(root, markStates, marksOptions.states),
+        foldBlocks(root, markFilter, markStates),
+      ];
       model = textModel(root);
     }
     legend?.update();
@@ -708,6 +742,22 @@ export function createViewer(root: HTMLElement, options: ViewerOptions = {}): Vi
     if (managedDom) marksOptions?.onFilterChange?.(filter);
     else render();
   };
+  const setMarkStates = (
+    states: Readonly<Record<string, string | null>>,
+    replace = false,
+  ): void => {
+    const next = new Map(replace ? [] : markStates);
+    for (const [id, state] of Object.entries(states)) {
+      if (typeof state === 'string' && state) next.set(id, state);
+      else next.delete(id);
+    }
+    markStates = next;
+    if (managedDom) marksOptions?.onStatesChange?.(states, replace);
+    else render();
+  };
+  if (marksOptions?.initialStates && managedDom) {
+    marksOptions.onStatesChange?.(marksOptions.initialStates, true);
+  }
   if (marksOptions && marksOptions.legend !== false && marksOptions.types.length) {
     legend = createLegend(
       marksOptions.types,
@@ -764,6 +814,8 @@ export function createViewer(root: HTMLElement, options: ViewerOptions = {}): Vi
     },
     refresh: render,
     setMarkFilter,
+    setMarkState: (id, state) => setMarkStates({ [id]: state }),
+    setMarkStates,
     destroy() {
       observer.disconnect();
       clearTimeout(refreshTimer);

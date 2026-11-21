@@ -5,16 +5,25 @@
  */
 import { t } from '@axiomtext/i18n';
 import {
+  combinedBadge,
   localizeNumber,
   markColorStyle,
+  markMatches,
   normalizeMarkTypes,
   parseMarkData,
   sanitizeBadge,
 } from '@axiomtext/plugin-marks/data';
-import type { MarkData, MarkStyle, MarkTypeDef } from '@axiomtext/plugin-marks/data';
+import type {
+  MarkData,
+  MarkFilter,
+  MarkFilterQuery,
+  MarkStateStyle,
+  MarkStyle,
+  MarkTypeDef,
+} from '@axiomtext/plugin-marks/data';
 import { getLanguage } from '@axiomtext/i18n';
 
-export type { MarkData, MarkStyle, MarkTypeDef };
+export type { MarkData, MarkFilter, MarkFilterQuery, MarkStateStyle, MarkStyle, MarkTypeDef };
 
 /** What the app gets when a reader taps a mark. */
 export interface MarkClickEvent {
@@ -26,9 +35,6 @@ export interface MarkClickEvent {
   page: number | null;
   rect: { top: number; bottom: number; left: number; right: number };
 }
-
-/** `'all'`, `'marked'` (paragraphs with any mark) or the mark type ids to show. */
-export type MarkFilter = 'all' | 'marked' | readonly string[];
 
 const MARK = 'mark.ax-mark[data-mark-id]';
 
@@ -86,16 +92,42 @@ export function styleMarks(root: Element, types: readonly MarkTypeDef[]): void {
   }
 }
 
+/** Readers' states by mark id (`learned`, …). */
+export type MarkStates = ReadonlyMap<string, string>;
+
+/** Plain pages: `data-mark-state` on each mark with a state, faded when its style says so. */
+export function applyStates(
+  root: Element,
+  states: MarkStates,
+  styles: Readonly<Record<string, MarkStateStyle>> | undefined,
+): void {
+  for (const el of root.querySelectorAll<HTMLElement>(MARK)) {
+    const state = states.get(el.getAttribute('data-mark-id') ?? '');
+    if (state) el.setAttribute('data-mark-state', state);
+    else el.removeAttribute('data-mark-state');
+    el.classList.toggle('ax-mark-faded', !!state && !!styles?.[state]?.fade);
+  }
+}
+
 /** Plain pages: draws each mark's badge after its last part. Returns a cleanup function. */
-export function drawBadges(root: Element): () => void {
+export function drawBadges(
+  root: Element,
+  states: MarkStates = new Map(),
+  styles?: Readonly<Record<string, MarkStateStyle>>,
+): () => void {
   root.querySelectorAll('.ax-mark-badge[data-viewer]').forEach((b) => b.remove());
   const last = new Map<string, HTMLElement>();
   for (const el of root.querySelectorAll<HTMLElement>(MARK)) {
-    if (el.hasAttribute('data-badge')) last.set(el.getAttribute('data-mark-id') ?? '', el);
+    const id = el.getAttribute('data-mark-id') ?? '';
+    if (el.hasAttribute('data-badge') || states.has(id)) last.set(id, el);
   }
   const added: HTMLElement[] = [];
   for (const el of last.values()) {
-    const badge = sanitizeBadge(el.getAttribute('data-badge'));
+    const badge = combinedBadge(
+      sanitizeBadge(el.getAttribute('data-badge')),
+      states.get(el.getAttribute('data-mark-id') ?? '') ?? null,
+      styles,
+    );
     if (!badge) continue;
     const span = document.createElement('span');
     span.className = 'ax-mark-badge';
@@ -110,18 +142,26 @@ export function drawBadges(root: Element): () => void {
   return () => added.forEach((s) => s.remove());
 }
 
-const shows = (block: Element, filter: MarkFilter): boolean => {
+const shows = (block: Element, filter: MarkFilter, states: MarkStates): boolean => {
   if (filter === 'all' || block.matches('[data-page]')) return true;
-  const marks = [...block.querySelectorAll(MARK)];
-  if (filter === 'marked') return marks.length > 0;
-  return marks.some((m) => filter.includes(m.getAttribute('data-mark-type') ?? ''));
+  return [...block.querySelectorAll(MARK)].some((m) =>
+    markMatches(
+      filter,
+      m.getAttribute('data-mark-type') ?? '',
+      states.get(m.getAttribute('data-mark-id') ?? '') ?? null,
+    ),
+  );
 };
 
 /**
  * Plain pages: folds top-level blocks without a shown mark into "… 3 paragraphs" buttons that
  * expand. Returns a cleanup function.
  */
-export function foldBlocks(root: Element, filter: MarkFilter): () => void {
+export function foldBlocks(
+  root: Element,
+  filter: MarkFilter,
+  states: MarkStates = new Map(),
+): () => void {
   const folded: Element[] = [];
   const buttons: HTMLElement[] = [];
   if (filter !== 'all') {
@@ -156,7 +196,7 @@ export function foldBlocks(root: Element, filter: MarkFilter): () => void {
     };
     for (const block of [...root.children]) {
       if (block.matches('.ax-fold, .ax-legend')) continue;
-      if (shows(block, filter)) flush();
+      if (shows(block, filter, states)) flush();
       else group.push(block);
     }
     flush();
@@ -185,7 +225,13 @@ export function createLegend(
   let current: MarkFilter = filter;
 
   const selected = (): Set<string> =>
-    new Set(current === 'all' || current === 'marked' ? defs.map((d) => d.id) : current);
+    new Set(
+      current === 'all' || current === 'marked'
+        ? defs.map((d) => d.id)
+        : Array.isArray(current)
+          ? (current as readonly string[])
+          : ((current as MarkFilterQuery).types ?? defs.map((d) => d.id)),
+    );
 
   const buttons = defs.map((def) => {
     const button = document.createElement('button');

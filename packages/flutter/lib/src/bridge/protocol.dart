@@ -56,11 +56,13 @@ const List<String> bridgeMethods = [
   'insertPage',
   'scrollToPage',
   'setMarkFilter',
+  'setMarkStates',
   'getNotebook',
   'revealHighlight',
   'openPdf',
   'setPdfAnnotations',
   'getPdfAnnotations',
+  'getPdfMarks',
   'pdfScrollToPage',
 ];
 

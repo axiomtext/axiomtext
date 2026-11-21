@@ -4,8 +4,16 @@ import {
   buildSchema,
   createEmptyDocument,
   migrateDocument,
+  readDocument,
 } from '@axiomtext/core';
-import type { AxiomPlugin, CommandFactory, DocumentJSON, EditorCommand } from '@axiomtext/core';
+import type {
+  AxiomPlugin,
+  CommandFactory,
+  DocumentJSON,
+  EditorCommand,
+  MarkInfo,
+  PageInfo,
+} from '@axiomtext/core';
 import { baseKeymap, chainCommands, exitCode } from 'prosemirror-commands';
 import { closeHistory, history, redo, undo } from 'prosemirror-history';
 import { dropCursor } from 'prosemirror-dropcursor';
@@ -59,6 +67,13 @@ export interface Editor {
   setJSON(content: DocumentJSON): void;
   /** Current content as an HTML string. */
   getHTML(): string;
+  /**
+   * Every mark (marked books) in document order: `{ id, type, text, page, data, badge, anchor }`.
+   * Empty without the marks plugin. Same as `listMarks(editor.getJSON())`.
+   */
+  getMarks(): MarkInfo[];
+  /** Every page-number block in order: `{ number, index }`. */
+  getPages(): PageInfo[];
   /** Plain text, blocks separated by blank lines. */
   getText(): string;
   /**
@@ -256,11 +271,13 @@ export function createEditor(options: EditorOptions): Editor {
     return (factory as (...a: unknown[]) => EditorCommand)(...args);
   };
 
+  const getJSON = (): DocumentJSON => ({
+    version: DOCUMENT_VERSION,
+    doc: view.state.doc.toJSON() as DocumentJSON['doc'],
+  });
+
   return {
-    getJSON: () => ({
-      version: DOCUMENT_VERSION,
-      doc: view.state.doc.toJSON() as DocumentJSON['doc'],
-    }),
+    getJSON,
     setJSON(content) {
       ensureAlive();
       view.updateState(buildState(toDoc(content)));
@@ -273,6 +290,8 @@ export function createEditor(options: EditorOptions): Editor {
       return wrapper.innerHTML;
     },
     getText: () => view.state.doc.textBetween(0, view.state.doc.content.size, '\n\n', '\n'),
+    getMarks: () => (readDocument(schema, 'marks', getJSON()) as MarkInfo[] | undefined) ?? [],
+    getPages: () => (readDocument(schema, 'pages', getJSON()) as PageInfo[] | undefined) ?? [],
     insertHTML(html) {
       ensureAlive();
       view.pasteHTML(html);

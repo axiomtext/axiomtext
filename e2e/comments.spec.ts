@@ -31,7 +31,7 @@ test.describe('comments', () => {
     await page.keyboard.type('The quick brown fox jumps over the lazy dog.');
     await selectText(page, 'brown fox');
 
-    await page.getByRole('button', { name: 'Comment', exact: true }).click();
+    await page.getByRole('button', { name: 'Add comment', exact: true }).click();
     const composer = page.getByRole('dialog', { name: 'Add a comment' });
     await expect(composer).toBeVisible();
     await composer.getByRole('button', { name: 'Highlight color' }).click();
@@ -70,11 +70,11 @@ test.describe('comments', () => {
     await thread.getByRole('button', { name: 'Resolve' }).click();
     await expect(mark).toHaveAttribute('data-resolved', 'true');
     await page.keyboard.press('Escape');
-    const panelButton = page.getByRole('button', { name: 'Comments', exact: true });
+    const panelButton = page.getByRole('button', { name: 'All comments', exact: true });
     if (await panelButton.isVisible()) await panelButton.click();
     else {
       await page.getByRole('button', { name: 'More' }).click();
-      await page.getByRole('menuitem', { name: 'Comments' }).click();
+      await page.getByRole('menuitem', { name: 'All comments' }).click();
     }
     const panel = page.getByRole('complementary', { name: 'Comments' });
     await expect(panel.getByRole('tab', { name: 'Open (0)' })).toBeVisible();
@@ -94,7 +94,7 @@ test.describe('comments', () => {
       (window as unknown as { axiomEditor: { getText(): string } }).axiomEditor.getText(),
     );
     await page.keyboard.type('xyz');
-    await page.getByRole('button', { name: 'Comment', exact: true }).click();
+    await page.getByRole('button', { name: 'Add comment', exact: true }).click();
     await page.getByRole('textbox', { name: 'Comment' }).fill('Nice name');
     await page
       .getByRole('dialog', { name: 'Add a comment' })
@@ -112,7 +112,7 @@ test.describe('comments', () => {
     await editorBox(page).click();
     await page.keyboard.type('Pick any colour you like.');
     await selectText(page, 'any colour');
-    await page.getByRole('button', { name: 'Comment', exact: true }).click();
+    await page.getByRole('button', { name: 'Add comment', exact: true }).click();
     const composer = page.getByRole('dialog', { name: 'Add a comment' });
     await composer.getByRole('button', { name: 'Highlight color' }).click();
     // On by default.

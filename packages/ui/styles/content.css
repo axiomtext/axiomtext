@@ -1545,7 +1545,8 @@ mark.ax-mark {
   transition:
     background-color 180ms ease,
     box-shadow 180ms ease,
-    text-decoration-color 180ms ease;
+    text-decoration-color 180ms ease,
+    opacity 200ms ease;
 }
 mark.ax-mark[data-mark-style='fill'] {
   background: color-mix(in srgb, var(--ax-mark) 24%, transparent);
@@ -1579,6 +1580,16 @@ mark.ax-mark[data-mark-style='box'] {
 [contenteditable='false'] mark.ax-mark:active,
 .axiomtext-content:not([contenteditable='true']) mark.ax-mark:active {
   background: color-mix(in srgb, var(--ax-mark) 42%, transparent);
+}
+/* Readers' states (setMarkState): a faded mark, e.g. "learned". The attribute data-mark-state
+   is on the mark (web pages) or on the text inside it (editors), for your own styles. */
+mark.ax-mark.ax-mark-faded,
+mark.ax-mark:has(.ax-mark-faded) {
+  opacity: 0.45;
+}
+mark.ax-mark.ax-mark-faded + .ax-mark-badge,
+mark.ax-mark:has(.ax-mark-faded) + .ax-mark-badge {
+  opacity: 0.7;
 }
 .ax-mark-badge {
   --ax-mark: #eab308;

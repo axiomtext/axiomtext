@@ -1,5 +1,17 @@
 # axiomtext
 
+## 0.4.0
+
+### Minor Changes
+
+- Marked books for apps that save marks as rows: `editor.getMarks()` / `getPages()` and
+  `listPdfMarks()` / `annotator.getMarks()` return a documented, stable mark format; mark ids stay
+  the same through edits, undo and redo, and pasted copies or split halves get new ids; readers'
+  states (`setMarkState(id, 'learned')`, `marks.states` styles, `{ excludeStates }` filters).
+- Marked books: the Mark button is a marker pen, `marks.types` is optional (defaults to
+  `DEFAULT_MARK_TYPES`), and the comment buttons are labelled "Add comment" and "All comments"
+  (tooltip and screen-reader name, translated).
+
 ## 0.3.0
 
 ### Minor Changes

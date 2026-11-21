@@ -37,10 +37,12 @@
     "@axiomtext/i18n": "workspace:*",
     "prosemirror-model": "^1.25.13",
     "prosemirror-state": "^1.4.4",
+    "prosemirror-transform": "^1.10.0",
     "prosemirror-view": "^1.43.0"
   },
   "devDependencies": {
     "@axiomtext/view": "workspace:*",
-    "@axiomtext/test-utils": "workspace:*"
+    "@axiomtext/test-utils": "workspace:*",
+    "prosemirror-history": "^1.5.2"
   }
 }

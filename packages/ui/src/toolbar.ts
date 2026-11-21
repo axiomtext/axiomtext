@@ -317,7 +317,7 @@ const BUTTONS: Record<ButtonName, ButtonSpec> = {
     run: () => false, // opened through ToolbarOptions.onShortcuts
   },
   comment: {
-    label: 'Comment',
+    label: 'Add comment',
     icon: 'comment',
     shortcut: 'Mod-Alt-m',
     requires: 'addComment',
@@ -325,7 +325,7 @@ const BUTTONS: Record<ButtonName, ButtonSpec> = {
     enabled: (e) => !e.getSelectionState().empty,
   },
   commentsPanel: {
-    label: 'Comments',
+    label: 'All comments',
     icon: 'comments',
     run: () => false, // opened through ToolbarOptions.onCommentsPanel
   },
@@ -521,11 +521,11 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
       {
         type: 'button',
         class: 'ax-button',
-        'aria-label': spec.label,
+        'aria-label': t(spec.label),
         'aria-keyshortcuts': spec.shortcut
           ? spec.shortcut.replace('Mod', 'Control').replace(/-/g, '+')
           : undefined,
-        'data-tooltip': shortcut ? `${t(spec.label)}  ${shortcut}` : spec.label,
+        'data-tooltip': shortcut ? `${t(spec.label)}  ${shortcut}` : t(spec.label),
         'data-item': name,
         ...(spec.active ? { 'aria-pressed': 'false' } : {}),
       },
@@ -711,7 +711,7 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
           icon: 'mark',
           items: () => [
             ...markTypes.map((m, i) => ({
-              label: m.label,
+              label: t(m.label),
               previewStyle: markPreviewStyle(m.color, m.style),
               ...(i < 9 ? { shortcut: `Alt-${i + 1}` } : {}),
               run: (e: Editor) => e.execute('setMark', m.id),

@@ -488,7 +488,8 @@ class AxiomTextController extends ChangeNotifier {
   Future<bool> setMarkBadge(String id, String? badge) async =>
       await _call('setMarkBadge', {'id': id, 'badge': badge}) == true;
 
-  /// Every mark in the document, in reading order.
+  /// Every mark in the document, in reading order: id, type, text, page, data and badge (the
+  /// "Mark format" in the docs).
   Future<List<AxiomMark>> getMarks() async {
     final value = await _call('getMarks');
     return [
@@ -522,6 +523,17 @@ class AxiomTextController extends ChangeNotifier {
   Future<void> setMarkFilter(AxiomMarkFilter filter) =>
       _call('setMarkFilter', {'filter': filter.toJson()});
 
+  /// A reader's own state on a mark, e.g. `setMarkState(id, 'learned')` (null clears it). Shown
+  /// with [AxiomTextEditor.markStateStyles] and usable in [AxiomMarkFilter.query]. Not saved in
+  /// the document.
+  Future<void> setMarkState(String id, String? state) =>
+      setMarkStates({id: state});
+
+  /// Several states at once; with [replace], marks not listed lose theirs.
+  Future<void> setMarkStates(Map<String, String?> states,
+          {bool replace = false}) =>
+      _call('setMarkStates', {'states': states, 'replace': replace});
+
   // ── PDF annotation ─────────────────────────────────────────────
 
   /// Shows a PDF (its bytes) instead of the document, with marks and highlights. Returns the
@@ -550,6 +562,17 @@ class AxiomTextController extends ChangeNotifier {
   /// The open PDF's annotations.
   Future<List<AxiomPdfAnnotation>> getPdfAnnotations() async =>
       _pdfAnnotations(await _call('getPdfAnnotations'));
+
+  /// The open PDF's marks (not readers' highlights) in reading order, in the same shape as
+  /// [getMarks]: id, type, text, page and data.
+  Future<List<AxiomMark>> getPdfMarks() async {
+    final value = await _call('getPdfMarks');
+    return [
+      if (value is List<Object?>)
+        for (final m in value)
+          if (m is Map<String, Object?>) AxiomMark.fromMap(m),
+    ];
+  }
 
   /// Replaces the open PDF's annotations.
   Future<void> setPdfAnnotations(List<AxiomPdfAnnotation> annotations) =>
@@ -685,7 +708,7 @@ class AxiomTextController extends ChangeNotifier {
     'Upload from computer', 'Take a photo', 'Edit as LaTeX', 'Rows', 'Columns',
     'Save',
     'Link address', 'Choose a photo', 'Comment', 'Comments', 'Mark',
-    'Remove mark', 'Page number',
+    'Remove mark', 'Page number', 'Add comment', 'All comments',
   ];
 
   Future<void> _loadLabels() async {

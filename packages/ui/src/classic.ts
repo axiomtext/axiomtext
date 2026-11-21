@@ -75,6 +75,7 @@ export function createClassicEditor(options: ClassicEditorOptions): ClassicEdito
             ...(prepared.marks.filter ? { filter: prepared.marks.filter } : {}),
             // The editor folds paragraphs itself; the legend drives it.
             onFilterChange: (filter) => editor.execute('setMarkFilter', filter),
+            onStatesChange: (states, replace) => editor.execute('setMarkStates', states, replace),
           },
         }
       : {}),

@@ -98,6 +98,29 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('a learned mark is faded and gets the state badge', (tester) async {
+    await _pump(
+      tester,
+      AxiomTextView(
+        content: AxiomContent.json(_chapter()),
+        markTypes: _types,
+        markStates: const {'m1': 'learned'},
+        markStateStyles: const {
+          'learned': AxiomMarkStateStyle(fade: true, badge: '✓'),
+        },
+      ),
+    );
+    expect(find.text('2 ✓'), findsOneWidget);
+    TextSpan? marked;
+    for (final rich in tester.widgetList<RichText>(find.byType(RichText))) {
+      rich.text.visitChildren((span) {
+        if (span is TextSpan && span.text == 'photosynthesis') marked = span;
+        return marked == null;
+      });
+    }
+    expect(marked?.style?.color?.a, closeTo(0.45, 0.01));
+  });
+
   testWidgets('tapping a mark reports it with its data and page', (tester) async {
     AxiomMark? tapped;
     await _pump(
