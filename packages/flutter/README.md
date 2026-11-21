@@ -11,7 +11,9 @@ so it works offline with no server.
 - Comments (threads, replies, resolve) saved in the document, and readers' own highlights and
   notes on read-only content
 - Marked books: your own mark types (Important, Past exam question…) with app data, badges, tap
-  events, page numbers, a legend and reading filters; the same marks on existing PDFs
+  events, page numbers, a legend and reading filters; stable mark ids and `getMarks()` for saving
+  them as rows; students' own states (learned) with a "not learned yet" filter; the same marks on
+  existing PDFs
 - `AxiomTextView`: content drawn natively (no WebView) for long lists of questions
 - JSON (lossless), HTML and Markdown in and out
 - Follows your app's theme, light and dark, and its locale: 10 interface languages including
@@ -141,24 +143,33 @@ AxiomTextEditor(
   readOnly: true,
   initialContent: AxiomContent.json(chapter),
   markTypes: const [
-    AxiomMarkType(id: 'important', label: 'গুরুত্বপূর্ণ', color: Color(0xFF16A34A)),
-    AxiomMarkType(id: 'pyq', label: 'পূর্বের বছরের প্রশ্ন', color: Color(0xFFB45309),
+    AxiomMarkType(id: 'IMPORTANT', label: 'গুরুত্বপূর্ণ', color: Color(0xFFDC2626)),
+    AxiomMarkType(id: 'PREVIOUS_YEAR', label: 'পূর্বের বছরের প্রশ্ন', color: Color(0xFFCA8A04),
         style: AxiomMarkStyle.box),
-  ],
+  ], // or AxiomMarkType.defaults
+  markStateStyles: const {'learned': AxiomMarkStateStyle(fade: true, badge: '✓')},
+  markStates: learnedByThisStudent, // {'m42': 'learned', …}
   onMarkTap: (mark) => showQuestions(mark.data?['questionIds'], mark.page),
   selectionActions: const [AxiomSelectionAction(id: 'ask', label: 'Ask AI')],
   onSelectionAction: (event) => askAi(event.text),
 );
 
-await controller.setMark('important', data: {'questionIds': ['q1', 'q2']}, badge: '2');
-await controller.getMarks();        // with text, data and page
+await controller.setMark('IMPORTANT', data: {'questionIds': ['q1', 'q2']}, badge: '2');
+await controller.getMarks();        // every mark in order: id, type, text, page, data
+await controller.setMarkState('m42', 'learned');  // faded with a ✓; not saved in the document
 await controller.insertPage(23);
 await controller.scrollToPage(23);
 await controller.setMarkFilter(AxiomMarkFilter.marked); // fold unmarked paragraphs
+await controller.setMarkFilter(AxiomMarkFilter.query(excludeStates: ['learned']));
 await controller.notebook();        // the reader's highlights, for a "My notes" screen
 ```
 
-Writers get the Mark menu (`AxiomToolbarItem.mark`, Alt+1…9) and `AxiomToolbarItem.page`.
+Writers get the Mark menu (`AxiomToolbarItem.mark`, Alt+1…9) and `AxiomToolbarItem.page`; pick
+the buttons per screen with `toolbarItems`. Mark ids stay the same while the text is edited,
+undone and redone; a pasted copy or the second half of a split mark gets a new id. The mark
+format is [documented and stable](https://axiomtext.dev/guides/marked-books/#the-mark-format),
+so your server can read marks from the saved JSON. `controller.getPdfMarks()` gives PDF marks in
+the same shape.
 
 ### PDFs
 
@@ -177,6 +188,8 @@ AxiomPdfView(
 
 ```dart
 AxiomTextView(content: AxiomContent.json(question), markTypes: markTypes, onMarkTap: practise)
+AxiomTextView(content: AxiomContent.json(chapter), markTypes: markTypes,
+    markStates: learned, markStateStyles: styles) // learned marks faded, with a ✓
 AxiomTextView(content: AxiomContent.markdown(r'Solve $x^2 = 4$'))
 ```
 

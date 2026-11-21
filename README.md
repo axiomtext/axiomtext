@@ -9,6 +9,7 @@
 MIT licensed · runs entirely in the browser · no server, no license key, no limits
 
 [![npm](https://img.shields.io/npm/v/axiomtext?label=npm&color=4f46e5)](https://www.npmjs.com/package/axiomtext)
+[![pub.dev](https://img.shields.io/pub/v/axiomtext?label=pub.dev&color=0175c2)](https://pub.dev/packages/axiomtext)
 [![License: MIT](https://img.shields.io/badge/license-MIT-16a34a)](LICENSE)
 [![CI](https://github.com/axiomtext/axiomtext/actions/workflows/ci.yml/badge.svg)](https://github.com/axiomtext/axiomtext/actions/workflows/ci.yml)
 [![Bundle](https://img.shields.io/badge/core%20%2B%20view-69%20KB%20gzip-0ea5e9)](docs/adr/0008-bundle-budgets.md)
@@ -54,23 +55,23 @@ when you want them.
 
 ## Features
 
-| Area             | What you get                                                                                                                                                                                                                                               |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Text**         | Bold, italic, underline, strikethrough, sub/superscript, inline code, font family & size, text colour, highlight, clear formatting                                                                                                                         |
-| **Blocks**       | Paragraphs, headings 1–6, quotes, bulleted / numbered / to-do lists, alignment, indentation, horizontal lines, page breaks, columns                                                                                                                        |
-| **Tables**       | Insert from a grid, add/remove rows & columns, merge/split cells, header rows, cell colours, column resizing                                                                                                                                               |
-| **Images**       | Upload, paste, drag & drop, resize, captions, alt text; wrap modes: in line, left, right, break text, **text on both sides**; move with arrow keys; pluggable upload adapters                                                                              |
-| **Math**         | Inline & block equations; **click-to-edit visual editor**; LaTeX with autocomplete; AsciiMath; structure/symbol/Greek palettes; math keyboard; `$…$`, `\(…\)`, `$$` triggers; paste MathML from Wikipedia, ChatGPT, MathJax pages; tested on 500 equations |
-| **Comments**     | Comment threads on text (reply, edit, resolve, comments panel, comment-only mode), saved in the document; readers' colour highlights and private notes on read-only content that survive later edits                                                       |
-| **Marked books** | Your own mark types (Important, Past exam question…) with app data, badges and taps; page numbers; a legend and reading filters; selection actions; the same marks on existing PDFs (`axiomtext/pdf`)                                                      |
-| **Bangla**       | Pasted Bijoy (SutonnyMJ) text becomes Unicode automatically, with Keep original; `convertBijoy()` for imports                                                                                                                                              |
-| **Server**       | `axiomtext/server`: `renderHTML(json)` gives the same HTML as the editor, without a browser                                                                                                                                                                |
-| **Writing**      | Markdown shortcuts, undo/redo, word & character count, keyboard shortcuts dialog (Ctrl/⌘ + /), placeholder, read-only mode                                                                                                                                 |
-| **Data**         | JSON (lossless, versioned), HTML, Markdown import/export, plain text; autosave to the browser or your server; paste cleanup for Word, Google Docs and web pages                                                                                            |
-| **Editors**      | Classic (fixed toolbar), inline (floating toolbar), balloon (toolbar on selection + "+" inserter); headless mode for custom UIs                                                                                                                            |
-| **Frameworks**   | Vanilla JS, React, Vue, Flutter, CDN `<script>` / ES module                                                                                                                                                                                                |
-| **Languages**    | UI in English, বাংলা, हिन्दी, العربية, Español, Français, Deutsch, Português, 简体中文, 日本語; right-to-left; IME input                                                                                                                                    |
-| **Look**         | Modern UI, light & dark themes, smooth (and reduced-motion-aware) animations, custom icons, CSS variables                                                                                                                                                  |
+| Area             | What you get                                                                                                                                                                                                                                                                                         |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Text**         | Bold, italic, underline, strikethrough, sub/superscript, inline code, font family & size, text colour, highlight, clear formatting                                                                                                                                                                   |
+| **Blocks**       | Paragraphs, headings 1–6, quotes, bulleted / numbered / to-do lists, alignment, indentation, horizontal lines, page breaks, columns                                                                                                                                                                  |
+| **Tables**       | Insert from a grid, add/remove rows & columns, merge/split cells, header rows, cell colours, column resizing                                                                                                                                                                                         |
+| **Images**       | Upload, paste, drag & drop, resize, captions, alt text; wrap modes: in line, left, right, break text, **text on both sides**; move with arrow keys; pluggable upload adapters                                                                                                                        |
+| **Math**         | Inline & block equations; **click-to-edit visual editor**; LaTeX with autocomplete; AsciiMath; structure/symbol/Greek palettes; math keyboard; `$…$`, `\(…\)`, `$$` triggers; paste MathML from Wikipedia, ChatGPT, MathJax pages; tested on 500 equations                                           |
+| **Comments**     | Comment threads on text (reply, edit, resolve, comments panel, comment-only mode), saved in the document; readers' colour highlights and private notes on read-only content that survive later edits                                                                                                 |
+| **Marked books** | Your own mark types (Important, Past exam question…) with app data, badges and taps; stable mark ids and `getMarks()` for saving them as rows; readers' states (learned) and "not learned yet" filters; page numbers; a legend; selection actions; the same marks on existing PDFs (`axiomtext/pdf`) |
+| **Bangla**       | Pasted Bijoy (SutonnyMJ) text becomes Unicode automatically, with Keep original; `convertBijoy()` for imports                                                                                                                                                                                        |
+| **Server**       | `axiomtext/server`: `renderHTML(json)` gives the same HTML as the editor, without a browser                                                                                                                                                                                                          |
+| **Writing**      | Markdown shortcuts, undo/redo, word & character count, keyboard shortcuts dialog (Ctrl/⌘ + /), placeholder, read-only mode                                                                                                                                                                           |
+| **Data**         | JSON (lossless, versioned), HTML, Markdown import/export, plain text; autosave to the browser or your server; paste cleanup for Word, Google Docs and web pages                                                                                                                                      |
+| **Editors**      | Classic (fixed toolbar), inline (floating toolbar), balloon (toolbar on selection + "+" inserter); headless mode for custom UIs                                                                                                                                                                      |
+| **Frameworks**   | Vanilla JS, React, Vue, Flutter, CDN `<script>` / ES module                                                                                                                                                                                                                                          |
+| **Languages**    | UI in English, বাংলা, हिन्दी, العربية, Español, Français, Deutsch, Português, 简体中文, 日本語; right-to-left; IME input                                                                                                                                                                              |
+| **Look**         | Modern UI, light & dark themes, smooth (and reduced-motion-aware) animations, custom icons, CSS variables                                                                                                                                                                                            |
 
 ## Quick start
 
@@ -101,8 +102,8 @@ editor.on('change', () => {
 ### CDN (no build step)
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/axiomtext@0.1/dist/cdn/axiomtext.css" />
-<script src="https://cdn.jsdelivr.net/npm/axiomtext@0.1/dist/cdn/axiomtext.iife.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/axiomtext@0.4/dist/cdn/axiomtext.css" />
+<script src="https://cdn.jsdelivr.net/npm/axiomtext@0.4/dist/cdn/axiomtext.iife.js"></script>
 
 <div id="editor"></div>
 <script>
@@ -168,7 +169,9 @@ final json = await controller.getJson(); // the same JSON as the web editor
 ```
 
 Android, iOS, macOS and Web, offline. It has a native Material or Cupertino toolbar above the
-keyboard and a native math keyboard. See [`packages/flutter`](packages/flutter).
+keyboard, a native math keyboard, marked books and PDF marking, and `AxiomTextView` for showing
+content without a WebView. See [`packages/flutter`](packages/flutter) or
+[pub.dev](https://pub.dev/packages/axiomtext).
 
 ### Editor types
 
@@ -220,7 +223,7 @@ createClassicEditor({
 The saved HTML already contains the rendered equations, so no JavaScript is needed:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/axiomtext@0.1/dist/cdn/content.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/axiomtext@0.4/dist/cdn/content.css" />
 
 <div class="axiomtext-content">
   <!-- HTML from editor.getHTML() -->
@@ -267,6 +270,36 @@ createViewer(article, { highlights: { items: saved, onChange: save } });
 
 See [Comments & highlights](https://axiomtext.dev/guides/comments/).
 
+### Marked books
+
+Teachers mark lines with your own mark types; students read them, filter by them and tap a mark
+to practise the questions linked to it.
+
+```js
+const { editor } = createClassicEditor({
+  element,
+  marks: {
+    types: [
+      { id: 'IMPORTANT', label: 'গুরুত্বপূর্ণ', color: '#dc2626', style: 'fill' },
+      { id: 'MARKED', label: 'দাগানো', color: '#2563eb', style: 'underline' },
+      { id: 'PREVIOUS_YEAR', label: 'পূর্বের বছরের প্রশ্ন', color: '#ca8a04', style: 'box' },
+    ],
+    states: { learned: { fade: true, badge: '✓' } }, // how a student's own states look
+    onClick: ({ id, data, page, rect }) => showQuestions(data?.questionIds, rect),
+  },
+});
+
+editor.getMarks(); // every mark in order: [{ id, type, text, page, data, badge, anchor }]
+editor.execute('setMarkState', 'm42', 'learned'); // faded, with a ✓ (not saved in the document)
+editor.execute('setMarkFilter', { excludeStates: ['learned'] }); // "not learned yet"
+```
+
+Mark ids stay the same while the text is edited, undone and redone; a pasted copy or the second
+half of a split mark gets a new id. The mark format is documented and stable, so a server in any
+language can read marks from the saved JSON. Page-number blocks, a legend, reading filters and
+the same marks on existing PDFs (`axiomtext/pdf`) are included. See
+[Marked books](https://axiomtext.dev/guides/marked-books/).
+
 ### Languages and right-to-left
 
 ```js
@@ -309,7 +342,9 @@ editor.on('update', () => boldButton.classList.toggle('active', editor.isActive(
 | `content`                  | `DocumentJSON`                | empty                | Starting content                       |
 | `placeholder`              | `string`                      | —                    | Text shown when empty                  |
 | `editable`                 | `boolean`                     | `true`               | `false` for read-only                  |
-| `toolbar`                  | `ToolbarItemName[]`           | full toolbar         | Buttons and `'                         | '` separators; extra buttons move into **More** |
+| `toolbar`                  | `ToolbarItemName[]`           | full toolbar         | Buttons and `'\|'` separators          |
+| `marks`                    | `MarksOptions`                | off                  | Marked books: mark types, states, taps |
+| `comments`, `highlights`   | `object`                      | off                  | Comment threads, readers' highlights   |
 | `language`, `translations` | `string`, `object`            | `'en'`               | Interface language                     |
 | `autosave`                 | `boolean \| AutosaveOptions`  | off                  | Browser drafts or your save function   |
 | `icons`                    | `Record<name, SVG \| string>` | —                    | Replace toolbar icons                  |
@@ -325,6 +360,7 @@ Full reference: [axiomtext.dev/reference/options](https://axiomtext.dev/referenc
 | ------------------------------------------------------------------------ | ---------------------------------------------------------------- |
 | `getJSON()` / `setJSON(doc)`                                             | Read / replace the document                                      |
 | `getHTML()` / `getText()`                                                | Export as HTML / plain text                                      |
+| `getMarks()` / `getPages()`                                              | Every mark (id, type, text, page, data) / page block, in order   |
 | `insertHTML(html)` / `insertText(text)`                                  | Insert at the cursor as if pasted                                |
 | `execute(command, ...args)` / `can(command)`                             | Run a command (`'toggleBold'`, `'insertTable'`, `'insertMath'`…) |
 | `isActive(name, attrs?)`                                                 | Is a format or block active at the cursor                        |
@@ -368,7 +404,7 @@ are bundled into `axiomtext` and are not published on their own.
   [security guide](https://axiomtext.dev/guides/security/).
 - **Performance** (`pnpm bench`, 1000 paragraphs ≈ 50 000 words): load ≈ 0.2 s, typing p50 ≈ 8 ms
   and p95 ≈ 12 ms per keystroke. KaTeX and MathLive load only when a document uses maths.
-- **Bundle size** (gzip): core + view 69 KB, UI 84 KB, math plugin 13 KB, each language ≈ 3 KB.
+- **Bundle size** (gzip): core + view 69 KB, UI with the classic editor 100 KB, math plugin 13 KB, each language ≈ 3 KB.
   Budgets are enforced in CI ([ADR-0008](docs/adr/0008-bundle-budgets.md)).
 
 ## Development
@@ -424,9 +460,12 @@ Packages are published to npm from your computer with your npm login and 2FA —
 
 - [x] **M1 — v0.1 alpha:** core editing, tables, images, visual math editor, Markdown, autosave,
       classic/inline/balloon editors, React & Vue, CDN, 10 languages, docs site
+- [x] **Since then (v0.2–0.4):** comments and readers' highlights, **marked books** (mark types,
+      stable ids, `getMarks()`, readers' states), PDF marking (`axiomtext/pdf`), server rendering
+      (`axiomtext/server`), Bijoy Bangla paste, and the **Flutter SDK** on
+      [pub.dev](https://pub.dev/packages/axiomtext)
 - [ ] **M2 — v0.5 beta:** advanced tables, paste from Word/Excel, find & replace, mentions,
-      slash menu, code blocks, media embeds, Angular & Svelte, **Flutter SDK beta** (first version
-      in [`packages/flutter`](packages/flutter))
+      slash menu, code blocks, media embeds, Angular & Svelte
 - [ ] **M3 — v1.0:** pagination & page setup, footnotes, table of contents, **Word (DOCX)
       import/export**, PDF export, equation numbering
 
