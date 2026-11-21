@@ -1,6 +1,6 @@
 {
   "name": "@axiomtext/vue",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Vue 3 integration.",
   "license": "MIT",
   "type": "module",
@@ -37,5 +37,8 @@
   },
   "peerDependencies": {
     "vue": "^3.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

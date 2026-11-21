@@ -1,6 +1,6 @@
 {
   "name": "@axiomtext/react",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "React integration.",
   "license": "MIT",
   "type": "module",
@@ -41,5 +41,8 @@
   "peerDependencies": {
     "react": ">=18",
     "react-dom": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

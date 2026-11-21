@@ -1,10 +1,11 @@
 name: Release
 
-# Opens a "Version Packages" PR from pending changesets; merging it publishes to npm
-# with provenance. Needs the repository secret NPM_TOKEN (an npm automation token).
+# Runs only when started by hand (Actions → Release → Run workflow), so it uses no GitHub minutes
+# otherwise. Everyday releases are published from your own computer (see RELEASING.md).
+# When run: opens a "Version Packages" PR from pending changesets, or publishes with provenance.
+# Needs npm trusted publishing configured for the packages (preferred) or an NPM_TOKEN secret.
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write

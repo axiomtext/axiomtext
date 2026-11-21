@@ -393,8 +393,8 @@ free HTTPS), switches to the new release atomically and only then pushes to GitH
 Actions minutes are used, and `deploy/scripts/deploy-from-laptop.sh --rollback` goes back
 instantly. Setup and details: [**deploy/README.md**](deploy/README.md).
 
-Releases to npm are automated with Changesets: merging the "Release: version packages" pull
-request publishes all packages with provenance (needs the `NPM_TOKEN` repository secret).
+Packages are published to npm from your computer with your npm login and 2FA — see
+[**RELEASING.md**](RELEASING.md).
 
 ## Roadmap
 

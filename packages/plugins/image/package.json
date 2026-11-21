@@ -1,6 +1,6 @@
 {
   "name": "@axiomtext/plugin-image",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Images with captions, alt text, resizing, alignment, upload adapters, paste and drag-and-drop.",
   "license": "MIT",
   "type": "module",
@@ -28,8 +28,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "publishConfig": {
-    "access": "public",
-    "provenance": true
+    "access": "public"
   },
   "dependencies": {
     "@axiomtext/core": "workspace:*",
