@@ -1,7 +1,10 @@
 import 'dart:convert';
 
+// Flutter 3.47+ prefers package:material_ui / cupertino_ui; kept for older Flutter.
+// ignore: deprecated_member_use
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 

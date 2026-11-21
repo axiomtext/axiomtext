@@ -1,3 +1,8 @@
+## 0.1.1
+
+- No analyzer notices on Flutter 3.47+ (the `material.dart` / `cupertino.dart` deprecation);
+  still works from Flutter 3.27.
+
 ## 0.1.0
 
 First beta of the Flutter SDK.

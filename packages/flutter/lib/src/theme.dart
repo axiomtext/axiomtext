@@ -1,3 +1,5 @@
+// Flutter 3.47+ prefers package:material_ui / cupertino_ui; kept for older Flutter.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 
 /// Colours and font of the editor, sent to the engine as CSS variables (`--ax-*`).

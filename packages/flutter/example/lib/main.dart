@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:axiomtext/axiomtext.dart';
+// Flutter 3.47+ prefers package:material_ui / cupertino_ui; kept for older Flutter.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
