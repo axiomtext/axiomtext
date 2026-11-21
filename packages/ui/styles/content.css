@@ -18,7 +18,7 @@
   --ax-surface-hover: #f1f3f6;
   --ax-fg: #17181c;
   --ax-fg-muted: #5f6672;
-  --ax-fg-subtle: #8a909b;
+  --ax-fg-subtle: #6b7280; /* 4.8:1 on white (WCAG AA) */
   --ax-border: #e4e7ec;
   --ax-border-strong: #d0d5dd;
 
@@ -61,7 +61,7 @@
   --ax-surface-hover: #23252b;
   --ax-fg: #ececf1;
   --ax-fg-muted: #a3a8b3;
-  --ax-fg-subtle: #737985;
+  --ax-fg-subtle: #8b919c; /* 5.3:1 on the dark surface */
   --ax-border: #26282e;
   --ax-border-strong: #33363d;
   --ax-accent: #8b85ff;
@@ -275,7 +275,7 @@
   outline-offset: 2px;
 }
 .ax-task-item[data-checked='true'] > .ax-task-item__content {
-  color: var(--ax-fg-subtle);
+  color: var(--ax-fg-muted);
   text-decoration: line-through;
   text-decoration-color: var(--ax-fg-subtle);
   transition: color var(--ax-duration) var(--ax-ease);
@@ -354,6 +354,14 @@
   color: #d92d20;
   font-family: var(--ax-font-mono);
   text-decoration: underline wavy #d92d20;
+}
+
+/* Math is always written left to right, even inside Arabic or Urdu text. */
+.axiomtext-content .ax-math,
+.axiomtext-content .katex,
+.axiomtext-content math-field {
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 
 /* Images: in line with text, wrapped left/right, or breaking the text */

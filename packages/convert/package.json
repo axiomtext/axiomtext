@@ -27,5 +27,22 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
   },
-  "private": true
+  "dependencies": {
+    "markdown-it": "^14.3.3",
+    "@axiomtext/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@axiomtext/math": "workspace:*",
+    "@axiomtext/plugin-basic-styles": "workspace:*",
+    "@axiomtext/plugin-blockquote": "workspace:*",
+    "@axiomtext/plugin-columns": "workspace:*",
+    "@axiomtext/plugin-font": "workspace:*",
+    "@axiomtext/plugin-heading": "workspace:*",
+    "@axiomtext/plugin-image": "workspace:*",
+    "@axiomtext/plugin-link": "workspace:*",
+    "@axiomtext/plugin-list": "workspace:*",
+    "@axiomtext/plugin-table": "workspace:*",
+    "@axiomtext/view": "workspace:*",
+    "@types/markdown-it": "^14.2.0"
+  }
 }

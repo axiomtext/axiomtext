@@ -1,3 +1,4 @@
+import { t } from '@axiomtext/i18n';
 import type { Editor } from '@axiomtext/view';
 import { h } from './dom';
 import { icon } from './icons';
@@ -116,7 +117,7 @@ export function createLinkUI(editor: Editor): LinkUI {
       return;
     }
     if (!editor.can('setLink', value)) {
-      error.textContent = "This link isn't allowed. Use a web address like https://example.com";
+      error.textContent = t("This link isn't allowed. Use a web address like https://example.com");
       input.setAttribute('aria-invalid', 'true');
       return;
     }

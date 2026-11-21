@@ -1,3 +1,14 @@
+import { t } from '@axiomtext/i18n';
+
+/** Attributes holding UI text: translated automatically (ids are the English texts). */
+const TRANSLATED = new Set([
+  'aria-label',
+  'data-tooltip',
+  'placeholder',
+  'title',
+  'aria-description',
+]);
+
 type Attrs = Record<string, string | boolean | undefined>;
 
 /** Small helper to create elements without innerHTML (keeps the UI XSS-safe). */
@@ -9,10 +20,10 @@ export function h<K extends keyof HTMLElementTagNameMap>(
   const el = document.createElement(tag);
   for (const [key, value] of Object.entries(attrs)) {
     if (value === undefined || value === false) continue;
-    el.setAttribute(key, value === true ? '' : value);
+    el.setAttribute(key, value === true ? '' : TRANSLATED.has(key) ? t(value) : value);
   }
   for (const child of children) {
-    el.append(typeof child === 'string' ? document.createTextNode(child) : child);
+    el.append(typeof child === 'string' ? document.createTextNode(t(child)) : child);
   }
   return el;
 }

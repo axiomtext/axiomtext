@@ -1,5 +1,11 @@
 /**
- * @axiomtext/convert — HTML, Markdown, DOCX and PDF conversion (client-side).
- * Planned for milestone M1. See docs/goal-1/02-development-guide.md.
+ * @axiomtext/convert — client-side conversion.
+ *
+ * Markdown (CNV-003):
+ *   import { toMarkdown, fromMarkdown } from '@axiomtext/convert';
+ *   const md = toMarkdown(editor.getJSON());
+ *   editor.setJSON(fromMarkdown(md));
  */
-export const status = 'planned:M1' as const;
+export { toMarkdown, escapeMarkdown } from './markdown-out';
+export type { ToMarkdownOptions } from './markdown-out';
+export { fromMarkdown } from './markdown-in';

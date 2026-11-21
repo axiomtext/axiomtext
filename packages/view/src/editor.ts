@@ -14,8 +14,9 @@ import { undoInputRule } from 'prosemirror-inputrules';
 import { keymap } from 'prosemirror-keymap';
 import { DOMSerializer, Node as PMNode } from 'prosemirror-model';
 import type { Schema } from 'prosemirror-model';
-import { EditorState, Plugin } from 'prosemirror-state';
+import { EditorState, NodeSelection, Plugin, Selection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
+import { cleanPastedHTML } from './paste';
 import { placeholderPlugin } from './placeholder';
 
 export interface EditorOptions {
@@ -58,6 +59,13 @@ export interface Editor {
   getHTML(): string;
   /** Plain text, blocks separated by blank lines. */
   getText(): string;
+  /**
+   * Inserts HTML at the cursor exactly like pasting it: cleaned up, filtered by the schema
+   * (unknown or unsafe content is dropped) and converted by plugins (e.g. MathML → equations).
+   */
+  insertHTML(html: string): void;
+  /** Inserts plain text at the cursor like pasting it (e.g. `$x^2$` becomes an equation). */
+  insertText(text: string): void;
   /** Run a plugin command by name, e.g. `execute('setHeading', 2)`. Returns false if it can't run. */
   execute(command: string, ...args: unknown[]): boolean;
   /** Whether a command can run in the current state. */
@@ -79,6 +87,11 @@ export interface Editor {
   getSelectionRect(): { top: number; bottom: number; left: number; right: number };
   /** Whether the editable area currently has focus. */
   hasFocus(): boolean;
+  /**
+   * `empty`: nothing selected (just a cursor). `emptyBlock`: the cursor is in an empty line.
+   * Used by floating toolbars (balloon editor).
+   */
+  getSelectionState(): { empty: boolean; emptyBlock: boolean; nodeSelected: boolean };
   /** Attributes of the text block around the cursor (e.g. `textAlign`). */
   getBlockAttrs(): Record<string, unknown>;
   /** The node selected as a whole (e.g. an image), or null. */
@@ -95,7 +108,8 @@ export interface Editor {
   canRedo(): boolean;
   /** The editable DOM element (for focus management by UI components). */
   readonly dom: HTMLElement;
-  focus(): void;
+  /** Focus the editor; optionally put the cursor at the start or end of the document. */
+  focus(position?: 'start' | 'end'): void;
   setEditable(editable: boolean): void;
   /** Subscribe to an event. Returns an unsubscribe function. */
   on(event: EditorEvent, listener: Listener): () => void;
@@ -211,6 +225,7 @@ export function createEditor(options: EditorOptions): Editor {
       'aria-multiline': 'true',
       'aria-label': options.ariaLabel ?? 'Rich text editor',
     },
+    transformPastedHTML: cleanPastedHTML,
     dispatchTransaction(tr) {
       const next = view.state.apply(tr);
       view.updateState(next);
@@ -249,6 +264,14 @@ export function createEditor(options: EditorOptions): Editor {
       return wrapper.innerHTML;
     },
     getText: () => view.state.doc.textBetween(0, view.state.doc.content.size, '\n\n', '\n'),
+    insertHTML(html) {
+      ensureAlive();
+      view.pasteHTML(html);
+    },
+    insertText(text) {
+      ensureAlive();
+      view.pasteText(text);
+    },
     execute(name, ...args) {
       ensureAlive();
       // Explicit commands (toolbar, API) always start a new undo step, so undo reverts
@@ -306,6 +329,15 @@ export function createEditor(options: EditorOptions): Editor {
       };
     },
     hasFocus: () => view.hasFocus(),
+    getSelectionState() {
+      const sel = view.state.selection;
+      const parent = sel.$from.parent;
+      return {
+        empty: sel.empty,
+        emptyBlock: sel.empty && parent.isTextblock && parent.content.size === 0,
+        nodeSelected: sel instanceof NodeSelection,
+      };
+    },
     getBlockAttrs: () => ({ ...view.state.selection.$from.parent.attrs }),
     getSelectedNode() {
       const sel = view.state.selection as { node?: PMNode; from: number };
@@ -331,7 +363,16 @@ export function createEditor(options: EditorOptions): Editor {
     get dom() {
       return view.dom;
     },
-    focus: () => view.focus(),
+    focus(position) {
+      if (position) {
+        const selection =
+          position === 'start'
+            ? Selection.atStart(view.state.doc)
+            : Selection.atEnd(view.state.doc);
+        view.dispatch(view.state.tr.setSelection(selection).scrollIntoView());
+      }
+      view.focus();
+    },
     setEditable(value) {
       editable = value;
       view.setProps({});

@@ -1,0 +1,21 @@
+{
+  "name": "@axiomtext/website",
+  "version": "0.0.0",
+  "private": true,
+  "description": "axiomtext.dev \u2014 docs and live demo (static site).",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "pnpm --filter @axiomtext/playground exec vite build --base=/playground/ --outDir ../website/public/playground --emptyOutDir && astro build",
+    "preview": "astro preview"
+  },
+  "devDependencies": {
+    "@astrojs/starlight": "^0.43.1",
+    "@axiomtext/playground": "workspace:*",
+    "@axiomtext/presets": "workspace:*",
+    "@axiomtext/ui": "workspace:*",
+    "astro": "^7.4.13",
+    "katex": "^0.19.1"
+  }
+}

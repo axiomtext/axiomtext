@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-20T22:30:57.473Z",
+  "results": {
+    "load 200 paragraphs (~10000 words), ms": 49,
+    "load 1000 paragraphs (~50000 words), ms": 211,
+    "typing: processing per key p50 (1000 paragraphs), ms": 8.1,
+    "typing: processing per key p95 (1000 paragraphs), ms": 11.7,
+    "typing samples": 225,
+    "getHTML (1000 paragraphs), ms": 12
+  },
+  "gate": {
+    "typingP95Under16ms": true
+  }
+}

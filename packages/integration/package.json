@@ -1,0 +1,20 @@
+{
+  "name": "@axiomtext/integration-tests",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Cross-package tests (paste corpus, Markdown round trips) against real editors.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@axiomtext/view": "workspace:*",
+    "@axiomtext/core": "workspace:*",
+    "@axiomtext/plugin-basic-styles": "workspace:*",
+    "@axiomtext/plugin-list": "workspace:*",
+    "@axiomtext/plugin-heading": "workspace:*",
+    "@axiomtext/plugin-link": "workspace:*"
+  }
+}

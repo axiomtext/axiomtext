@@ -19,7 +19,11 @@
       "import": "./dist/index.js"
     },
     "./styles.css": "./styles/axiomtext.css",
-    "./content.css": "./styles/content.css"
+    "./content.css": "./styles/content.css",
+    "./locales/*": {
+      "types": "./dist/locales/*.d.ts",
+      "import": "./dist/locales/*.js"
+    }
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -33,11 +37,12 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@axiomtext/core": "workspace:*",
+    "@axiomtext/i18n": "workspace:*",
     "@axiomtext/view": "workspace:*",
     "lucide": "^1.77.0"
   },
   "devDependencies": {
-    "@axiomtext/core": "workspace:*",
     "@axiomtext/plugin-basic-styles": "workspace:*",
     "@axiomtext/plugin-heading": "workspace:*",
     "@axiomtext/plugin-block-format": "workspace:*",

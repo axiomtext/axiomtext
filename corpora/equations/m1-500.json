@@ -1,0 +1,2502 @@
+[
+ {
+  "id": "algebra-001",
+  "area": "algebra",
+  "latex": "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}"
+ },
+ {
+  "id": "algebra-002",
+  "area": "algebra",
+  "latex": "(a+b)^2 = a^2 + 2ab + b^2"
+ },
+ {
+  "id": "algebra-003",
+  "area": "algebra",
+  "latex": "(a-b)^2 = a^2 - 2ab + b^2"
+ },
+ {
+  "id": "algebra-004",
+  "area": "algebra",
+  "latex": "a^2 - b^2 = (a+b)(a-b)"
+ },
+ {
+  "id": "algebra-005",
+  "area": "algebra",
+  "latex": "a^3 + b^3 = (a+b)(a^2 - ab + b^2)"
+ },
+ {
+  "id": "algebra-006",
+  "area": "algebra",
+  "latex": "a^3 - b^3 = (a-b)(a^2 + ab + b^2)"
+ },
+ {
+  "id": "algebra-007",
+  "area": "algebra",
+  "latex": "(a+b)^n = \\sum_{k=0}^{n} \\binom{n}{k} a^{n-k} b^k"
+ },
+ {
+  "id": "algebra-008",
+  "area": "algebra",
+  "latex": "\\sqrt[3]{x^2 + 1} \\leq |x| + 1"
+ },
+ {
+  "id": "algebra-009",
+  "area": "algebra",
+  "latex": "x^{m} \\cdot x^{n} = x^{m+n}"
+ },
+ {
+  "id": "algebra-010",
+  "area": "algebra",
+  "latex": "\\frac{x^m}{x^n} = x^{m-n}"
+ },
+ {
+  "id": "algebra-011",
+  "area": "algebra",
+  "latex": "(x^m)^n = x^{mn}"
+ },
+ {
+  "id": "algebra-012",
+  "area": "algebra",
+  "latex": "x^{-n} = \\frac{1}{x^n}"
+ },
+ {
+  "id": "algebra-013",
+  "area": "algebra",
+  "latex": "x^{\\frac{p}{q}} = \\sqrt[q]{x^p}"
+ },
+ {
+  "id": "algebra-014",
+  "area": "algebra",
+  "latex": "\\log_b(xy) = \\log_b x + \\log_b y"
+ },
+ {
+  "id": "algebra-015",
+  "area": "algebra",
+  "latex": "\\log_b\\left(\\frac{x}{y}\\right) = \\log_b x - \\log_b y"
+ },
+ {
+  "id": "algebra-016",
+  "area": "algebra",
+  "latex": "\\log_b x^k = k \\log_b x"
+ },
+ {
+  "id": "algebra-017",
+  "area": "algebra",
+  "latex": "\\log_b x = \\frac{\\ln x}{\\ln b}"
+ },
+ {
+  "id": "algebra-018",
+  "area": "algebra",
+  "latex": "e^{\\ln x} = x"
+ },
+ {
+  "id": "algebra-019",
+  "area": "algebra",
+  "latex": "|a + b| \\leq |a| + |b|"
+ },
+ {
+  "id": "algebra-020",
+  "area": "algebra",
+  "latex": "\\left| \\frac{a}{b} \\right| = \\frac{|a|}{|b|}"
+ },
+ {
+  "id": "algebra-021",
+  "area": "algebra",
+  "latex": "ax^2 + bx + c = 0"
+ },
+ {
+  "id": "algebra-022",
+  "area": "algebra",
+  "latex": "\\Delta = b^2 - 4ac"
+ },
+ {
+  "id": "algebra-023",
+  "area": "algebra",
+  "latex": "x_1 + x_2 = -\\frac{b}{a}"
+ },
+ {
+  "id": "algebra-024",
+  "area": "algebra",
+  "latex": "x_1 x_2 = \\frac{c}{a}"
+ },
+ {
+  "id": "algebra-025",
+  "area": "algebra",
+  "latex": "y = mx + b"
+ },
+ {
+  "id": "algebra-026",
+  "area": "algebra",
+  "latex": "m = \\frac{y_2 - y_1}{x_2 - x_1}"
+ },
+ {
+  "id": "algebra-027",
+  "area": "algebra",
+  "latex": "f(x) = a(x-h)^2 + k"
+ },
+ {
+  "id": "algebra-028",
+  "area": "algebra",
+  "latex": "\\frac{1}{x-1} + \\frac{1}{x+1} = \\frac{2x}{x^2-1}"
+ },
+ {
+  "id": "algebra-029",
+  "area": "algebra",
+  "latex": "\\sum_{k=1}^{n} k = \\frac{n(n+1)}{2}"
+ },
+ {
+  "id": "algebra-030",
+  "area": "algebra",
+  "latex": "\\sum_{k=1}^{n} k^2 = \\frac{n(n+1)(2n+1)}{6}"
+ },
+ {
+  "id": "algebra-031",
+  "area": "algebra",
+  "latex": "\\sum_{k=1}^{n} k^3 = \\left(\\frac{n(n+1)}{2}\\right)^2"
+ },
+ {
+  "id": "algebra-032",
+  "area": "algebra",
+  "latex": "\\sum_{k=0}^{n-1} ar^k = a\\frac{1-r^n}{1-r}"
+ },
+ {
+  "id": "algebra-033",
+  "area": "algebra",
+  "latex": "a_n = a_1 + (n-1)d"
+ },
+ {
+  "id": "algebra-034",
+  "area": "algebra",
+  "latex": "S_n = \\frac{n}{2}(a_1 + a_n)"
+ },
+ {
+  "id": "algebra-035",
+  "area": "algebra",
+  "latex": "n! = \\prod_{k=1}^{n} k"
+ },
+ {
+  "id": "algebra-036",
+  "area": "algebra",
+  "latex": "\\binom{n}{k} = \\frac{n!}{k!(n-k)!}"
+ },
+ {
+  "id": "algebra-037",
+  "area": "algebra",
+  "latex": "\\binom{n}{k} = \\binom{n-1}{k-1} + \\binom{n-1}{k}"
+ },
+ {
+  "id": "algebra-038",
+  "area": "algebra",
+  "latex": "\\lfloor x \\rfloor \\leq x < \\lfloor x \\rfloor + 1"
+ },
+ {
+  "id": "algebra-039",
+  "area": "algebra",
+  "latex": "\\lceil x \\rceil - 1 < x \\leq \\lceil x \\rceil"
+ },
+ {
+  "id": "algebra-040",
+  "area": "algebra",
+  "latex": "z = a + bi"
+ },
+ {
+  "id": "algebra-041",
+  "area": "algebra",
+  "latex": "|z| = \\sqrt{a^2 + b^2}"
+ },
+ {
+  "id": "algebra-042",
+  "area": "algebra",
+  "latex": "\\overline{z} = a - bi"
+ },
+ {
+  "id": "algebra-043",
+  "area": "algebra",
+  "latex": "e^{i\\theta} = \\cos\\theta + i\\sin\\theta"
+ },
+ {
+  "id": "algebra-044",
+  "area": "algebra",
+  "latex": "e^{i\\pi} + 1 = 0"
+ },
+ {
+  "id": "algebra-045",
+  "area": "algebra",
+  "latex": "z^n = r^n(\\cos n\\theta + i \\sin n\\theta)"
+ },
+ {
+  "id": "algebra-046",
+  "area": "algebra",
+  "latex": "i^2 = -1"
+ },
+ {
+  "id": "calculus-001",
+  "area": "calculus",
+  "latex": "\\int_0^1 x^2 \\, dx = \\frac{1}{3}"
+ },
+ {
+  "id": "calculus-002",
+  "area": "calculus",
+  "latex": "\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1"
+ },
+ {
+  "id": "calculus-003",
+  "area": "calculus",
+  "latex": "\\lim_{n \\to \\infty} \\left(1 + \\frac{1}{n}\\right)^n = e"
+ },
+ {
+  "id": "calculus-004",
+  "area": "calculus",
+  "latex": "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}"
+ },
+ {
+  "id": "calculus-005",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left[f(g(x))\\right] = f'(g(x))\\,g'(x)"
+ },
+ {
+  "id": "calculus-006",
+  "area": "calculus",
+  "latex": "(fg)' = f'g + fg'"
+ },
+ {
+  "id": "calculus-007",
+  "area": "calculus",
+  "latex": "\\left(\\frac{f}{g}\\right)' = \\frac{f'g - fg'}{g^2}"
+ },
+ {
+  "id": "calculus-008",
+  "area": "calculus",
+  "latex": "\\int_a^b f'(x)\\,dx = f(b) - f(a)"
+ },
+ {
+  "id": "calculus-009",
+  "area": "calculus",
+  "latex": "\\int u \\, dv = uv - \\int v \\, du"
+ },
+ {
+  "id": "calculus-010",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\int_a^x f(t)\\,dt = f(x)"
+ },
+ {
+  "id": "calculus-011",
+  "area": "calculus",
+  "latex": "\\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx = \\sqrt{\\pi}"
+ },
+ {
+  "id": "calculus-012",
+  "area": "calculus",
+  "latex": "\\sum_{n=0}^{\\infty} \\frac{x^n}{n!} = e^x"
+ },
+ {
+  "id": "calculus-013",
+  "area": "calculus",
+  "latex": "f(x) = \\sum_{n=0}^{\\infty} \\frac{f^{(n)}(a)}{n!}(x-a)^n"
+ },
+ {
+  "id": "calculus-014",
+  "area": "calculus",
+  "latex": "\\sin x = \\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n+1}}{(2n+1)!}"
+ },
+ {
+  "id": "calculus-015",
+  "area": "calculus",
+  "latex": "\\cos x = \\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n}}{(2n)!}"
+ },
+ {
+  "id": "calculus-016",
+  "area": "calculus",
+  "latex": "\\ln(1+x) = \\sum_{n=1}^{\\infty} \\frac{(-1)^{n+1} x^n}{n}"
+ },
+ {
+  "id": "calculus-017",
+  "area": "calculus",
+  "latex": "\\frac{1}{1-x} = \\sum_{n=0}^{\\infty} x^n, \\quad |x| < 1"
+ },
+ {
+  "id": "calculus-018",
+  "area": "calculus",
+  "latex": "\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}"
+ },
+ {
+  "id": "calculus-019",
+  "area": "calculus",
+  "latex": "\\frac{\\partial f}{\\partial x}"
+ },
+ {
+  "id": "calculus-020",
+  "area": "calculus",
+  "latex": "\\frac{\\partial^2 f}{\\partial x \\partial y} = \\frac{\\partial^2 f}{\\partial y \\partial x}"
+ },
+ {
+  "id": "calculus-021",
+  "area": "calculus",
+  "latex": "\\nabla f = \\left( \\frac{\\partial f}{\\partial x}, \\frac{\\partial f}{\\partial y}, \\frac{\\partial f}{\\partial z} \\right)"
+ },
+ {
+  "id": "calculus-022",
+  "area": "calculus",
+  "latex": "\\nabla \\cdot \\mathbf{F} = \\frac{\\partial F_x}{\\partial x} + \\frac{\\partial F_y}{\\partial y} + \\frac{\\partial F_z}{\\partial z}"
+ },
+ {
+  "id": "calculus-023",
+  "area": "calculus",
+  "latex": "\\nabla^2 f = \\frac{\\partial^2 f}{\\partial x^2} + \\frac{\\partial^2 f}{\\partial y^2}"
+ },
+ {
+  "id": "calculus-024",
+  "area": "calculus",
+  "latex": "\\iint_D f(x,y)\\,dA"
+ },
+ {
+  "id": "calculus-025",
+  "area": "calculus",
+  "latex": "\\iiint_V \\rho \\, dV"
+ },
+ {
+  "id": "calculus-026",
+  "area": "calculus",
+  "latex": "\\oint_C \\mathbf{F} \\cdot d\\mathbf{r} = \\iint_S (\\nabla \\times \\mathbf{F}) \\cdot d\\mathbf{S}"
+ },
+ {
+  "id": "calculus-027",
+  "area": "calculus",
+  "latex": "\\int_0^{2\\pi}\\!\\!\\int_0^R r \\, dr \\, d\\theta = \\pi R^2"
+ },
+ {
+  "id": "calculus-028",
+  "area": "calculus",
+  "latex": "\\frac{dy}{dx} + P(x)y = Q(x)"
+ },
+ {
+  "id": "calculus-029",
+  "area": "calculus",
+  "latex": "y'' + \\omega^2 y = 0"
+ },
+ {
+  "id": "calculus-030",
+  "area": "calculus",
+  "latex": "\\mathcal{L}\\{f(t)\\} = \\int_0^{\\infty} e^{-st} f(t)\\,dt"
+ },
+ {
+  "id": "calculus-031",
+  "area": "calculus",
+  "latex": "\\hat{f}(\\xi) = \\int_{-\\infty}^{\\infty} f(x) e^{-2\\pi i x \\xi}\\,dx"
+ },
+ {
+  "id": "calculus-032",
+  "area": "calculus",
+  "latex": "\\lim_{x \\to a^+} f(x) = L"
+ },
+ {
+  "id": "calculus-033",
+  "area": "calculus",
+  "latex": "\\lim_{x \\to \\infty} \\frac{\\ln x}{x} = 0"
+ },
+ {
+  "id": "calculus-034",
+  "area": "calculus",
+  "latex": "\\int \\frac{dx}{\\sqrt{1-x^2}} = \\arcsin x + C"
+ },
+ {
+  "id": "calculus-035",
+  "area": "calculus",
+  "latex": "\\int \\frac{dx}{1+x^2} = \\arctan x + C"
+ },
+ {
+  "id": "calculus-036",
+  "area": "calculus",
+  "latex": "\\int \\sec^2 x \\, dx = \\tan x + C"
+ },
+ {
+  "id": "calculus-037",
+  "area": "calculus",
+  "latex": "\\int_0^{\\pi} \\sin x \\, dx = 2"
+ },
+ {
+  "id": "calculus-038",
+  "area": "calculus",
+  "latex": "\\Gamma(z) = \\int_0^{\\infty} t^{z-1} e^{-t}\\,dt"
+ },
+ {
+  "id": "calculus-039",
+  "area": "calculus",
+  "latex": "\\zeta(s) = \\sum_{n=1}^{\\infty} \\frac{1}{n^s}"
+ },
+ {
+  "id": "matrices-001",
+  "area": "matrices",
+  "latex": "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"
+ },
+ {
+  "id": "matrices-002",
+  "area": "matrices",
+  "latex": "\\det\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix} = ad - bc"
+ },
+ {
+  "id": "matrices-003",
+  "area": "matrices",
+  "latex": "A^{-1} = \\frac{1}{ad-bc}\\begin{pmatrix} d & -b \\\\ -c & a \\end{pmatrix}"
+ },
+ {
+  "id": "matrices-004",
+  "area": "matrices",
+  "latex": "\\begin{bmatrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}"
+ },
+ {
+  "id": "matrices-005",
+  "area": "matrices",
+  "latex": "\\begin{vmatrix} a & b & c \\\\ d & e & f \\\\ g & h & i \\end{vmatrix}"
+ },
+ {
+  "id": "matrices-006",
+  "area": "matrices",
+  "latex": "A\\mathbf{x} = \\mathbf{b}"
+ },
+ {
+  "id": "matrices-007",
+  "area": "matrices",
+  "latex": "A\\mathbf{v} = \\lambda \\mathbf{v}"
+ },
+ {
+  "id": "matrices-008",
+  "area": "matrices",
+  "latex": "\\det(A - \\lambda I) = 0"
+ },
+ {
+  "id": "matrices-009",
+  "area": "matrices",
+  "latex": "(AB)^T = B^T A^T"
+ },
+ {
+  "id": "matrices-010",
+  "area": "matrices",
+  "latex": "(AB)^{-1} = B^{-1}A^{-1}"
+ },
+ {
+  "id": "matrices-011",
+  "area": "matrices",
+  "latex": "\\operatorname{tr}(A) = \\sum_{i=1}^{n} a_{ii}"
+ },
+ {
+  "id": "matrices-012",
+  "area": "matrices",
+  "latex": "A = U \\Sigma V^T"
+ },
+ {
+  "id": "matrices-013",
+  "area": "matrices",
+  "latex": "\\begin{pmatrix} \\cos\\theta & -\\sin\\theta \\\\ \\sin\\theta & \\cos\\theta \\end{pmatrix}"
+ },
+ {
+  "id": "matrices-014",
+  "area": "matrices",
+  "latex": "\\begin{pmatrix} a_{11} & \\cdots & a_{1n} \\\\ \\vdots & \\ddots & \\vdots \\\\ a_{m1} & \\cdots & a_{mn} \\end{pmatrix}"
+ },
+ {
+  "id": "matrices-015",
+  "area": "matrices",
+  "latex": "\\left[\\begin{array}{cc|c} 1 & 2 & 3 \\\\ 4 & 5 & 6 \\end{array}\\right]"
+ },
+ {
+  "id": "matrices-016",
+  "area": "matrices",
+  "latex": "\\begin{Bmatrix} x \\\\ y \\end{Bmatrix}"
+ },
+ {
+  "id": "matrices-017",
+  "area": "matrices",
+  "latex": "\\begin{Vmatrix} a & b \\\\ c & d \\end{Vmatrix}"
+ },
+ {
+  "id": "matrices-018",
+  "area": "matrices",
+  "latex": "\\begin{smallmatrix} a & b \\\\ c & d \\end{smallmatrix}"
+ },
+ {
+  "id": "matrices-019",
+  "area": "matrices",
+  "latex": "I_n = \\operatorname{diag}(1, \\ldots, 1)"
+ },
+ {
+  "id": "matrices-020",
+  "area": "matrices",
+  "latex": "\\mathbf{u} \\cdot \\mathbf{v} = \\|\\mathbf{u}\\|\\|\\mathbf{v}\\|\\cos\\theta"
+ },
+ {
+  "id": "cases-001",
+  "area": "cases",
+  "latex": "|x| = \\begin{cases} x & x \\geq 0 \\\\ -x & x < 0 \\end{cases}"
+ },
+ {
+  "id": "cases-002",
+  "area": "cases",
+  "latex": "f(x) = \\begin{cases} x^2 & \\text{if } x > 0 \\\\ 0 & \\text{otherwise} \\end{cases}"
+ },
+ {
+  "id": "cases-003",
+  "area": "cases",
+  "latex": "\\operatorname{sgn}(x) = \\begin{cases} -1 & x < 0 \\\\ 0 & x = 0 \\\\ 1 & x > 0 \\end{cases}"
+ },
+ {
+  "id": "cases-004",
+  "area": "cases",
+  "latex": "\\delta_{ij} = \\begin{cases} 1 & i = j \\\\ 0 & i \\neq j \\end{cases}"
+ },
+ {
+  "id": "cases-005",
+  "area": "cases",
+  "latex": "F_n = \\begin{cases} 0 & n = 0 \\\\ 1 & n = 1 \\\\ F_{n-1} + F_{n-2} & n > 1 \\end{cases}"
+ },
+ {
+  "id": "cases-006",
+  "area": "cases",
+  "latex": "\\begin{cases} x + y = 5 \\\\ x - y = 1 \\end{cases}"
+ },
+ {
+  "id": "cases-007",
+  "area": "cases",
+  "latex": "\\begin{cases} 2x + 3y - z = 1 \\\\ x - y + 2z = 3 \\\\ 3x + y + z = 4 \\end{cases}"
+ },
+ {
+  "id": "cases-008",
+  "area": "cases",
+  "latex": "H(x) = \\begin{cases} 0 & x < 0 \\\\ 1 & x \\geq 0 \\end{cases}"
+ },
+ {
+  "id": "aligned-001",
+  "area": "aligned",
+  "latex": "\\begin{aligned} (x+1)^2 &= x^2 + 2x + 1 \\\\ &\\geq 2x + 1 \\end{aligned}"
+ },
+ {
+  "id": "aligned-002",
+  "area": "aligned",
+  "latex": "\\begin{aligned} a &= b + c \\\\ d &= e - f \\end{aligned}"
+ },
+ {
+  "id": "aligned-003",
+  "area": "aligned",
+  "latex": "\\begin{aligned} \\int_0^1 2x \\, dx &= \\left[ x^2 \\right]_0^1 \\\\ &= 1 \\end{aligned}"
+ },
+ {
+  "id": "aligned-004",
+  "area": "aligned",
+  "latex": "\\begin{aligned} f(x) &= x^2 - 4x + 4 \\\\ &= (x-2)^2 \\end{aligned}"
+ },
+ {
+  "id": "aligned-005",
+  "area": "aligned",
+  "latex": "\\begin{gathered} a = 1 \\\\ b = 2 \\end{gathered}"
+ },
+ {
+  "id": "aligned-006",
+  "area": "aligned",
+  "latex": "\\begin{aligned} \\nabla \\cdot \\mathbf{E} &= \\frac{\\rho}{\\varepsilon_0} \\\\ \\nabla \\cdot \\mathbf{B} &= 0 \\\\ \\nabla \\times \\mathbf{E} &= -\\frac{\\partial \\mathbf{B}}{\\partial t} \\\\ \\nabla \\times \\mathbf{B} &= \\mu_0 \\mathbf{J} + \\mu_0 \\varepsilon_0 \\frac{\\partial \\mathbf{E}}{\\partial t} \\end{aligned}"
+ },
+ {
+  "id": "aligned-007",
+  "area": "aligned",
+  "latex": "\\begin{alignedat}{2} x &= 1 &\\quad y &= 2 \\\\ z &= 3 &\\quad w &= 4 \\end{alignedat}"
+ },
+ {
+  "id": "aligned-008",
+  "area": "aligned",
+  "latex": "\\begin{split} a &= b \\\\ &= c \\end{split}"
+ },
+ {
+  "id": "vectors-001",
+  "area": "vectors",
+  "latex": "\\vec{v} = \\langle v_1, v_2, v_3 \\rangle"
+ },
+ {
+  "id": "vectors-002",
+  "area": "vectors",
+  "latex": "\\|\\vec{v}\\| = \\sqrt{v_1^2 + v_2^2 + v_3^2}"
+ },
+ {
+  "id": "vectors-003",
+  "area": "vectors",
+  "latex": "\\hat{u} = \\frac{\\vec{u}}{\\|\\vec{u}\\|}"
+ },
+ {
+  "id": "vectors-004",
+  "area": "vectors",
+  "latex": "\\vec{a} \\times \\vec{b} = \\begin{vmatrix} \\mathbf{i} & \\mathbf{j} & \\mathbf{k} \\\\ a_1 & a_2 & a_3 \\\\ b_1 & b_2 & b_3 \\end{vmatrix}"
+ },
+ {
+  "id": "vectors-005",
+  "area": "vectors",
+  "latex": "\\vec{a} \\cdot \\vec{b} = a_1 b_1 + a_2 b_2 + a_3 b_3"
+ },
+ {
+  "id": "vectors-006",
+  "area": "vectors",
+  "latex": "\\operatorname{proj}_{\\vec{b}} \\vec{a} = \\frac{\\vec{a} \\cdot \\vec{b}}{\\|\\vec{b}\\|^2}\\vec{b}"
+ },
+ {
+  "id": "vectors-007",
+  "area": "vectors",
+  "latex": "\\overrightarrow{AB} = B - A"
+ },
+ {
+  "id": "vectors-008",
+  "area": "vectors",
+  "latex": "\\vec{F} = m\\vec{a}"
+ },
+ {
+  "id": "vectors-009",
+  "area": "vectors",
+  "latex": "\\mathbf{r}(t) = \\langle \\cos t, \\sin t, t \\rangle"
+ },
+ {
+  "id": "vectors-010",
+  "area": "vectors",
+  "latex": "\\vec{u} \\perp \\vec{v} \\iff \\vec{u} \\cdot \\vec{v} = 0"
+ },
+ {
+  "id": "sets-logic-001",
+  "area": "sets-logic",
+  "latex": "A \\cup B = \\{x \\mid x \\in A \\lor x \\in B\\}"
+ },
+ {
+  "id": "sets-logic-002",
+  "area": "sets-logic",
+  "latex": "A \\cap B = \\{x \\mid x \\in A \\land x \\in B\\}"
+ },
+ {
+  "id": "sets-logic-003",
+  "area": "sets-logic",
+  "latex": "\\overline{A \\cup B} = \\overline{A} \\cap \\overline{B}"
+ },
+ {
+  "id": "sets-logic-004",
+  "area": "sets-logic",
+  "latex": "A \\setminus B = \\{x \\in A \\mid x \\notin B\\}"
+ },
+ {
+  "id": "sets-logic-005",
+  "area": "sets-logic",
+  "latex": "|A \\cup B| = |A| + |B| - |A \\cap B|"
+ },
+ {
+  "id": "sets-logic-006",
+  "area": "sets-logic",
+  "latex": "\\mathcal{P}(A) = \\{S \\mid S \\subseteq A\\}"
+ },
+ {
+  "id": "sets-logic-007",
+  "area": "sets-logic",
+  "latex": "\\mathbb{N} \\subset \\mathbb{Z} \\subset \\mathbb{Q} \\subset \\mathbb{R} \\subset \\mathbb{C}"
+ },
+ {
+  "id": "sets-logic-008",
+  "area": "sets-logic",
+  "latex": "\\forall \\varepsilon > 0 \\; \\exists \\delta > 0"
+ },
+ {
+  "id": "sets-logic-009",
+  "area": "sets-logic",
+  "latex": "\\neg(p \\land q) \\equiv \\neg p \\lor \\neg q"
+ },
+ {
+  "id": "sets-logic-010",
+  "area": "sets-logic",
+  "latex": "p \\Rightarrow q \\equiv \\neg p \\lor q"
+ },
+ {
+  "id": "sets-logic-011",
+  "area": "sets-logic",
+  "latex": "A \\times B = \\{(a,b) \\mid a \\in A, b \\in B\\}"
+ },
+ {
+  "id": "sets-logic-012",
+  "area": "sets-logic",
+  "latex": "\\emptyset \\subseteq A"
+ },
+ {
+  "id": "sets-logic-013",
+  "area": "sets-logic",
+  "latex": "x \\in \\mathbb{R}^n"
+ },
+ {
+  "id": "sets-logic-014",
+  "area": "sets-logic",
+  "latex": "f: A \\to B"
+ },
+ {
+  "id": "sets-logic-015",
+  "area": "sets-logic",
+  "latex": "f: x \\mapsto x^2"
+ },
+ {
+  "id": "sets-logic-016",
+  "area": "sets-logic",
+  "latex": "\\bigcup_{i=1}^{n} A_i"
+ },
+ {
+  "id": "sets-logic-017",
+  "area": "sets-logic",
+  "latex": "\\bigcap_{i \\in I} A_i"
+ },
+ {
+  "id": "sets-logic-018",
+  "area": "sets-logic",
+  "latex": "\\aleph_0 = |\\mathbb{N}|"
+ },
+ {
+  "id": "statistics-001",
+  "area": "statistics",
+  "latex": "\\bar{x} = \\frac{1}{n}\\sum_{i=1}^{n} x_i"
+ },
+ {
+  "id": "statistics-002",
+  "area": "statistics",
+  "latex": "s^2 = \\frac{1}{n-1}\\sum_{i=1}^{n} (x_i - \\bar{x})^2"
+ },
+ {
+  "id": "statistics-003",
+  "area": "statistics",
+  "latex": "\\sigma = \\sqrt{\\frac{1}{N}\\sum_{i=1}^{N}(x_i - \\mu)^2}"
+ },
+ {
+  "id": "statistics-004",
+  "area": "statistics",
+  "latex": "z = \\frac{x - \\mu}{\\sigma}"
+ },
+ {
+  "id": "statistics-005",
+  "area": "statistics",
+  "latex": "P(A \\mid B) = \\frac{P(B \\mid A)\\,P(A)}{P(B)}"
+ },
+ {
+  "id": "statistics-006",
+  "area": "statistics",
+  "latex": "P(A \\cup B) = P(A) + P(B) - P(A \\cap B)"
+ },
+ {
+  "id": "statistics-007",
+  "area": "statistics",
+  "latex": "E[X] = \\sum_{i} x_i \\, p_i"
+ },
+ {
+  "id": "statistics-008",
+  "area": "statistics",
+  "latex": "\\operatorname{Var}(X) = E[X^2] - (E[X])^2"
+ },
+ {
+  "id": "statistics-009",
+  "area": "statistics",
+  "latex": "f(x) = \\frac{1}{\\sigma\\sqrt{2\\pi}} e^{-\\frac{(x-\\mu)^2}{2\\sigma^2}}"
+ },
+ {
+  "id": "statistics-010",
+  "area": "statistics",
+  "latex": "P(X = k) = \\binom{n}{k} p^k (1-p)^{n-k}"
+ },
+ {
+  "id": "statistics-011",
+  "area": "statistics",
+  "latex": "P(X = k) = \\frac{\\lambda^k e^{-\\lambda}}{k!}"
+ },
+ {
+  "id": "statistics-012",
+  "area": "statistics",
+  "latex": "\\operatorname{Cov}(X,Y) = E[(X-\\mu_X)(Y-\\mu_Y)]"
+ },
+ {
+  "id": "statistics-013",
+  "area": "statistics",
+  "latex": "\\rho_{XY} = \\frac{\\operatorname{Cov}(X,Y)}{\\sigma_X \\sigma_Y}"
+ },
+ {
+  "id": "statistics-014",
+  "area": "statistics",
+  "latex": "\\chi^2 = \\sum \\frac{(O_i - E_i)^2}{E_i}"
+ },
+ {
+  "id": "statistics-015",
+  "area": "statistics",
+  "latex": "\\hat{\\beta} = (X^T X)^{-1} X^T y"
+ },
+ {
+  "id": "statistics-016",
+  "area": "statistics",
+  "latex": "\\bar{x} \\pm z_{\\alpha/2}\\frac{\\sigma}{\\sqrt{n}}"
+ },
+ {
+  "id": "statistics-017",
+  "area": "statistics",
+  "latex": "H_0: \\mu = \\mu_0"
+ },
+ {
+  "id": "statistics-018",
+  "area": "statistics",
+  "latex": "X \\sim \\mathcal{N}(\\mu, \\sigma^2)"
+ },
+ {
+  "id": "statistics-019",
+  "area": "statistics",
+  "latex": "F(x) = P(X \\leq x)"
+ },
+ {
+  "id": "trigonometry-001",
+  "area": "trigonometry",
+  "latex": "\\sin^2\\theta + \\cos^2\\theta = 1"
+ },
+ {
+  "id": "trigonometry-002",
+  "area": "trigonometry",
+  "latex": "1 + \\tan^2\\theta = \\sec^2\\theta"
+ },
+ {
+  "id": "trigonometry-003",
+  "area": "trigonometry",
+  "latex": "1 + \\cot^2\\theta = \\csc^2\\theta"
+ },
+ {
+  "id": "trigonometry-004",
+  "area": "trigonometry",
+  "latex": "\\sin 2\\theta = 2\\sin\\theta\\cos\\theta"
+ },
+ {
+  "id": "trigonometry-005",
+  "area": "trigonometry",
+  "latex": "\\cos 2\\theta = \\cos^2\\theta - \\sin^2\\theta"
+ },
+ {
+  "id": "trigonometry-006",
+  "area": "trigonometry",
+  "latex": "\\tan 2\\theta = \\frac{2\\tan\\theta}{1 - \\tan^2\\theta}"
+ },
+ {
+  "id": "trigonometry-007",
+  "area": "trigonometry",
+  "latex": "\\sin(\\alpha \\pm \\beta) = \\sin\\alpha\\cos\\beta \\pm \\cos\\alpha\\sin\\beta"
+ },
+ {
+  "id": "trigonometry-008",
+  "area": "trigonometry",
+  "latex": "\\cos(\\alpha \\pm \\beta) = \\cos\\alpha\\cos\\beta \\mp \\sin\\alpha\\sin\\beta"
+ },
+ {
+  "id": "trigonometry-009",
+  "area": "trigonometry",
+  "latex": "\\tan(\\alpha + \\beta) = \\frac{\\tan\\alpha + \\tan\\beta}{1 - \\tan\\alpha\\tan\\beta}"
+ },
+ {
+  "id": "trigonometry-010",
+  "area": "trigonometry",
+  "latex": "\\frac{a}{\\sin A} = \\frac{b}{\\sin B} = \\frac{c}{\\sin C}"
+ },
+ {
+  "id": "trigonometry-011",
+  "area": "trigonometry",
+  "latex": "c^2 = a^2 + b^2 - 2ab\\cos C"
+ },
+ {
+  "id": "trigonometry-012",
+  "area": "trigonometry",
+  "latex": "\\sin\\frac{\\theta}{2} = \\pm\\sqrt{\\frac{1-\\cos\\theta}{2}}"
+ },
+ {
+  "id": "trigonometry-013",
+  "area": "trigonometry",
+  "latex": "\\cos\\frac{\\theta}{2} = \\pm\\sqrt{\\frac{1+\\cos\\theta}{2}}"
+ },
+ {
+  "id": "trigonometry-014",
+  "area": "trigonometry",
+  "latex": "\\sinh x = \\frac{e^x - e^{-x}}{2}"
+ },
+ {
+  "id": "trigonometry-015",
+  "area": "trigonometry",
+  "latex": "\\cosh^2 x - \\sinh^2 x = 1"
+ },
+ {
+  "id": "trigonometry-016",
+  "area": "trigonometry",
+  "latex": "\\arcsin x + \\arccos x = \\frac{\\pi}{2}"
+ },
+ {
+  "id": "trigonometry-017",
+  "area": "trigonometry",
+  "latex": "\\tan\\theta = \\frac{\\sin\\theta}{\\cos\\theta}"
+ },
+ {
+  "id": "trigonometry-018",
+  "area": "trigonometry",
+  "latex": "\\theta \\in \\left[0, \\frac{\\pi}{2}\\right)"
+ },
+ {
+  "id": "trigonometry-019",
+  "area": "trigonometry",
+  "latex": "180^\\circ = \\pi \\text{ rad}"
+ },
+ {
+  "id": "accents-001",
+  "area": "accents",
+  "latex": "\\hat{x}"
+ },
+ {
+  "id": "accents-002",
+  "area": "accents",
+  "latex": "\\bar{x}"
+ },
+ {
+  "id": "accents-003",
+  "area": "accents",
+  "latex": "\\tilde{x}"
+ },
+ {
+  "id": "accents-004",
+  "area": "accents",
+  "latex": "\\vec{x}"
+ },
+ {
+  "id": "accents-005",
+  "area": "accents",
+  "latex": "\\dot{x}"
+ },
+ {
+  "id": "accents-006",
+  "area": "accents",
+  "latex": "\\ddot{x}"
+ },
+ {
+  "id": "accents-007",
+  "area": "accents",
+  "latex": "\\acute{a}"
+ },
+ {
+  "id": "accents-008",
+  "area": "accents",
+  "latex": "\\grave{a}"
+ },
+ {
+  "id": "accents-009",
+  "area": "accents",
+  "latex": "\\breve{a}"
+ },
+ {
+  "id": "accents-010",
+  "area": "accents",
+  "latex": "\\check{a}"
+ },
+ {
+  "id": "accents-011",
+  "area": "accents",
+  "latex": "\\overline{AB}"
+ },
+ {
+  "id": "accents-012",
+  "area": "accents",
+  "latex": "\\underline{x+y}"
+ },
+ {
+  "id": "accents-013",
+  "area": "accents",
+  "latex": "\\widehat{ABC}"
+ },
+ {
+  "id": "accents-014",
+  "area": "accents",
+  "latex": "\\widetilde{xyz}"
+ },
+ {
+  "id": "accents-015",
+  "area": "accents",
+  "latex": "\\overrightarrow{PQ}"
+ },
+ {
+  "id": "accents-016",
+  "area": "accents",
+  "latex": "\\overleftarrow{PQ}"
+ },
+ {
+  "id": "accents-017",
+  "area": "accents",
+  "latex": "\\overbrace{a + \\cdots + a}^{n \\text{ times}}"
+ },
+ {
+  "id": "accents-018",
+  "area": "accents",
+  "latex": "\\underbrace{1 + 2 + \\cdots + n}_{n \\text{ terms}}"
+ },
+ {
+  "id": "accents-019",
+  "area": "accents",
+  "latex": "\\overset{\\text{def}}{=}"
+ },
+ {
+  "id": "accents-020",
+  "area": "accents",
+  "latex": "\\underset{x \\to 0}{\\lim}"
+ },
+ {
+  "id": "accents-021",
+  "area": "accents",
+  "latex": "\\stackrel{?}{=}"
+ },
+ {
+  "id": "accents-022",
+  "area": "accents",
+  "latex": "\\boxed{E = mc^2}"
+ },
+ {
+  "id": "accents-023",
+  "area": "accents",
+  "latex": "\\cancel{x}"
+ },
+ {
+  "id": "accents-024",
+  "area": "accents",
+  "latex": "\\mathring{A}"
+ },
+ {
+  "id": "number-theory-001",
+  "area": "number-theory",
+  "latex": "a \\equiv b \\pmod{n}"
+ },
+ {
+  "id": "number-theory-002",
+  "area": "number-theory",
+  "latex": "\\gcd(a, b) \\cdot \\operatorname{lcm}(a, b) = ab"
+ },
+ {
+  "id": "number-theory-003",
+  "area": "number-theory",
+  "latex": "a^{p-1} \\equiv 1 \\pmod{p}"
+ },
+ {
+  "id": "number-theory-004",
+  "area": "number-theory",
+  "latex": "\\varphi(n) = n \\prod_{p \\mid n}\\left(1 - \\frac{1}{p}\\right)"
+ },
+ {
+  "id": "number-theory-005",
+  "area": "number-theory",
+  "latex": "n = p_1^{a_1} p_2^{a_2} \\cdots p_k^{a_k}"
+ },
+ {
+  "id": "number-theory-006",
+  "area": "number-theory",
+  "latex": "\\pi(x) \\sim \\frac{x}{\\ln x}"
+ },
+ {
+  "id": "number-theory-007",
+  "area": "number-theory",
+  "latex": "\\sum_{d \\mid n} \\varphi(d) = n"
+ },
+ {
+  "id": "number-theory-008",
+  "area": "number-theory",
+  "latex": "a^{\\varphi(n)} \\equiv 1 \\pmod{n}"
+ },
+ {
+  "id": "number-theory-009",
+  "area": "number-theory",
+  "latex": "\\left(\\frac{a}{p}\\right) \\equiv a^{\\frac{p-1}{2}} \\pmod{p}"
+ },
+ {
+  "id": "number-theory-010",
+  "area": "number-theory",
+  "latex": "x^n + y^n \\neq z^n, \\; n > 2"
+ },
+ {
+  "id": "geometry-001",
+  "area": "geometry",
+  "latex": "A = \\pi r^2"
+ },
+ {
+  "id": "geometry-002",
+  "area": "geometry",
+  "latex": "C = 2\\pi r"
+ },
+ {
+  "id": "geometry-003",
+  "area": "geometry",
+  "latex": "V = \\frac{4}{3}\\pi r^3"
+ },
+ {
+  "id": "geometry-004",
+  "area": "geometry",
+  "latex": "S = 4\\pi r^2"
+ },
+ {
+  "id": "geometry-005",
+  "area": "geometry",
+  "latex": "a^2 + b^2 = c^2"
+ },
+ {
+  "id": "geometry-006",
+  "area": "geometry",
+  "latex": "A = \\frac{1}{2}bh"
+ },
+ {
+  "id": "geometry-007",
+  "area": "geometry",
+  "latex": "A = \\sqrt{s(s-a)(s-b)(s-c)}"
+ },
+ {
+  "id": "geometry-008",
+  "area": "geometry",
+  "latex": "d = \\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}"
+ },
+ {
+  "id": "geometry-009",
+  "area": "geometry",
+  "latex": "(x - h)^2 + (y - k)^2 = r^2"
+ },
+ {
+  "id": "geometry-010",
+  "area": "geometry",
+  "latex": "\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1"
+ },
+ {
+  "id": "geometry-011",
+  "area": "geometry",
+  "latex": "\\frac{x^2}{a^2} - \\frac{y^2}{b^2} = 1"
+ },
+ {
+  "id": "geometry-012",
+  "area": "geometry",
+  "latex": "V = \\frac{1}{3}\\pi r^2 h"
+ },
+ {
+  "id": "geometry-013",
+  "area": "geometry",
+  "latex": "\\angle ABC = 90^\\circ"
+ },
+ {
+  "id": "geometry-014",
+  "area": "geometry",
+  "latex": "\\triangle ABC \\cong \\triangle DEF"
+ },
+ {
+  "id": "geometry-015",
+  "area": "geometry",
+  "latex": "AB \\parallel CD"
+ },
+ {
+  "id": "physics-001",
+  "area": "physics",
+  "latex": "E = mc^2"
+ },
+ {
+  "id": "physics-002",
+  "area": "physics",
+  "latex": "F = G\\frac{m_1 m_2}{r^2}"
+ },
+ {
+  "id": "physics-003",
+  "area": "physics",
+  "latex": "F = k\\frac{q_1 q_2}{r^2}"
+ },
+ {
+  "id": "physics-004",
+  "area": "physics",
+  "latex": "v = v_0 + at"
+ },
+ {
+  "id": "physics-005",
+  "area": "physics",
+  "latex": "s = v_0 t + \\frac{1}{2}at^2"
+ },
+ {
+  "id": "physics-006",
+  "area": "physics",
+  "latex": "v^2 = v_0^2 + 2as"
+ },
+ {
+  "id": "physics-007",
+  "area": "physics",
+  "latex": "p = mv"
+ },
+ {
+  "id": "physics-008",
+  "area": "physics",
+  "latex": "E_k = \\frac{1}{2}mv^2"
+ },
+ {
+  "id": "physics-009",
+  "area": "physics",
+  "latex": "W = \\int \\mathbf{F} \\cdot d\\mathbf{s}"
+ },
+ {
+  "id": "physics-010",
+  "area": "physics",
+  "latex": "PV = nRT"
+ },
+ {
+  "id": "physics-011",
+  "area": "physics",
+  "latex": "\\Delta U = Q - W"
+ },
+ {
+  "id": "physics-012",
+  "area": "physics",
+  "latex": "\\lambda = \\frac{h}{p}"
+ },
+ {
+  "id": "physics-013",
+  "area": "physics",
+  "latex": "E = h\\nu"
+ },
+ {
+  "id": "physics-014",
+  "area": "physics",
+  "latex": "i\\hbar\\frac{\\partial}{\\partial t}\\Psi = \\hat{H}\\Psi"
+ },
+ {
+  "id": "physics-015",
+  "area": "physics",
+  "latex": "\\Delta x \\, \\Delta p \\geq \\frac{\\hbar}{2}"
+ },
+ {
+  "id": "physics-016",
+  "area": "physics",
+  "latex": "V = IR"
+ },
+ {
+  "id": "physics-017",
+  "area": "physics",
+  "latex": "P = IV"
+ },
+ {
+  "id": "physics-018",
+  "area": "physics",
+  "latex": "\\omega = 2\\pi f"
+ },
+ {
+  "id": "physics-019",
+  "area": "physics",
+  "latex": "T = 2\\pi\\sqrt{\\frac{L}{g}}"
+ },
+ {
+  "id": "physics-020",
+  "area": "physics",
+  "latex": "\\gamma = \\frac{1}{\\sqrt{1 - \\frac{v^2}{c^2}}}"
+ },
+ {
+  "id": "physics-021",
+  "area": "physics",
+  "latex": "S = k_B \\ln \\Omega"
+ },
+ {
+  "id": "physics-022",
+  "area": "physics",
+  "latex": "\\tau = \\mathbf{r} \\times \\mathbf{F}"
+ },
+ {
+  "id": "calculus-040",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(x^{n}\\right) = nx^{n-1}"
+ },
+ {
+  "id": "calculus-041",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(e^{x}\\right) = e^{x}"
+ },
+ {
+  "id": "calculus-042",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(\\ln x\\right) = \\frac{1}{x}"
+ },
+ {
+  "id": "calculus-043",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(\\sin x\\right) = \\cos x"
+ },
+ {
+  "id": "calculus-044",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(\\cos x\\right) = -\\sin x"
+ },
+ {
+  "id": "calculus-045",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(\\tan x\\right) = \\sec^2 x"
+ },
+ {
+  "id": "calculus-046",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(a^{x}\\right) = a^{x}\\ln a"
+ },
+ {
+  "id": "calculus-047",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(\\sqrt{x}\\right) = \\frac{1}{2\\sqrt{x}}"
+ },
+ {
+  "id": "calculus-048",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(\\arctan x\\right) = \\frac{1}{1+x^2}"
+ },
+ {
+  "id": "calculus-049",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(\\arcsin x\\right) = \\frac{1}{\\sqrt{1-x^2}}"
+ },
+ {
+  "id": "calculus-050",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(\\sinh x\\right) = \\cosh x"
+ },
+ {
+  "id": "calculus-051",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(\\cosh x\\right) = \\sinh x"
+ },
+ {
+  "id": "calculus-052",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(\\log_a x\\right) = \\frac{1}{x\\ln a}"
+ },
+ {
+  "id": "calculus-053",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(\\frac{1}{x}\\right) = -\\frac{1}{x^2}"
+ },
+ {
+  "id": "calculus-054",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(\\sec x\\right) = \\sec x \\tan x"
+ },
+ {
+  "id": "calculus-055",
+  "area": "calculus",
+  "latex": "\\frac{d}{dx}\\left(\\cot x\\right) = -\\csc^2 x"
+ },
+ {
+  "id": "calculus-056",
+  "area": "calculus",
+  "latex": "\\int x^{n} \\, dx = \\frac{x^{n+1}}{n+1} + C"
+ },
+ {
+  "id": "calculus-057",
+  "area": "calculus",
+  "latex": "\\int e^{x} \\, dx = e^{x} + C"
+ },
+ {
+  "id": "calculus-058",
+  "area": "calculus",
+  "latex": "\\int \\frac{1}{x} \\, dx = \\ln|x| + C"
+ },
+ {
+  "id": "calculus-059",
+  "area": "calculus",
+  "latex": "\\int \\cos x \\, dx = \\sin x + C"
+ },
+ {
+  "id": "calculus-060",
+  "area": "calculus",
+  "latex": "\\int \\sin x \\, dx = -\\cos x + C"
+ },
+ {
+  "id": "calculus-061",
+  "area": "calculus",
+  "latex": "\\int a^{x} \\, dx = \\frac{a^{x}}{\\ln a} + C"
+ },
+ {
+  "id": "calculus-062",
+  "area": "calculus",
+  "latex": "\\int \\sec x \\tan x \\, dx = \\sec x + C"
+ },
+ {
+  "id": "calculus-063",
+  "area": "calculus",
+  "latex": "\\int \\frac{1}{a^2+x^2} \\, dx = \\frac{1}{a}\\arctan\\frac{x}{a} + C"
+ },
+ {
+  "id": "calculus-064",
+  "area": "calculus",
+  "latex": "\\int \\ln x \\, dx = x\\ln x - x + C"
+ },
+ {
+  "id": "calculus-065",
+  "area": "calculus",
+  "latex": "\\int x e^{x} \\, dx = (x-1)e^{x} + C"
+ },
+ {
+  "id": "matrices-021",
+  "area": "matrices",
+  "latex": "I_{2} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}"
+ },
+ {
+  "id": "matrices-022",
+  "area": "matrices",
+  "latex": "\\begin{bmatrix} a_{11} & a_{12} \\\\ a_{21} & a_{22} \\end{bmatrix}"
+ },
+ {
+  "id": "matrices-023",
+  "area": "matrices",
+  "latex": "I_{3} = \\begin{pmatrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{pmatrix}"
+ },
+ {
+  "id": "matrices-024",
+  "area": "matrices",
+  "latex": "\\begin{bmatrix} a_{11} & a_{12} & a_{13} \\\\ a_{21} & a_{22} & a_{23} \\\\ a_{31} & a_{32} & a_{33} \\end{bmatrix}"
+ },
+ {
+  "id": "matrices-025",
+  "area": "matrices",
+  "latex": "I_{4} = \\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 0 & 0 & 1 \\end{pmatrix}"
+ },
+ {
+  "id": "matrices-026",
+  "area": "matrices",
+  "latex": "\\begin{bmatrix} a_{11} & a_{12} & a_{13} & a_{14} \\\\ a_{21} & a_{22} & a_{23} & a_{24} \\\\ a_{31} & a_{32} & a_{33} & a_{34} \\\\ a_{41} & a_{42} & a_{43} & a_{44} \\end{bmatrix}"
+ },
+ {
+  "id": "matrices-027",
+  "area": "matrices",
+  "latex": "I_{5} = \\begin{pmatrix} 1 & 0 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 & 0 \\\\ 0 & 0 & 1 & 0 & 0 \\\\ 0 & 0 & 0 & 1 & 0 \\\\ 0 & 0 & 0 & 0 & 1 \\end{pmatrix}"
+ },
+ {
+  "id": "matrices-028",
+  "area": "matrices",
+  "latex": "\\begin{bmatrix} a_{11} & a_{12} & a_{13} & a_{14} & a_{15} \\\\ a_{21} & a_{22} & a_{23} & a_{24} & a_{25} \\\\ a_{31} & a_{32} & a_{33} & a_{34} & a_{35} \\\\ a_{41} & a_{42} & a_{43} & a_{44} & a_{45} \\\\ a_{51} & a_{52} & a_{53} & a_{54} & a_{55} \\end{bmatrix}"
+ },
+ {
+  "id": "matrices-029",
+  "area": "matrices",
+  "latex": "I_{6} = \\begin{pmatrix} 1 & 0 & 0 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 & 0 & 0 \\\\ 0 & 0 & 1 & 0 & 0 & 0 \\\\ 0 & 0 & 0 & 1 & 0 & 0 \\\\ 0 & 0 & 0 & 0 & 1 & 0 \\\\ 0 & 0 & 0 & 0 & 0 & 1 \\end{pmatrix}"
+ },
+ {
+  "id": "matrices-030",
+  "area": "matrices",
+  "latex": "\\begin{bmatrix} a_{11} & a_{12} & a_{13} & a_{14} & a_{15} & a_{16} \\\\ a_{21} & a_{22} & a_{23} & a_{24} & a_{25} & a_{26} \\\\ a_{31} & a_{32} & a_{33} & a_{34} & a_{35} & a_{36} \\\\ a_{41} & a_{42} & a_{43} & a_{44} & a_{45} & a_{46} \\\\ a_{51} & a_{52} & a_{53} & a_{54} & a_{55} & a_{56} \\\\ a_{61} & a_{62} & a_{63} & a_{64} & a_{65} & a_{66} \\end{bmatrix}"
+ },
+ {
+  "id": "trigonometry-020",
+  "area": "trigonometry",
+  "latex": "\\sin 30^\\circ = \\frac{1}{2}"
+ },
+ {
+  "id": "trigonometry-021",
+  "area": "trigonometry",
+  "latex": "\\sin 45^\\circ = \\frac{\\sqrt{2}}{2}"
+ },
+ {
+  "id": "trigonometry-022",
+  "area": "trigonometry",
+  "latex": "\\sin 60^\\circ = \\frac{\\sqrt{3}}{2}"
+ },
+ {
+  "id": "trigonometry-023",
+  "area": "trigonometry",
+  "latex": "\\sin 90^\\circ = 1"
+ },
+ {
+  "id": "trigonometry-024",
+  "area": "trigonometry",
+  "latex": "\\sin 0^\\circ = 0"
+ },
+ {
+  "id": "trigonometry-025",
+  "area": "trigonometry",
+  "latex": "\\sin 180^\\circ = 0"
+ },
+ {
+  "id": "trigonometry-026",
+  "area": "trigonometry",
+  "latex": "\\sin 270^\\circ = -1"
+ },
+ {
+  "id": "trigonometry-027",
+  "area": "trigonometry",
+  "latex": "\\sin 120^\\circ = \\frac{\\sqrt{3}}{2}"
+ },
+ {
+  "id": "trigonometry-028",
+  "area": "trigonometry",
+  "latex": "\\cos 30^\\circ = \\frac{\\sqrt{3}}{2}"
+ },
+ {
+  "id": "trigonometry-029",
+  "area": "trigonometry",
+  "latex": "\\cos 45^\\circ = \\frac{\\sqrt{2}}{2}"
+ },
+ {
+  "id": "trigonometry-030",
+  "area": "trigonometry",
+  "latex": "\\cos 60^\\circ = \\frac{1}{2}"
+ },
+ {
+  "id": "trigonometry-031",
+  "area": "trigonometry",
+  "latex": "\\cos 90^\\circ = 0"
+ },
+ {
+  "id": "trigonometry-032",
+  "area": "trigonometry",
+  "latex": "\\cos 0^\\circ = 1"
+ },
+ {
+  "id": "trigonometry-033",
+  "area": "trigonometry",
+  "latex": "\\cos 180^\\circ = -1"
+ },
+ {
+  "id": "trigonometry-034",
+  "area": "trigonometry",
+  "latex": "\\tan \\frac{\\pi}{6} = \\frac{\\sqrt{3}}{3}"
+ },
+ {
+  "id": "trigonometry-035",
+  "area": "trigonometry",
+  "latex": "\\tan \\frac{\\pi}{4} = 1"
+ },
+ {
+  "id": "trigonometry-036",
+  "area": "trigonometry",
+  "latex": "\\tan \\frac{\\pi}{3} = \\sqrt{3}"
+ },
+ {
+  "id": "trigonometry-037",
+  "area": "trigonometry",
+  "latex": "\\tan 0 = 0"
+ },
+ {
+  "id": "algebra-047",
+  "area": "algebra",
+  "latex": "\\sqrt[2]{x^{2}} = |x|"
+ },
+ {
+  "id": "algebra-048",
+  "area": "algebra",
+  "latex": "(x+1)^{2} = \\sum_{k=0}^{2} \\binom{2}{k} x^k"
+ },
+ {
+  "id": "algebra-049",
+  "area": "algebra",
+  "latex": "\\sqrt[3]{x^{3}} = x"
+ },
+ {
+  "id": "algebra-050",
+  "area": "algebra",
+  "latex": "(x+1)^{3} = \\sum_{k=0}^{3} \\binom{3}{k} x^k"
+ },
+ {
+  "id": "algebra-051",
+  "area": "algebra",
+  "latex": "\\sqrt[4]{x^{4}} = |x|"
+ },
+ {
+  "id": "algebra-052",
+  "area": "algebra",
+  "latex": "(x+1)^{4} = \\sum_{k=0}^{4} \\binom{4}{k} x^k"
+ },
+ {
+  "id": "algebra-053",
+  "area": "algebra",
+  "latex": "\\sqrt[5]{x^{5}} = x"
+ },
+ {
+  "id": "algebra-054",
+  "area": "algebra",
+  "latex": "(x+1)^{5} = \\sum_{k=0}^{5} \\binom{5}{k} x^k"
+ },
+ {
+  "id": "algebra-055",
+  "area": "algebra",
+  "latex": "\\sqrt[6]{x^{6}} = |x|"
+ },
+ {
+  "id": "algebra-056",
+  "area": "algebra",
+  "latex": "(x+1)^{6} = \\sum_{k=0}^{6} \\binom{6}{k} x^k"
+ },
+ {
+  "id": "algebra-057",
+  "area": "algebra",
+  "latex": "\\sqrt[7]{x^{7}} = x"
+ },
+ {
+  "id": "algebra-058",
+  "area": "algebra",
+  "latex": "(x+1)^{7} = \\sum_{k=0}^{7} \\binom{7}{k} x^k"
+ },
+ {
+  "id": "algebra-059",
+  "area": "algebra",
+  "latex": "\\sqrt[8]{x^{8}} = |x|"
+ },
+ {
+  "id": "algebra-060",
+  "area": "algebra",
+  "latex": "(x+1)^{8} = \\sum_{k=0}^{8} \\binom{8}{k} x^k"
+ },
+ {
+  "id": "algebra-061",
+  "area": "algebra",
+  "latex": "\\sqrt[9]{x^{9}} = x"
+ },
+ {
+  "id": "algebra-062",
+  "area": "algebra",
+  "latex": "(x+1)^{9} = \\sum_{k=0}^{9} \\binom{9}{k} x^k"
+ },
+ {
+  "id": "algebra-063",
+  "area": "algebra",
+  "latex": "\\sqrt[10]{x^{10}} = |x|"
+ },
+ {
+  "id": "algebra-064",
+  "area": "algebra",
+  "latex": "(x+1)^{10} = \\sum_{k=0}^{10} \\binom{10}{k} x^k"
+ },
+ {
+  "id": "statistics-020",
+  "area": "statistics",
+  "latex": "P(X \\leq 1) = \\sum_{k=0}^{1} \\frac{\\lambda^k e^{-\\lambda}}{k!}"
+ },
+ {
+  "id": "statistics-021",
+  "area": "statistics",
+  "latex": "P(X \\leq 2) = \\sum_{k=0}^{2} \\frac{\\lambda^k e^{-\\lambda}}{k!}"
+ },
+ {
+  "id": "statistics-022",
+  "area": "statistics",
+  "latex": "P(X \\leq 3) = \\sum_{k=0}^{3} \\frac{\\lambda^k e^{-\\lambda}}{k!}"
+ },
+ {
+  "id": "statistics-023",
+  "area": "statistics",
+  "latex": "P(X \\leq 4) = \\sum_{k=0}^{4} \\frac{\\lambda^k e^{-\\lambda}}{k!}"
+ },
+ {
+  "id": "statistics-024",
+  "area": "statistics",
+  "latex": "P(X \\leq 5) = \\sum_{k=0}^{5} \\frac{\\lambda^k e^{-\\lambda}}{k!}"
+ },
+ {
+  "id": "statistics-025",
+  "area": "statistics",
+  "latex": "P(X \\leq 6) = \\sum_{k=0}^{6} \\frac{\\lambda^k e^{-\\lambda}}{k!}"
+ },
+ {
+  "id": "statistics-026",
+  "area": "statistics",
+  "latex": "P(X \\leq 7) = \\sum_{k=0}^{7} \\frac{\\lambda^k e^{-\\lambda}}{k!}"
+ },
+ {
+  "id": "statistics-027",
+  "area": "statistics",
+  "latex": "P(X \\leq 8) = \\sum_{k=0}^{8} \\frac{\\lambda^k e^{-\\lambda}}{k!}"
+ },
+ {
+  "id": "statistics-028",
+  "area": "statistics",
+  "latex": "P(X \\leq 9) = \\sum_{k=0}^{9} \\frac{\\lambda^k e^{-\\lambda}}{k!}"
+ },
+ {
+  "id": "statistics-029",
+  "area": "statistics",
+  "latex": "P(X \\leq 10) = \\sum_{k=0}^{10} \\frac{\\lambda^k e^{-\\lambda}}{k!}"
+ },
+ {
+  "id": "statistics-030",
+  "area": "statistics",
+  "latex": "P(X \\leq 11) = \\sum_{k=0}^{11} \\frac{\\lambda^k e^{-\\lambda}}{k!}"
+ },
+ {
+  "id": "statistics-031",
+  "area": "statistics",
+  "latex": "P(X \\leq 12) = \\sum_{k=0}^{12} \\frac{\\lambda^k e^{-\\lambda}}{k!}"
+ },
+ {
+  "id": "symbols-001",
+  "area": "symbols",
+  "latex": "\\alpha_{i}^{2} + \\alpha"
+ },
+ {
+  "id": "symbols-002",
+  "area": "symbols",
+  "latex": "\\beta_{i}^{2} + \\beta"
+ },
+ {
+  "id": "symbols-003",
+  "area": "symbols",
+  "latex": "\\gamma_{i}^{2} + \\gamma"
+ },
+ {
+  "id": "symbols-004",
+  "area": "symbols",
+  "latex": "\\delta_{i}^{2} + \\delta"
+ },
+ {
+  "id": "symbols-005",
+  "area": "symbols",
+  "latex": "\\epsilon_{i}^{2} + \\epsilon"
+ },
+ {
+  "id": "symbols-006",
+  "area": "symbols",
+  "latex": "\\zeta_{i}^{2} + \\zeta"
+ },
+ {
+  "id": "symbols-007",
+  "area": "symbols",
+  "latex": "\\eta_{i}^{2} + \\eta"
+ },
+ {
+  "id": "symbols-008",
+  "area": "symbols",
+  "latex": "\\theta_{i}^{2} + \\theta"
+ },
+ {
+  "id": "symbols-009",
+  "area": "symbols",
+  "latex": "\\iota_{i}^{2} + \\iota"
+ },
+ {
+  "id": "symbols-010",
+  "area": "symbols",
+  "latex": "\\kappa_{i}^{2} + \\kappa"
+ },
+ {
+  "id": "symbols-011",
+  "area": "symbols",
+  "latex": "\\lambda_{i}^{2} + \\lambda"
+ },
+ {
+  "id": "symbols-012",
+  "area": "symbols",
+  "latex": "\\mu_{i}^{2} + \\mu"
+ },
+ {
+  "id": "symbols-013",
+  "area": "symbols",
+  "latex": "\\nu_{i}^{2} + \\nu"
+ },
+ {
+  "id": "symbols-014",
+  "area": "symbols",
+  "latex": "\\xi_{i}^{2} + \\xi"
+ },
+ {
+  "id": "symbols-015",
+  "area": "symbols",
+  "latex": "\\pi_{i}^{2} + \\pi"
+ },
+ {
+  "id": "symbols-016",
+  "area": "symbols",
+  "latex": "\\rho_{i}^{2} + \\rho"
+ },
+ {
+  "id": "symbols-017",
+  "area": "symbols",
+  "latex": "\\sigma_{i}^{2} + \\sigma"
+ },
+ {
+  "id": "symbols-018",
+  "area": "symbols",
+  "latex": "\\tau_{i}^{2} + \\tau"
+ },
+ {
+  "id": "symbols-019",
+  "area": "symbols",
+  "latex": "\\upsilon_{i}^{2} + \\upsilon"
+ },
+ {
+  "id": "symbols-020",
+  "area": "symbols",
+  "latex": "\\phi_{i}^{2} + \\phi"
+ },
+ {
+  "id": "symbols-021",
+  "area": "symbols",
+  "latex": "\\chi_{i}^{2} + \\chi"
+ },
+ {
+  "id": "symbols-022",
+  "area": "symbols",
+  "latex": "\\psi_{i}^{2} + \\psi"
+ },
+ {
+  "id": "symbols-023",
+  "area": "symbols",
+  "latex": "\\omega_{i}^{2} + \\omega"
+ },
+ {
+  "id": "symbols-024",
+  "area": "symbols",
+  "latex": "\\Gamma_{i}^{2} + \\Gamma"
+ },
+ {
+  "id": "symbols-025",
+  "area": "symbols",
+  "latex": "\\Delta_{i}^{2} + \\Delta"
+ },
+ {
+  "id": "symbols-026",
+  "area": "symbols",
+  "latex": "\\Theta_{i}^{2} + \\Theta"
+ },
+ {
+  "id": "symbols-027",
+  "area": "symbols",
+  "latex": "\\Lambda_{i}^{2} + \\Lambda"
+ },
+ {
+  "id": "symbols-028",
+  "area": "symbols",
+  "latex": "\\Xi_{i}^{2} + \\Xi"
+ },
+ {
+  "id": "symbols-029",
+  "area": "symbols",
+  "latex": "\\Pi_{i}^{2} + \\Pi"
+ },
+ {
+  "id": "symbols-030",
+  "area": "symbols",
+  "latex": "\\Sigma_{i}^{2} + \\Sigma"
+ },
+ {
+  "id": "symbols-031",
+  "area": "symbols",
+  "latex": "\\Upsilon_{i}^{2} + \\Upsilon"
+ },
+ {
+  "id": "symbols-032",
+  "area": "symbols",
+  "latex": "\\Phi_{i}^{2} + \\Phi"
+ },
+ {
+  "id": "symbols-033",
+  "area": "symbols",
+  "latex": "\\Psi_{i}^{2} + \\Psi"
+ },
+ {
+  "id": "symbols-034",
+  "area": "symbols",
+  "latex": "\\Omega_{i}^{2} + \\Omega"
+ },
+ {
+  "id": "symbols-035",
+  "area": "symbols",
+  "latex": "\\varepsilon_{i}^{2} + \\varepsilon"
+ },
+ {
+  "id": "symbols-036",
+  "area": "symbols",
+  "latex": "\\vartheta_{i}^{2} + \\vartheta"
+ },
+ {
+  "id": "symbols-037",
+  "area": "symbols",
+  "latex": "\\varphi_{i}^{2} + \\varphi"
+ },
+ {
+  "id": "symbols-038",
+  "area": "symbols",
+  "latex": "\\varrho_{i}^{2} + \\varrho"
+ },
+ {
+  "id": "symbols-039",
+  "area": "symbols",
+  "latex": "\\varsigma_{i}^{2} + \\varsigma"
+ },
+ {
+  "id": "accents-025",
+  "area": "accents",
+  "latex": "\\hat{a} = \\hat{a}_0 + t"
+ },
+ {
+  "id": "accents-026",
+  "area": "accents",
+  "latex": "\\hat{b} = \\hat{b}_0 + t"
+ },
+ {
+  "id": "accents-027",
+  "area": "accents",
+  "latex": "\\hat{\\theta} = \\hat{\\theta}_0 + t"
+ },
+ {
+  "id": "accents-028",
+  "area": "accents",
+  "latex": "\\hat{\\omega} = \\hat{\\omega}_0 + t"
+ },
+ {
+  "id": "accents-029",
+  "area": "accents",
+  "latex": "\\bar{a} = \\bar{a}_0 + t"
+ },
+ {
+  "id": "accents-030",
+  "area": "accents",
+  "latex": "\\bar{b} = \\bar{b}_0 + t"
+ },
+ {
+  "id": "accents-031",
+  "area": "accents",
+  "latex": "\\bar{\\theta} = \\bar{\\theta}_0 + t"
+ },
+ {
+  "id": "accents-032",
+  "area": "accents",
+  "latex": "\\bar{\\omega} = \\bar{\\omega}_0 + t"
+ },
+ {
+  "id": "accents-033",
+  "area": "accents",
+  "latex": "\\vec{a} = \\vec{a}_0 + t"
+ },
+ {
+  "id": "accents-034",
+  "area": "accents",
+  "latex": "\\vec{b} = \\vec{b}_0 + t"
+ },
+ {
+  "id": "accents-035",
+  "area": "accents",
+  "latex": "\\vec{\\theta} = \\vec{\\theta}_0 + t"
+ },
+ {
+  "id": "accents-036",
+  "area": "accents",
+  "latex": "\\vec{\\omega} = \\vec{\\omega}_0 + t"
+ },
+ {
+  "id": "accents-037",
+  "area": "accents",
+  "latex": "\\tilde{a} = \\tilde{a}_0 + t"
+ },
+ {
+  "id": "accents-038",
+  "area": "accents",
+  "latex": "\\tilde{b} = \\tilde{b}_0 + t"
+ },
+ {
+  "id": "accents-039",
+  "area": "accents",
+  "latex": "\\tilde{\\theta} = \\tilde{\\theta}_0 + t"
+ },
+ {
+  "id": "accents-040",
+  "area": "accents",
+  "latex": "\\tilde{\\omega} = \\tilde{\\omega}_0 + t"
+ },
+ {
+  "id": "accents-041",
+  "area": "accents",
+  "latex": "\\dot{a} = \\dot{a}_0 + t"
+ },
+ {
+  "id": "accents-042",
+  "area": "accents",
+  "latex": "\\dot{b} = \\dot{b}_0 + t"
+ },
+ {
+  "id": "accents-043",
+  "area": "accents",
+  "latex": "\\dot{\\theta} = \\dot{\\theta}_0 + t"
+ },
+ {
+  "id": "accents-044",
+  "area": "accents",
+  "latex": "\\dot{\\omega} = \\dot{\\omega}_0 + t"
+ },
+ {
+  "id": "accents-045",
+  "area": "accents",
+  "latex": "\\ddot{a} = \\ddot{a}_0 + t"
+ },
+ {
+  "id": "accents-046",
+  "area": "accents",
+  "latex": "\\ddot{b} = \\ddot{b}_0 + t"
+ },
+ {
+  "id": "accents-047",
+  "area": "accents",
+  "latex": "\\ddot{\\theta} = \\ddot{\\theta}_0 + t"
+ },
+ {
+  "id": "accents-048",
+  "area": "accents",
+  "latex": "\\ddot{\\omega} = \\ddot{\\omega}_0 + t"
+ },
+ {
+  "id": "symbols-040",
+  "area": "symbols",
+  "latex": "a \\leq b"
+ },
+ {
+  "id": "symbols-041",
+  "area": "symbols",
+  "latex": "a \\geq b"
+ },
+ {
+  "id": "symbols-042",
+  "area": "symbols",
+  "latex": "a \\neq b"
+ },
+ {
+  "id": "symbols-043",
+  "area": "symbols",
+  "latex": "a \\approx b"
+ },
+ {
+  "id": "symbols-044",
+  "area": "symbols",
+  "latex": "a \\equiv b"
+ },
+ {
+  "id": "symbols-045",
+  "area": "symbols",
+  "latex": "a \\sim b"
+ },
+ {
+  "id": "symbols-046",
+  "area": "symbols",
+  "latex": "a \\simeq b"
+ },
+ {
+  "id": "symbols-047",
+  "area": "symbols",
+  "latex": "a \\cong b"
+ },
+ {
+  "id": "symbols-048",
+  "area": "symbols",
+  "latex": "a \\propto b"
+ },
+ {
+  "id": "symbols-049",
+  "area": "symbols",
+  "latex": "a \\ll b"
+ },
+ {
+  "id": "symbols-050",
+  "area": "symbols",
+  "latex": "a \\gg b"
+ },
+ {
+  "id": "symbols-051",
+  "area": "symbols",
+  "latex": "a \\prec b"
+ },
+ {
+  "id": "symbols-052",
+  "area": "symbols",
+  "latex": "a \\succ b"
+ },
+ {
+  "id": "symbols-053",
+  "area": "symbols",
+  "latex": "a \\subset b"
+ },
+ {
+  "id": "symbols-054",
+  "area": "symbols",
+  "latex": "a \\supset b"
+ },
+ {
+  "id": "symbols-055",
+  "area": "symbols",
+  "latex": "a \\in b"
+ },
+ {
+  "id": "symbols-056",
+  "area": "symbols",
+  "latex": "a \\ni b"
+ },
+ {
+  "id": "symbols-057",
+  "area": "symbols",
+  "latex": "a \\mid b"
+ },
+ {
+  "id": "symbols-058",
+  "area": "symbols",
+  "latex": "a \\parallel b"
+ },
+ {
+  "id": "symbols-059",
+  "area": "symbols",
+  "latex": "a \\perp b"
+ },
+ {
+  "id": "calculus-066",
+  "area": "calculus",
+  "latex": "\\int_0^{1} x^{1} \\, dx = \\frac{1^{2}}{2}"
+ },
+ {
+  "id": "calculus-067",
+  "area": "calculus",
+  "latex": "\\lim_{x \\to 1} \\frac{x^2 - 1}{x - 1} = 2"
+ },
+ {
+  "id": "number-theory-011",
+  "area": "number-theory",
+  "latex": "1^{\\varphi(n)} \\equiv 1 \\pmod{n}, \\; \\gcd(1, n) = 1"
+ },
+ {
+  "id": "calculus-068",
+  "area": "calculus",
+  "latex": "\\int_0^{2} x^{2} \\, dx = \\frac{2^{3}}{3}"
+ },
+ {
+  "id": "calculus-069",
+  "area": "calculus",
+  "latex": "\\lim_{x \\to 2} \\frac{x^2 - 4}{x - 2} = 4"
+ },
+ {
+  "id": "number-theory-012",
+  "area": "number-theory",
+  "latex": "2^{\\varphi(n)} \\equiv 1 \\pmod{n}, \\; \\gcd(2, n) = 1"
+ },
+ {
+  "id": "calculus-070",
+  "area": "calculus",
+  "latex": "\\int_0^{3} x^{3} \\, dx = \\frac{3^{4}}{4}"
+ },
+ {
+  "id": "calculus-071",
+  "area": "calculus",
+  "latex": "\\lim_{x \\to 3} \\frac{x^2 - 9}{x - 3} = 6"
+ },
+ {
+  "id": "number-theory-013",
+  "area": "number-theory",
+  "latex": "3^{\\varphi(n)} \\equiv 1 \\pmod{n}, \\; \\gcd(3, n) = 1"
+ },
+ {
+  "id": "calculus-072",
+  "area": "calculus",
+  "latex": "\\int_0^{4} x^{4} \\, dx = \\frac{4^{5}}{5}"
+ },
+ {
+  "id": "calculus-073",
+  "area": "calculus",
+  "latex": "\\lim_{x \\to 4} \\frac{x^2 - 16}{x - 4} = 8"
+ },
+ {
+  "id": "number-theory-014",
+  "area": "number-theory",
+  "latex": "4^{\\varphi(n)} \\equiv 1 \\pmod{n}, \\; \\gcd(4, n) = 1"
+ },
+ {
+  "id": "calculus-074",
+  "area": "calculus",
+  "latex": "\\int_0^{5} x^{5} \\, dx = \\frac{5^{6}}{6}"
+ },
+ {
+  "id": "calculus-075",
+  "area": "calculus",
+  "latex": "\\lim_{x \\to 5} \\frac{x^2 - 25}{x - 5} = 10"
+ },
+ {
+  "id": "number-theory-015",
+  "area": "number-theory",
+  "latex": "5^{\\varphi(n)} \\equiv 1 \\pmod{n}, \\; \\gcd(5, n) = 1"
+ },
+ {
+  "id": "calculus-076",
+  "area": "calculus",
+  "latex": "\\int_0^{6} x^{6} \\, dx = \\frac{6^{7}}{7}"
+ },
+ {
+  "id": "calculus-077",
+  "area": "calculus",
+  "latex": "\\lim_{x \\to 6} \\frac{x^2 - 36}{x - 6} = 12"
+ },
+ {
+  "id": "number-theory-016",
+  "area": "number-theory",
+  "latex": "6^{\\varphi(n)} \\equiv 1 \\pmod{n}, \\; \\gcd(6, n) = 1"
+ },
+ {
+  "id": "calculus-078",
+  "area": "calculus",
+  "latex": "\\int_0^{7} x^{7} \\, dx = \\frac{7^{8}}{8}"
+ },
+ {
+  "id": "calculus-079",
+  "area": "calculus",
+  "latex": "\\lim_{x \\to 7} \\frac{x^2 - 49}{x - 7} = 14"
+ },
+ {
+  "id": "number-theory-017",
+  "area": "number-theory",
+  "latex": "7^{\\varphi(n)} \\equiv 1 \\pmod{n}, \\; \\gcd(7, n) = 1"
+ },
+ {
+  "id": "calculus-080",
+  "area": "calculus",
+  "latex": "\\int_0^{8} x^{8} \\, dx = \\frac{8^{9}}{9}"
+ },
+ {
+  "id": "calculus-081",
+  "area": "calculus",
+  "latex": "\\lim_{x \\to 8} \\frac{x^2 - 64}{x - 8} = 16"
+ },
+ {
+  "id": "number-theory-018",
+  "area": "number-theory",
+  "latex": "8^{\\varphi(n)} \\equiv 1 \\pmod{n}, \\; \\gcd(8, n) = 1"
+ },
+ {
+  "id": "fonts-001",
+  "area": "fonts",
+  "latex": "\\mathbb{ABC} + \\mathbb{x}"
+ },
+ {
+  "id": "fonts-002",
+  "area": "fonts",
+  "latex": "\\mathcal{ABC} + \\mathcal{x}"
+ },
+ {
+  "id": "fonts-003",
+  "area": "fonts",
+  "latex": "\\mathfrak{ABC} + \\mathfrak{x}"
+ },
+ {
+  "id": "fonts-004",
+  "area": "fonts",
+  "latex": "\\mathbf{ABC} + \\mathbf{x}"
+ },
+ {
+  "id": "fonts-005",
+  "area": "fonts",
+  "latex": "\\mathrm{ABC} + \\mathrm{x}"
+ },
+ {
+  "id": "fonts-006",
+  "area": "fonts",
+  "latex": "\\mathsf{ABC} + \\mathsf{x}"
+ },
+ {
+  "id": "fonts-007",
+  "area": "fonts",
+  "latex": "\\mathtt{ABC} + \\mathtt{x}"
+ },
+ {
+  "id": "fonts-008",
+  "area": "fonts",
+  "latex": "\\mathit{ABC} + \\mathit{x}"
+ },
+ {
+  "id": "fonts-009",
+  "area": "fonts",
+  "latex": "\\boldsymbol{ABC} + \\boldsymbol{x}"
+ },
+ {
+  "id": "matrices-031",
+  "area": "matrices",
+  "latex": "\\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix}"
+ },
+ {
+  "id": "matrices-032",
+  "area": "matrices",
+  "latex": "\\begin{pmatrix} x \\\\ y \\\\ z \\end{pmatrix}"
+ },
+ {
+  "id": "matrices-033",
+  "area": "matrices",
+  "latex": "\\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix}"
+ },
+ {
+  "id": "matrices-034",
+  "area": "matrices",
+  "latex": "\\begin{bmatrix} x \\\\ y \\\\ z \\end{bmatrix}"
+ },
+ {
+  "id": "matrices-035",
+  "area": "matrices",
+  "latex": "\\begin{Bmatrix} 1 & 2 \\\\ 3 & 4 \\end{Bmatrix}"
+ },
+ {
+  "id": "matrices-036",
+  "area": "matrices",
+  "latex": "\\begin{Bmatrix} x \\\\ y \\\\ z \\end{Bmatrix}"
+ },
+ {
+  "id": "matrices-037",
+  "area": "matrices",
+  "latex": "\\begin{vmatrix} 1 & 2 \\\\ 3 & 4 \\end{vmatrix}"
+ },
+ {
+  "id": "matrices-038",
+  "area": "matrices",
+  "latex": "\\begin{vmatrix} x \\\\ y \\\\ z \\end{vmatrix}"
+ },
+ {
+  "id": "matrices-039",
+  "area": "matrices",
+  "latex": "\\begin{Vmatrix} 1 & 2 \\\\ 3 & 4 \\end{Vmatrix}"
+ },
+ {
+  "id": "matrices-040",
+  "area": "matrices",
+  "latex": "\\begin{Vmatrix} x \\\\ y \\\\ z \\end{Vmatrix}"
+ },
+ {
+  "id": "matrices-041",
+  "area": "matrices",
+  "latex": "\\begin{matrix} 1 & 2 \\\\ 3 & 4 \\end{matrix}"
+ },
+ {
+  "id": "matrices-042",
+  "area": "matrices",
+  "latex": "\\begin{matrix} x \\\\ y \\\\ z \\end{matrix}"
+ },
+ {
+  "id": "delimiters-001",
+  "area": "delimiters",
+  "latex": "\\left( \\frac{a}{b} \\right)"
+ },
+ {
+  "id": "delimiters-002",
+  "area": "delimiters",
+  "latex": "\\bigl( x \\bigr) \\Bigl( x \\Bigr)"
+ },
+ {
+  "id": "delimiters-003",
+  "area": "delimiters",
+  "latex": "\\left[ \\frac{a}{b} \\right]"
+ },
+ {
+  "id": "delimiters-004",
+  "area": "delimiters",
+  "latex": "\\bigl[ x \\bigr] \\Bigl[ x \\Bigr]"
+ },
+ {
+  "id": "delimiters-005",
+  "area": "delimiters",
+  "latex": "\\left\\{ \\frac{a}{b} \\right\\}"
+ },
+ {
+  "id": "delimiters-006",
+  "area": "delimiters",
+  "latex": "\\bigl\\{ x \\bigr\\} \\Bigl\\{ x \\Bigr\\}"
+ },
+ {
+  "id": "delimiters-007",
+  "area": "delimiters",
+  "latex": "\\left\\langle \\frac{a}{b} \\right\\rangle"
+ },
+ {
+  "id": "delimiters-008",
+  "area": "delimiters",
+  "latex": "\\bigl\\langle x \\bigr\\rangle \\Bigl\\langle x \\Bigr\\rangle"
+ },
+ {
+  "id": "delimiters-009",
+  "area": "delimiters",
+  "latex": "\\left| \\frac{a}{b} \\right|"
+ },
+ {
+  "id": "delimiters-010",
+  "area": "delimiters",
+  "latex": "\\bigl| x \\bigr| \\Bigl| x \\Bigr|"
+ },
+ {
+  "id": "delimiters-011",
+  "area": "delimiters",
+  "latex": "\\left\\| \\frac{a}{b} \\right\\|"
+ },
+ {
+  "id": "delimiters-012",
+  "area": "delimiters",
+  "latex": "\\bigl\\| x \\bigr\\| \\Bigl\\| x \\Bigr\\|"
+ },
+ {
+  "id": "delimiters-013",
+  "area": "delimiters",
+  "latex": "\\left\\lfloor \\frac{a}{b} \\right\\rfloor"
+ },
+ {
+  "id": "delimiters-014",
+  "area": "delimiters",
+  "latex": "\\bigl\\lfloor x \\bigr\\rfloor \\Bigl\\lfloor x \\Bigr\\rfloor"
+ },
+ {
+  "id": "delimiters-015",
+  "area": "delimiters",
+  "latex": "\\left\\lceil \\frac{a}{b} \\right\\rceil"
+ },
+ {
+  "id": "delimiters-016",
+  "area": "delimiters",
+  "latex": "\\bigl\\lceil x \\bigr\\rceil \\Bigl\\lceil x \\Bigr\\rceil"
+ },
+ {
+  "id": "statistics-032",
+  "area": "statistics",
+  "latex": "\\mu_{1} = E\\left[(X - \\mu)^{1}\\right]"
+ },
+ {
+  "id": "statistics-033",
+  "area": "statistics",
+  "latex": "\\mu_{2} = E\\left[(X - \\mu)^{2}\\right]"
+ },
+ {
+  "id": "statistics-034",
+  "area": "statistics",
+  "latex": "\\mu_{3} = E\\left[(X - \\mu)^{3}\\right]"
+ },
+ {
+  "id": "statistics-035",
+  "area": "statistics",
+  "latex": "\\mu_{4} = E\\left[(X - \\mu)^{4}\\right]"
+ },
+ {
+  "id": "statistics-036",
+  "area": "statistics",
+  "latex": "\\mu_{5} = E\\left[(X - \\mu)^{5}\\right]"
+ },
+ {
+  "id": "statistics-037",
+  "area": "statistics",
+  "latex": "\\mu_{6} = E\\left[(X - \\mu)^{6}\\right]"
+ },
+ {
+  "id": "statistics-038",
+  "area": "statistics",
+  "latex": "\\mu_{7} = E\\left[(X - \\mu)^{7}\\right]"
+ },
+ {
+  "id": "statistics-039",
+  "area": "statistics",
+  "latex": "\\mu_{8} = E\\left[(X - \\mu)^{8}\\right]"
+ },
+ {
+  "id": "sets-logic-019",
+  "area": "sets-logic",
+  "latex": "A_{2} = \\{ x \\in \\mathbb{Z} \\mid x \\equiv 0 \\pmod{2} \\}"
+ },
+ {
+  "id": "sets-logic-020",
+  "area": "sets-logic",
+  "latex": "A_{3} = \\{ x \\in \\mathbb{Z} \\mid x \\equiv 0 \\pmod{3} \\}"
+ },
+ {
+  "id": "sets-logic-021",
+  "area": "sets-logic",
+  "latex": "A_{4} = \\{ x \\in \\mathbb{Z} \\mid x \\equiv 0 \\pmod{4} \\}"
+ },
+ {
+  "id": "sets-logic-022",
+  "area": "sets-logic",
+  "latex": "A_{5} = \\{ x \\in \\mathbb{Z} \\mid x \\equiv 0 \\pmod{5} \\}"
+ },
+ {
+  "id": "sets-logic-023",
+  "area": "sets-logic",
+  "latex": "A_{6} = \\{ x \\in \\mathbb{Z} \\mid x \\equiv 0 \\pmod{6} \\}"
+ },
+ {
+  "id": "sets-logic-024",
+  "area": "sets-logic",
+  "latex": "A_{7} = \\{ x \\in \\mathbb{Z} \\mid x \\equiv 0 \\pmod{7} \\}"
+ }
+]

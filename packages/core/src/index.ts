@@ -20,3 +20,4 @@ export { buildSchema } from './schema';
 export { sanitizeUrl, DEFAULT_ALLOWED_PROTOCOLS } from './url';
 export { markInputRule } from './input-rules';
 export { sanitizeColor, sanitizeFontFamily, sanitizeFontSize } from './css';
+export { trustedHTML, trustedTypesEnforced, TRUSTED_TYPES_POLICY } from './trusted-html';

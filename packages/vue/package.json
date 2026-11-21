@@ -27,5 +27,15 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
   },
-  "private": true
+  "devDependencies": {
+    "vue": "^3.5.46"
+  },
+  "dependencies": {
+    "@axiomtext/core": "workspace:*",
+    "@axiomtext/presets": "workspace:*",
+    "@axiomtext/view": "workspace:*"
+  },
+  "peerDependencies": {
+    "vue": "^3.3"
+  }
 }

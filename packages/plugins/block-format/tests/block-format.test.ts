@@ -31,10 +31,10 @@ describe('indent', () => {
     expect(run(outdentBlock())).toBe(false);
     run(indentBlock());
     run(indentBlock());
-    expect(t.html()).toContain('margin-left: 4em;');
+    expect(t.html()).toContain('margin-inline-start: 4em;');
     run(outdentBlock());
     run(outdentBlock());
-    expect(t.html()).not.toContain('margin-left');
+    expect(t.html()).not.toContain('margin-inline-start');
   });
 
   it('combines with alignment in one style attribute', () => {
@@ -43,7 +43,7 @@ describe('indent', () => {
     run(setTextAlign('right'));
     run(indentBlock());
     expect(t.html()).toMatch(
-      /style="text-align: right; margin-left: 2em;"|style="margin-left: 2em; text-align: right;"/,
+      /style="text-align: right; margin-inline-start: 2em;"|style="margin-inline-start: 2em; text-align: right;"/,
     );
   });
 });

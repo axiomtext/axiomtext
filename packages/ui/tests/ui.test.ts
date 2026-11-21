@@ -29,7 +29,11 @@ function mount(plugins: readonly AxiomPlugin[] = [BasicStyles, Heading]): Classi
 }
 
 const button = (root: HTMLElement, name: string): HTMLButtonElement => {
-  const el = root.querySelector<HTMLButtonElement>(`button[aria-label="${name}"]`);
+  // Names may also carry the visible value first: "Paragraph, Text style".
+  const el = [...root.querySelectorAll<HTMLButtonElement>('button[aria-label]')].find((b) => {
+    const label = b.getAttribute('aria-label') ?? '';
+    return label === name || label.endsWith(`, ${name}`);
+  });
   if (!el) throw new Error(`button ${name} not found`);
   return el;
 };

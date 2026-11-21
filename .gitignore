@@ -16,3 +16,7 @@ packages/flutter/.packages
 packages/flutter/pubspec.lock
 # Private business docs (move these to the axiomtext/internal repo)
 _internal/
+
+# website build output
+apps/website/public/playground/
+apps/website/.astro/

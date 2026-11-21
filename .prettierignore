@@ -9,3 +9,5 @@ test-results
 docs
 _internal
 corpora
+apps/website/.astro
+apps/website/public/playground

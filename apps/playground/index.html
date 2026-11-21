@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script src="%BASE_URL%theme-init.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       http-equiv="Content-Security-Policy"
@@ -46,6 +47,29 @@
         <span class="badge">Playground</span>
       </a>
       <div class="app-bar__actions">
+        <label class="lang-select">
+          <span class="visually-hidden">Editor type</span>
+          <select id="mode-select" aria-label="Editor type">
+            <option value="classic">Classic</option>
+            <option value="inline">Inline</option>
+            <option value="balloon">Balloon</option>
+          </select>
+        </label>
+        <label class="lang-select">
+          <span class="visually-hidden">Interface language</span>
+          <select id="lang-select" aria-label="Interface language">
+            <option value="en">English</option>
+            <option value="bn">বাংলা</option>
+            <option value="hi">हिन्दी</option>
+            <option value="ar">العربية</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="pt">Português</option>
+            <option value="zh">简体中文</option>
+            <option value="ja">日本語</option>
+          </select>
+        </label>
         <a
           class="link"
           href="https://github.com/axiomtext/axiomtext"
@@ -104,6 +128,16 @@
           >
             HTML
           </button>
+          <button
+            type="button"
+            role="tab"
+            id="tab-md"
+            aria-selected="false"
+            aria-controls="out-md"
+            tabindex="-1"
+          >
+            Markdown
+          </button>
         </div>
         <button
           type="button"
@@ -114,6 +148,7 @@
       </div>
       <pre id="out-json" role="tabpanel" aria-labelledby="tab-json" data-testid="json"></pre>
       <pre id="out-html" role="tabpanel" aria-labelledby="tab-html" data-testid="html" hidden></pre>
+      <pre id="out-md" role="tabpanel" aria-labelledby="tab-md" data-testid="markdown" hidden></pre>
     </aside>
 
     <script type="module" src="/src/main.ts"></script>

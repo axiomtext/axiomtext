@@ -1,12 +1,24 @@
-import { definePlugin } from '@axiomtext/core';
+import { t } from '@axiomtext/i18n';
+import { definePlugin, trustedHTML } from '@axiomtext/core';
 import type { EditorCommand, NodeDefinition } from '@axiomtext/core';
 import { InputRule, inputRules } from 'prosemirror-inputrules';
-import type { DOMOutputSpec, Node as PMNode } from 'prosemirror-model';
+import { Fragment, Slice } from 'prosemirror-model';
+import type { DOMOutputSpec, Node as PMNode, Schema } from 'prosemirror-model';
 import { NodeSelection, Plugin, PluginKey, TextSelection } from 'prosemirror-state';
 import type { EditorView, NodeView } from 'prosemirror-view';
 import { openMathEditor } from './editor-popover';
 import type { MathEditorHandle } from './editor-popover';
+import { hasTextMath, mathmlToLatex, splitTextMath } from './convert';
+import { attachAutocompleteLazy as attachAutocomplete } from './autocomplete-lazy';
 import { createMathBar } from './math-bar';
+import {
+  createFormatToggle,
+  getConverters,
+  getLastFormat,
+  loadConverters,
+  setLastFormat,
+} from './text-input';
+import type { MathInputFormat } from './text-input';
 import type { MathBar } from './math-bar';
 import { loadMathLive } from './mathlive';
 import type { MathfieldElement } from './mathlive';
@@ -38,7 +50,7 @@ function mathToDOM(node: PMNode, display: boolean): DOMOutputSpec {
   if (rendered) {
     const el = document.createElement(display ? 'div' : 'span');
     for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
-    el.innerHTML = rendered; // KaTeX output, trust:false
+    el.innerHTML = trustedHTML(rendered); // KaTeX output, trust:false
     return el;
   }
   return [display ? 'div' : 'span', attrs, display ? `\\[${latex}\\]` : `\\(${latex}\\)`];
@@ -58,6 +70,25 @@ const nodes: Record<string, NodeDefinition> = {
         tag: 'span[data-type="math-inline"]',
         getAttrs: (dom) => ({ latex: (dom as HTMLElement).getAttribute('data-latex') ?? '' }),
       },
+      // Pasted MathML (Wikipedia, ChatGPT/KaTeX and MathJax pages, Word, MathType).
+      {
+        tag: 'math',
+        priority: 60,
+        getAttrs: (dom) => {
+          const el = dom as Element;
+          if (el.getAttribute('display') === 'block') return false;
+          const latex = mathmlToLatex(el);
+          return latex ? { latex } : false;
+        },
+      },
+      // Visual duplicates that sit next to the MathML on those pages.
+      ...[
+        'span.katex-html',
+        'mjx-math',
+        'mjx-container > svg',
+        'img.mwe-math-fallback-image-inline',
+        'img.mwe-math-fallback-image-display',
+      ].map((tag) => ({ tag, ignore: true, priority: 70 })),
     ],
     toDOM: (node) => mathToDOM(node, false),
   },
@@ -71,6 +102,14 @@ const nodes: Record<string, NodeDefinition> = {
       {
         tag: 'div[data-type="math-block"]',
         getAttrs: (dom) => ({ latex: (dom as HTMLElement).getAttribute('data-latex') ?? '' }),
+      },
+      {
+        tag: 'math[display="block"]',
+        priority: 60,
+        getAttrs: (dom) => {
+          const latex = mathmlToLatex(dom as Element);
+          return latex ? { latex } : false;
+        },
       },
     ],
     toDOM: (node) => mathToDOM(node, true),
@@ -163,8 +202,8 @@ class MathView implements NodeView {
     this.dom.removeAttribute('title');
     if (latex.trim() === '') {
       this.dom.classList.add('is-empty');
-      this.dom.textContent = this.display ? 'Click to add an equation' : '𝑓(𝑥)';
-      this.dom.setAttribute('aria-label', 'Empty equation');
+      this.dom.textContent = t(this.display ? 'Click to add an equation' : '𝑓(𝑥)');
+      this.dom.setAttribute('aria-label', t('Empty equation'));
       return;
     }
     this.dom.removeAttribute('aria-label');
@@ -175,7 +214,7 @@ class MathView implements NodeView {
     }
     const result = renderLatex(latex, this.display);
     if (result.html) {
-      this.dom.innerHTML = result.html; // KaTeX output, trust:false
+      this.dom.innerHTML = trustedHTML(result.html); // KaTeX output, trust:false
     } else {
       this.dom.classList.add('has-error');
       this.dom.textContent = latex;
@@ -259,6 +298,8 @@ class EditSession {
   private field: MathfieldElement | null = null;
   private bar: MathBar | null = null;
   private latexInput: HTMLTextAreaElement | null = null;
+  private latexPanel: { element: HTMLElement; destroy(): void } | null = null;
+  private latexFormat: MathInputFormat = 'latex';
   private fallback: MathEditorHandle | null = null;
   private closed = false;
   private readonly original: string;
@@ -287,7 +328,7 @@ class EditSession {
     field.value = this.original;
     field.smartFence = true;
     field.mathVirtualKeyboardPolicy = 'auto';
-    field.setAttribute('aria-label', 'Equation editor');
+    field.setAttribute('aria-label', t('Equation editor'));
     field.classList.add('ax-math-field');
     if (this.owner.display) field.classList.add('is-block');
     this.field = field;
@@ -399,31 +440,57 @@ class EditSession {
 
   private syncLatex(): void {
     if (this.field && this.latexInput && document.activeElement !== this.latexInput) {
-      this.latexInput.value = this.currentLatex();
+      const latex = this.currentLatex();
+      const conv = getConverters();
+      this.latexInput.value =
+        this.latexFormat === 'asciimath' && conv ? conv.toAscii(latex) : latex;
     }
   }
 
   private toggleLatex(): void {
     if (!this.bar || !this.field) return;
     if (this.latexInput) {
-      this.latexInput.remove();
+      this.latexPanel?.destroy();
+      this.latexPanel = null;
       this.latexInput = null;
       this.bar.setLatexOpen(false);
       this.field.focus();
       this.bar.position(this.owner.dom);
       return;
     }
+    void loadConverters(); // MathLive is loaded already: AsciiMath is available right away
     const input = document.createElement('textarea');
     input.className = 'ax-math-bar__latex';
     input.spellcheck = false;
     input.rows = 2;
-    input.setAttribute('aria-label', 'LaTeX');
-    input.value = this.currentLatex();
-    input.addEventListener('input', () => {
-      if (!this.field) return;
-      this.field.value = input.value;
-      this.bar?.setError(renderLatex(input.value, this.owner.display).error);
+    const conv = getConverters();
+    this.latexFormat = getLastFormat() === 'asciimath' && conv ? 'asciimath' : 'latex';
+    const toLatex = (): string =>
+      this.latexFormat === 'latex'
+        ? input.value
+        : (getConverters()?.toLatex(input.value) ?? input.value);
+    const label = (): string => t(this.latexFormat === 'latex' ? 'LaTeX' : 'AsciiMath');
+    input.setAttribute('aria-label', label());
+    const latex = this.currentLatex();
+    input.value = this.latexFormat === 'asciimath' && conv ? conv.toAscii(latex) : latex;
+    const toggle = createFormatToggle(this.latexFormat, (next) => {
+      const current = toLatex();
+      const converters = getConverters();
+      if (next === 'asciimath' && !converters) return;
+      this.latexFormat = next;
+      setLastFormat(next);
+      toggle.set(next);
+      input.value = next === 'asciimath' && converters ? converters.toAscii(current) : current;
+      input.setAttribute('aria-label', label());
+      input.focus();
     });
+    const update = (): void => {
+      if (!this.field) return;
+      const value = toLatex();
+      this.field.value = value;
+      this.bar?.setError(renderLatex(value, this.owner.display).error);
+    };
+    input.addEventListener('input', update);
     input.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
         event.preventDefault();
@@ -433,8 +500,27 @@ class EditSession {
         this.commit();
       }
     });
+    const fieldWrap = document.createElement('div');
+    fieldWrap.className = 'ax-math-editor__field';
+    fieldWrap.append(input);
+    const panel = document.createElement('div');
+    panel.className = 'ax-math-bar__text';
+    panel.append(toggle.element, fieldWrap);
+    const autocomplete = attachAutocomplete(
+      input,
+      fieldWrap,
+      update,
+      () => this.latexFormat === 'latex',
+    );
+    this.latexPanel = {
+      element: panel,
+      destroy: () => {
+        autocomplete.destroy();
+        panel.remove();
+      },
+    };
     this.latexInput = input;
-    this.bar.element.querySelector('.ax-math-bar__header')?.after(input);
+    this.bar.element.querySelector('.ax-math-bar__header')?.after(panel);
     this.bar.setLatexOpen(true);
     this.bar.position(this.owner.dom);
     input.focus();
@@ -483,6 +569,8 @@ class EditSession {
     this.cleanup.forEach((fn) => fn());
     this.cleanup = [];
     if (window.mathVirtualKeyboard?.visible) window.mathVirtualKeyboard.hide();
+    this.latexPanel?.destroy();
+    this.latexPanel = null;
     this.bar?.destroy();
     this.bar = null;
     this.fallback?.close();
@@ -531,12 +619,45 @@ function insertMathNode(type: 'math_inline' | 'math_block', latex: string): Edit
   };
 }
 
+/** Builds pasteable content from text with math delimiters (one paragraph per line). */
+export function textMathSlice(schema: Schema, text: string): Slice | null {
+  const { paragraph, math_inline: inline, math_block: block } = schema.nodes;
+  if (!paragraph || !inline) return null;
+  const blocks: PMNode[] = [];
+  for (const line of text.replace(/\r\n?/g, '\n').split('\n')) {
+    const parts = splitTextMath(line);
+    const only = parts.length === 1 ? parts[0] : undefined;
+    if (only?.type === 'math' && only.display && block) {
+      blocks.push(block.create({ latex: only.latex }));
+      continue;
+    }
+    const content: PMNode[] = [];
+    for (const part of parts) {
+      if (part.type === 'text') {
+        if (part.text) content.push(schema.text(part.text));
+      } else {
+        content.push(inline.create({ latex: part.latex }));
+      }
+    }
+    blocks.push(paragraph.create(null, content));
+  }
+  if (blocks.length === 1 && blocks[0]?.type === paragraph) {
+    // A single line pastes inline, into the current paragraph.
+    return new Slice(Fragment.from(blocks[0]), 1, 1);
+  }
+  const open = (node: PMNode | undefined): number => (node?.type === paragraph ? 1 : 0);
+  return new Slice(Fragment.from(blocks), open(blocks[0]), open(blocks.at(-1)));
+}
+
 /** Inserts an inline equation (opens the editor). */
 export const insertMath = (latex = ''): EditorCommand => insertMathNode('math_inline', latex);
 /** Inserts a display (block) equation (opens the editor). */
 export const insertMathBlock = (latex = ''): EditorCommand => insertMathNode('math_block', latex);
 
 /** MATH-001, 002, 006, 029, 037, 044, 045: equations with LaTeX, live preview and lazy KaTeX. */
+export { mathmlToLatex, mathmlStringToLatex, splitTextMath, hasTextMath } from './convert';
+export type { TextMathSegment } from './convert';
+
 export const MathPlugin = definePlugin({
   name: 'math',
   nodes,
@@ -557,6 +678,26 @@ export const MathPlugin = definePlugin({
           const latex = match[1];
           if (!latex) return null;
           return state.tr.replaceWith(start, end, inline.create({ latex }));
+        }),
+      );
+    }
+    if (inline) {
+      // \(x^2\) → inline equation
+      rules.push(
+        new InputRule(/\\\((.+?)\\\)$/, (state, match, start, end) => {
+          const latex = match[1]?.trim();
+          return latex ? state.tr.replaceWith(start, end, inline.create({ latex })) : null;
+        }),
+      );
+    }
+    if (block) {
+      // \[x^2\] typed on its own line → block equation
+      rules.push(
+        new InputRule(/^\\\[(.+?)\\\]$/, (state, match, start) => {
+          const latex = match[1]?.trim();
+          const $start = state.doc.resolve(start);
+          if (!latex || $start.parent.type.name !== 'paragraph') return null;
+          return state.tr.replaceWith($start.before(), $start.after(), block.create({ latex }));
         }),
       );
     }
@@ -590,6 +731,9 @@ export const MathPlugin = definePlugin({
           },
         }),
         props: {
+          // Pasting notes or Markdown with $…$, $$…$$, \(…\), \[…\] gives real equations.
+          clipboardTextParser: (text, _context, _plain, view) =>
+            (hasTextMath(text) ? textMathSlice(view.state.schema, text) : null) as Slice,
           // While the visual editor is opening, swallow typing so it can't overwrite the equation.
           handleKeyDown: (view) => opening.has(view),
           handleTextInput: (view) => opening.has(view),

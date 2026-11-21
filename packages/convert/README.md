@@ -1,5 +1,14 @@
 # @axiomtext/convert
 
-HTML, Markdown, DOCX and PDF conversion (client-side).
+Markdown import and export for [AxiomText](https://axiomtext.dev) documents (GitHub-flavoured:
+tables, task lists, strikethrough; maths as `$…$` / `$$…$$`).
 
-Status: **planned for M1**. Part of [AxiomText](https://axiomtext.dev), the free MIT rich text & math editor.
+```js
+import { toMarkdown, fromMarkdown } from '@axiomtext/convert';
+
+const md = toMarkdown(editor.getJSON());
+editor.setJSON(fromMarkdown(md));
+```
+
+`toMarkdown(doc, { html: true })` keeps underline, sub/superscript, highlight and image sizes as
+inline HTML. Raw HTML in imported Markdown is treated as text.

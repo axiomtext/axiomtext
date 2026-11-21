@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AxiomText from a CDN (classic script tag)</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1.0/dist/cdn/katex/katex.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1.0/dist/cdn/axiomtext.css"
+    />
+    <!-- One file with everything (math included). Global: AxiomText -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1.0/dist/cdn/axiomtext.iife.js"
+      crossorigin="anonymous"
+      defer
+    ></script>
+  </head>
+  <body>
+    <form method="post" action="/save">
+      <div id="editor"></div>
+      <input type="hidden" name="content" />
+      <button>Save</button>
+    </form>
+    <script>
+      addEventListener('DOMContentLoaded', () => {
+        const { editor } = AxiomText.createClassicEditor({
+          element: document.querySelector('#editor'),
+        });
+        // Submit the HTML (render it on your site inside <div class="axiomtext-content">).
+        document.querySelector('form').addEventListener('submit', () => {
+          document.querySelector('[name=content]').value = editor.getHTML();
+        });
+      });
+    </script>
+  </body>
+</html>

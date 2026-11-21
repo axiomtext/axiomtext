@@ -133,8 +133,17 @@ body {
 .icon-button svg {
   transition: transform var(--ax-duration-slow) var(--ax-ease-spring);
 }
-#theme-toggle.is-switching svg {
-  transform: rotate(90deg) scale(0.6);
+/* Theme switch: every colour changes at once (no per-element fades)… */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+}
+/* …as one quick cross-fade of the page where View Transitions are supported. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 220ms;
+  animation-timing-function: ease-out;
 }
 
 /* Keep the sticky editor toolbar below the app bar while scrolling. */
@@ -272,4 +281,43 @@ body.panel-open .dev-panel {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
+}
+
+/* Language picker */
+.lang-select select {
+  height: 34px;
+  padding: 0 28px 0 10px;
+  border: 1px solid var(--ax-border);
+  border-radius: 8px;
+  background: var(--ax-surface)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+    no-repeat right 9px center;
+  color: var(--ax-fg);
+  font: 500 13px var(--ax-font);
+  appearance: none;
+  cursor: pointer;
+}
+[dir='rtl'] .lang-select select {
+  padding: 0 10px 0 28px;
+  background-position: left 9px center;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Inline and balloon modes: the content sits on a plain page, like a blog post being edited. */
+[data-mode='inline'] #editor,
+[data-mode='balloon'] #editor {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 72px 56px;
+  border: 1px solid var(--ax-border);
+  border-radius: 16px;
+  background: var(--ax-surface);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
 }

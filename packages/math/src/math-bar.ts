@@ -1,3 +1,5 @@
+import { t } from '@axiomtext/i18n';
+import { trustedHTML } from '@axiomtext/core';
 import { renderLatex } from './render';
 
 /**
@@ -99,7 +101,7 @@ const button = (className: string, title: string, onClick: () => void): HTMLButt
   b.type = 'button';
   b.className = className;
   b.title = title;
-  b.setAttribute('aria-label', title);
+  b.setAttribute('aria-label', t(title));
   // Never steal focus from the equation being edited.
   b.addEventListener('mousedown', (e) => e.preventDefault());
   b.addEventListener('click', onClick);
@@ -109,7 +111,7 @@ const button = (className: string, title: string, onClick: () => void): HTMLButt
 const renderLabel = (el: HTMLElement, latex: string): void => {
   const { html } = renderLatex(latex, false);
   if (html)
-    el.innerHTML = html; // KaTeX output, trust:false
+    el.innerHTML = trustedHTML(html); // KaTeX output, trust:false
   else el.textContent = latex;
 };
 
@@ -118,7 +120,7 @@ export function createMathBar(callbacks: MathBarCallbacks): MathBar {
   const root = document.createElement('div');
   root.className = 'ax-math-bar';
   root.setAttribute('role', 'toolbar');
-  root.setAttribute('aria-label', 'Equation tools');
+  root.setAttribute('aria-label', t('Equation tools'));
 
   const tabs = document.createElement('div');
   tabs.className = 'ax-math-bar__tabs';
@@ -133,7 +135,7 @@ export function createMathBar(callbacks: MathBarCallbacks): MathBar {
   ];
   const tabButtons: HTMLButtonElement[] = [];
   const showGroup = (index: number): void => {
-    tabButtons.forEach((t, i) => t.setAttribute('aria-selected', String(i === index)));
+    tabButtons.forEach((tab, i) => tab.setAttribute('aria-selected', String(i === index)));
     panel.replaceChildren(
       ...(groups[index]?.[1] ?? []).map((template) => {
         const b = button('ax-math-bar__item', template.title, () => callbacks.insert(template));
@@ -144,7 +146,7 @@ export function createMathBar(callbacks: MathBarCallbacks): MathBar {
   };
   groups.forEach(([name], index) => {
     const tab = button('ax-math-bar__tab', name, () => showGroup(index));
-    tab.textContent = name;
+    tab.textContent = t(name);
     tab.setAttribute('role', 'tab');
     tabs.append(tab);
     tabButtons.push(tab);
@@ -153,11 +155,11 @@ export function createMathBar(callbacks: MathBarCallbacks): MathBar {
   const actions = document.createElement('div');
   actions.className = 'ax-math-bar__actions';
   const keyboard = button('ax-math-bar__action', 'Math keyboard', callbacks.toggleKeyboard);
-  keyboard.textContent = '⌨ Keyboard';
+  keyboard.textContent = t('⌨ Keyboard');
   const latex = button('ax-math-bar__action', 'Edit as LaTeX', callbacks.toggleLatex);
-  latex.textContent = 'LaTeX';
+  latex.textContent = t('LaTeX');
   const done = button('ax-math-bar__action is-primary', 'Done (Enter)', callbacks.done);
-  done.textContent = 'Done';
+  done.textContent = t('Done');
   actions.append(keyboard, latex, done);
 
   const header = document.createElement('div');

@@ -160,7 +160,7 @@ test.describe('M1 features', () => {
     await openEmpty(page);
     await editorBox(page).click();
     await page.getByRole('button', { name: 'More' }).click();
-    await page.getByRole('menuitemcheckbox', { name: /Block equation/ }).click();
+    await page.getByRole('menuitem', { name: /Block equation/ }).click();
     await expect(page.locator('math-field')).toBeFocused();
     await page.getByRole('button', { name: 'Fraction', exact: true }).click();
     await page.keyboard.type('1');

@@ -1,3 +1,4 @@
+import { trustedHTML } from '@axiomtext/core';
 import {
   AlignCenter,
   AlignJustify,
@@ -45,7 +46,9 @@ import {
   Heading3,
   Heading4,
   Italic,
+  Keyboard,
   Pilcrow,
+  Plus,
   Redo2,
   Strikethrough,
   Underline,
@@ -105,13 +108,71 @@ const icons = {
   pageBreak: ScissorsLineDashed,
   more: Ellipsis,
   close: X,
+  keyboard: Keyboard,
+  plus: Plus,
   fullWidth: RectangleHorizontal,
 } as const;
 
 export type IconName = keyof typeof icons;
 
 /** Creates an SVG icon element (decorative; the button carries the accessible name). */
+const overrides = new Map<string, SVGElement>();
+
+/** Removes anything executable from a user-supplied SVG icon. */
+function cleanSvg(svg: SVGElement): SVGElement {
+  svg
+    .querySelectorAll('script, foreignObject, iframe, use[href^="http"]')
+    .forEach((n) => n.remove());
+  for (const el of [svg, ...svg.querySelectorAll('*')]) {
+    for (const a of [...el.attributes]) {
+      const value = a.value.trim().toLowerCase();
+      if (
+        a.name.startsWith('on') ||
+        ((a.name === 'href' || a.name === 'xlink:href') && !value.startsWith('#'))
+      )
+        el.removeAttribute(a.name);
+    }
+  }
+  return svg;
+}
+
+/**
+ * Replaces built-in icons (UI-011) with your own: an `<svg>` element or SVG markup.
+ * Scripts, event handlers and external links inside the SVG are removed.
+ *
+ *   setIcons({ bold: '<svg viewBox="0 0 24 24">…</svg>' });
+ */
+export function setIcons(map: Partial<Record<IconName | WrapIconName, SVGElement | string>>): void {
+  for (const [name, value] of Object.entries(map)) {
+    if (!value) continue;
+    let svg: SVGElement | null = null;
+    if (typeof value === 'string') {
+      const doc = new DOMParser().parseFromString(trustedHTML(value), 'image/svg+xml');
+      const root = doc.documentElement;
+      if (root.localName === 'svg' && !doc.querySelector('parsererror'))
+        svg = document.importNode(root, true) as unknown as SVGElement;
+    } else {
+      svg = value.cloneNode(true) as SVGElement;
+    }
+    if (svg) overrides.set(name, cleanSvg(svg));
+  }
+}
+
+const fromOverride = (name: string, size: number): SVGElement | null => {
+  const custom = overrides.get(name);
+  if (!custom) return null;
+  const svg = custom.cloneNode(true) as SVGElement;
+  svg.setAttribute('width', String(size));
+  svg.setAttribute('height', String(size));
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
+  svg.classList.add('ax-icon');
+  return svg;
+};
+
 export function icon(name: IconName, size = 18): SVGElement {
+  const custom = fromOverride(name, size);
+  if (custom) return custom;
   const svg = createElement(icons[name], {
     width: size,
     height: size,
@@ -157,6 +218,8 @@ const WRAP_ICONS: Record<string, Shape[]> = {
 export type WrapIconName = keyof typeof WRAP_ICONS;
 
 export function wrapIcon(name: WrapIconName, size = 18): SVGElement {
+  const custom = fromOverride(name, size);
+  if (custom) return custom;
   const svg = document.createElementNS(SVG_NS, 'svg');
   for (const [k, v] of Object.entries({
     width: String(size),

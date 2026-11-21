@@ -1,3 +1,4 @@
+import { t } from '@axiomtext/i18n';
 import type { Editor } from '@axiomtext/view';
 import { h } from './dom';
 import { icon } from './icons';
@@ -60,8 +61,15 @@ export function createMenuButton(editor: Editor, options: MenuButtonOptions): Me
         iconSlot.dataset['icon'] = name;
       }
     }
-    labelEl.textContent = options.text ? options.text(editor) : '';
+    const text = options.text ? t(options.text(editor)) : '';
+    labelEl.textContent = text;
     labelEl.hidden = !options.text;
+    // Keep the visible text in the accessible name (WCAG 2.5.3 Label in Name).
+    const name = t(options.label);
+    button.setAttribute(
+      'aria-label',
+      text && !name.toLowerCase().includes(text.toLowerCase()) ? `${text}, ${name}` : name,
+    );
   };
 
   const close = (): void => popover?.close();
@@ -77,9 +85,10 @@ export function createMenuButton(editor: Editor, options: MenuButtonOptions): Me
         'button',
         {
           type: 'button',
-          role: 'menuitemcheckbox',
+          // Items with an on/off state are checkboxes; plain actions are menu items.
+          role: item.active ? 'menuitemcheckbox' : 'menuitem',
           class: 'ax-menu__item',
-          'aria-checked': String(active),
+          'aria-checked': item.active ? String(active) : undefined,
           disabled: !enabled,
           tabindex: '-1',
         },

@@ -1,0 +1,55 @@
+---
+title: Editor types
+description: Classic, inline and balloon editors.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import LiveEditor from '../../../components/LiveEditor.astro';
+
+All three types have the same features, plugins and API; only the toolbar differs.
+
+<Tabs>
+<TabItem label="Classic">
+A fixed toolbar on top, the content below and a status bar with word count. Best for forms, CMS
+fields and documents.
+
+```js
+import { createClassicEditor } from '@axiomtext/presets';
+createClassicEditor({ element, document: true }); // document: paper-like page
+```
+</TabItem>
+<TabItem label="Inline">
+The element itself becomes editable; the toolbar floats above it while it has focus and sticks to
+the top of the window while you scroll. Best for editing a page in place.
+
+```js
+import { createInlineEditor } from '@axiomtext/presets';
+createInlineEditor({ element: document.querySelector('article') });
+```
+</TabItem>
+<TabItem label="Balloon">
+No toolbar until you select text; formatting then appears next to the selection. A **+** button on
+empty lines inserts images, tables, equations and lists. Best for distraction-free writing.
+
+```js
+import { createBalloonEditor } from '@axiomtext/presets';
+createBalloonEditor({ element });
+```
+</TabItem>
+</Tabs>
+
+Try the balloon editor: select some text, or click an empty line.
+
+<LiveEditor type="balloon" sample="math" />
+
+## Choosing toolbar buttons
+
+```js
+createClassicEditor({
+  element,
+  toolbar: ['undo', 'redo', '|', 'blockStyle', 'bold', 'italic', 'link', 'math', 'image', 'more'],
+});
+```
+
+Buttons that don't fit move into **More** automatically. The full list of names is in
+[Options](/reference/options/#toolbar).

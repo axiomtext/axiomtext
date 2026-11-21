@@ -1,3 +1,4 @@
+import { t } from '@axiomtext/i18n';
 export interface Popover {
   readonly element: HTMLElement;
   close(): void;
@@ -22,7 +23,7 @@ export function openPopoverPanel(content: HTMLElement[], options: PopoverOptions
   const element = document.createElement('div');
   element.className = `ax-popover ${options.className ?? ''}`.trim();
   element.setAttribute('role', options.role ?? 'dialog');
-  element.setAttribute('aria-label', options.label);
+  element.setAttribute('aria-label', t(options.label));
   element.append(...content);
   document.body.append(element);
 

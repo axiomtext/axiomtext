@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AxiomText from a CDN (ES module)</title>
+    <!-- Pin the version you use. Get integrity hashes from dist/cdn/sri.json of that version. -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1.0/dist/cdn/katex/katex.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1.0/dist/cdn/axiomtext.css"
+    />
+  </head>
+  <body>
+    <div id="editor"></div>
+    <script type="module">
+      import {
+        createClassicEditor,
+        loadTranslations,
+      } from 'https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1.0/dist/cdn/axiomtext.js';
+
+      const { editor } = createClassicEditor({
+        element: document.querySelector('#editor'),
+        placeholder: 'Start writing…',
+        autosave: true, // keeps a draft in this browser
+        // language: 'bn', translations: await loadTranslations('bn'),
+      });
+      editor.on('change', () => console.log(editor.getJSON()));
+    </script>
+  </body>
+</html>

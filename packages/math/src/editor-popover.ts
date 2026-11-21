@@ -1,3 +1,15 @@
+import { t } from '@axiomtext/i18n';
+import { trustedHTML } from '@axiomtext/core';
+import { attachAutocompleteLazy as attachAutocomplete } from './autocomplete-lazy';
+import {
+  createFormatToggle,
+  getConverters,
+  getLastFormat,
+  loadConverters,
+  setLastFormat,
+} from './text-input';
+import type { MathInputFormat } from './text-input';
+export type { MathInputFormat } from './text-input';
 import { loadKatex, renderLatex } from './render';
 
 /** Quick-insert templates. `$0` marks where the cursor goes. */
@@ -42,7 +54,8 @@ const el = <K extends keyof HTMLElementTagNameMap>(
 ): HTMLElementTagNameMap[K] => {
   const node = document.createElement(tag);
   node.className = className;
-  for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+  for (const [k, v] of Object.entries(attrs))
+    node.setAttribute(k, ['aria-label', 'title', 'placeholder'].includes(k) ? t(v) : v);
   return node;
 };
 
@@ -69,19 +82,46 @@ export function openMathEditor(options: MathEditorOptions): MathEditorHandle {
     placeholder: 'e.g. x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}',
   });
   input.value = options.latex;
+  let format: MathInputFormat = 'latex';
+  const field = el('div', 'ax-math-editor__field');
+  field.append(input);
+  const toggle = createFormatToggle(format, (next) => void setFormat(next));
+  const formats = toggle.element;
+  /** The equation as LaTeX, whatever the user is typing in. */
+  const currentLatex = (): string =>
+    format === 'latex' ? input.value : (getConverters()?.toLatex(input.value) ?? '');
+  const setFormat = async (next: MathInputFormat): Promise<void> => {
+    if (next === format) return;
+    const latex = currentLatex();
+    if (next === 'asciimath' && !(await loadConverters())) return;
+    const conv = getConverters();
+    input.value = next === 'asciimath' && conv ? conv.toAscii(latex) : latex;
+    format = next;
+    setLastFormat(next);
+    toggle.set(next);
+    templates.hidden = next !== 'latex';
+    input.setAttribute('aria-label', t(next === 'latex' ? 'LaTeX' : 'AsciiMath'));
+    input.placeholder = t(
+      next === 'latex'
+        ? 'e.g. x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}'
+        : 'e.g. x = (-b +- sqrt(b^2-4ac))/(2a)',
+    );
+    update();
+    input.focus();
+  };
   const preview = el('div', 'ax-math-editor__preview', { 'aria-live': 'polite' });
   const error = el('div', 'ax-math-editor__error', { role: 'status' });
   const footer = el('div', 'ax-math-editor__footer');
   const hint = el('span', 'ax-math-editor__hint');
-  hint.textContent = options.displayMode
-    ? '⌘/Ctrl+Enter save · Esc cancel'
-    : 'Enter save · Esc cancel';
+  hint.textContent = t(
+    options.displayMode ? '⌘/Ctrl+Enter save · Esc cancel' : 'Enter save · Esc cancel',
+  );
   const copy = el('button', 'ax-math-editor__button', { type: 'button' });
-  copy.textContent = 'Copy LaTeX';
+  copy.textContent = t('Copy LaTeX');
   const cancel = el('button', 'ax-math-editor__button', { type: 'button' });
-  cancel.textContent = 'Cancel';
+  cancel.textContent = t('Cancel');
   const done = el('button', 'ax-math-editor__button is-primary', { type: 'button' });
-  done.textContent = 'Done';
+  done.textContent = t('Done');
   footer.append(hint, copy, cancel, done);
 
   for (const template of MATH_TEMPLATES) {
@@ -106,7 +146,13 @@ export function openMathEditor(options: MathEditorOptions): MathEditorHandle {
     templates.append(button);
   }
 
-  root.append(templates, input, preview, error, footer);
+  root.append(formats, templates, field, preview, error, footer);
+  const autocomplete = attachAutocomplete(
+    input,
+    field,
+    () => update(),
+    () => format === 'latex',
+  );
   document.body.append(root);
 
   const position = (): void => {
@@ -121,13 +167,13 @@ export function openMathEditor(options: MathEditorOptions): MathEditorHandle {
   };
 
   const update = (): void => {
-    const latex = input.value;
+    const latex = currentLatex();
     const result = renderLatex(latex, options.displayMode);
     preview.classList.toggle('is-empty', latex.trim() === '');
     if (result.html) {
-      preview.innerHTML = result.html; // KaTeX output with trust:false (see render.ts)
+      preview.innerHTML = trustedHTML(result.html); // KaTeX output with trust:false (see render.ts)
     } else if (latex.trim() === '') {
-      preview.textContent = 'Preview';
+      preview.textContent = t('Preview');
     }
     error.textContent = result.error ?? '';
     root.classList.toggle('has-error', result.error !== null);
@@ -141,9 +187,10 @@ export function openMathEditor(options: MathEditorOptions): MathEditorHandle {
   };
 
   const commit = (): void => {
-    if (renderLatex(input.value, options.displayMode).error) return;
+    const latex = currentLatex();
+    if (renderLatex(latex, options.displayMode).error) return;
     handle.close();
-    options.onCommit(input.value.trim());
+    options.onCommit(latex.trim());
   };
   const dismiss = (): void => {
     handle.close();
@@ -163,9 +210,9 @@ export function openMathEditor(options: MathEditorOptions): MathEditorHandle {
   done.addEventListener('click', commit);
   cancel.addEventListener('click', dismiss);
   copy.addEventListener('click', () => {
-    void navigator.clipboard?.writeText(input.value).then(() => {
-      copy.textContent = 'Copied ✓';
-      setTimeout(() => (copy.textContent = 'Copy LaTeX'), 1200);
+    void navigator.clipboard?.writeText(currentLatex()).then(() => {
+      copy.textContent = t('Copied ✓');
+      setTimeout(() => (copy.textContent = t('Copy LaTeX')), 1200);
     });
   });
 
@@ -184,19 +231,21 @@ export function openMathEditor(options: MathEditorOptions): MathEditorHandle {
       document.removeEventListener('pointerdown', onPointerDown, true);
       window.removeEventListener('resize', onScroll);
       window.removeEventListener('scroll', onScroll, true);
+      autocomplete.destroy();
       root.remove();
       if (openEditor === handle) openEditor = null;
     },
   };
   openEditor = handle;
 
-  preview.textContent = 'Loading…';
+  preview.textContent = t('Loading…');
   void loadKatex().then(() => {
     if (root.isConnected) update();
     position();
   });
   update();
   position();
+  if (getLastFormat() === 'asciimath') void setFormat('asciimath');
   requestAnimationFrame(() => {
     root.classList.add('is-open');
     input.focus();

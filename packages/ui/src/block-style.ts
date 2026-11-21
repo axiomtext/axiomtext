@@ -1,3 +1,4 @@
+import { t } from '@axiomtext/i18n';
 import type { Editor } from '@axiomtext/view';
 import { h, uid } from './dom';
 import { icon } from './icons';
@@ -211,7 +212,10 @@ export function createBlockStyleDropdown(editor: Editor): BlockStyleDropdown {
 
   const update = (): void => {
     const idx = currentIndex();
-    label.textContent = available[idx]?.label ?? 'Paragraph';
+    const text = t(available[idx]?.label ?? 'Paragraph');
+    label.textContent = text;
+    // The visible text is part of the accessible name (WCAG 2.5.3 Label in Name).
+    trigger.setAttribute('aria-label', `${text}, ${t('Text style')}`);
     optionEls.forEach((el, i) => el.setAttribute('aria-selected', String(i === idx)));
   };
   update();

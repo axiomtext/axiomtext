@@ -1,0 +1,30 @@
+---
+interface Props {
+  type?: 'classic' | 'inline' | 'balloon';
+  sample?: 'full' | 'math' | 'empty';
+}
+const { type = 'classic', sample = 'full' } = Astro.props;
+---
+
+<div class="live-editor not-content" data-type={type} data-sample={sample}></div>
+
+<script>
+  import '@axiomtext/ui/styles.css';
+  import 'katex/dist/katex.min.css';
+  import { createBalloonEditor, createClassicEditor, createInlineEditor } from '@axiomtext/presets';
+  import type { DocumentJSON } from '@axiomtext/presets';
+  import { samples } from './samples';
+
+  // The docs' light/dark switch sets data-theme on <html>, which the editor follows too.
+  for (const element of document.querySelectorAll<HTMLElement>('.live-editor:not([data-ready])')) {
+    element.dataset.ready = '';
+    const content = samples[(element.dataset.sample ?? 'full') as keyof typeof samples] as
+      | DocumentJSON
+      | undefined;
+    const options = { element, placeholder: 'Start writing…', ...(content ? { content } : {}) };
+    const type = element.dataset.type;
+    if (type === 'inline') createInlineEditor(options);
+    else if (type === 'balloon') createBalloonEditor(options);
+    else createClassicEditor(options);
+  }
+</script>

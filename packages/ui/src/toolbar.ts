@@ -1,3 +1,4 @@
+import { t } from '@axiomtext/i18n';
 import type { Editor } from '@axiomtext/view';
 import { createBlockStyleDropdown } from './block-style';
 import { createColorButton } from './color-button';
@@ -40,6 +41,7 @@ export type ToolbarItemName =
   | 'blockquote'
   | 'horizontalRule'
   | 'pageBreak'
+  | 'shortcuts'
   | 'more'
   | '|';
 
@@ -97,6 +99,7 @@ export const DEFAULT_MORE: readonly ToolbarItemName[] = [
   'pageBreak',
   'mathBlock',
   'clearFormatting',
+  'shortcuts',
 ];
 
 interface ButtonSpec {
@@ -296,6 +299,12 @@ const BUTTONS: Record<ButtonName, ButtonSpec> = {
     requires: 'insertMathBlock',
     run: exec('insertMathBlock'),
   },
+  shortcuts: {
+    label: 'Keyboard shortcuts',
+    icon: 'keyboard',
+    shortcut: 'Mod-/',
+    run: () => false, // opened through ToolbarOptions.onShortcuts
+  },
 };
 
 export const FONT_FAMILIES: readonly { label: string; value: string | null }[] = [
@@ -340,8 +349,15 @@ export interface ToolbarOptions {
   more?: readonly ToolbarItemName[];
   /** Called by the Link button (the classic editor opens its link popover). */
   onLink?: () => void;
+  /** Called by the "Keyboard shortcuts" item (the classic editor opens its help dialog). */
+  onShortcuts?: () => void;
   /** Accessible name of the toolbar. */
   ariaLabel?: string;
+  /**
+   * Move buttons that don't fit into "More" (default true). Floating toolbars that size to
+   * their content turn this off and wrap instead.
+   */
+  overflow?: boolean;
 }
 
 export interface Toolbar {
@@ -364,11 +380,18 @@ interface Entry {
   destroy?: () => void;
 }
 
-const specToMenuItem = (spec: ButtonSpec, onLink?: () => void, name?: string): MenuItem => ({
+type Handlers = Partial<Record<string, (() => void) | undefined>>;
+
+const specToMenuItem = (spec: ButtonSpec, handlers: Handlers, name?: string): MenuItem => ({
   label: spec.label,
   icon: spec.icon,
   ...(spec.shortcut ? { shortcut: spec.shortcut } : {}),
-  run: (e) => (name === 'link' ? (onLink?.(), true) : spec.run(e)),
+  run: (e) => {
+    const handler = name ? handlers[name] : undefined;
+    if (!handler) return spec.run(e);
+    handler();
+    return true;
+  },
   ...(spec.active ? { active: spec.active } : {}),
   ...(spec.enabled ? { enabled: spec.enabled } : {}),
 });
@@ -386,6 +409,7 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
   });
   const has = (command: string): boolean => editor.commandNames.includes(command);
 
+  const handlers: Handlers = { link: options.onLink, shortcuts: options.onShortcuts };
   const available = (name: ToolbarItemName): boolean => {
     switch (name) {
       case '|':
@@ -407,6 +431,8 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
         return has('insertTable');
       case 'align':
         return has('setTextAlign');
+      case 'shortcuts':
+        return options.onShortcuts !== undefined;
       default: {
         const req = BUTTONS[name].requires;
         return req === undefined || has(req);
@@ -437,7 +463,7 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
         'aria-keyshortcuts': spec.shortcut
           ? spec.shortcut.replace('Mod', 'Control').replace(/-/g, '+')
           : undefined,
-        'data-tooltip': shortcut ? `${spec.label}  ${shortcut}` : spec.label,
+        'data-tooltip': shortcut ? `${t(spec.label)}  ${shortcut}` : spec.label,
         'data-item': name,
         ...(spec.active ? { 'aria-pressed': 'false' } : {}),
       },
@@ -445,8 +471,9 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
     );
     button.addEventListener('mousedown', (e) => e.preventDefault());
     button.addEventListener('click', () => {
-      if (name === 'link') {
-        options.onLink?.();
+      const handler = handlers[name];
+      if (handler) {
+        handler();
         return;
       }
       spec.run(editor);
@@ -456,7 +483,7 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
       name,
       element: button,
       focusTarget: button,
-      menuItem: specToMenuItem(spec, options.onLink, name),
+      menuItem: specToMenuItem(spec, handlers, name),
       update() {
         if (spec.active) {
           const active = spec.active(editor);
@@ -620,7 +647,7 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
             ...entries
               .filter((e) => overflowed.has(e) && e.menuItem)
               .map((e) => e.menuItem as MenuItem),
-            ...moreNames.map((n) => specToMenuItem(BUTTONS[n], options.onLink, n)),
+            ...moreNames.map((n) => specToMenuItem(BUTTONS[n], handlers, n)),
           ],
         });
         entry = {
@@ -666,6 +693,7 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
     for (const e of entries) e.element.hidden = false;
     if (moreEntry) moreEntry.element.hidden = moreNames.length === 0;
     fixSeparators();
+    if (options.overflow === false) return;
     if (element.clientWidth === 0) return; // not in the DOM / no layout (tests)
     const fits = (): boolean => element.scrollWidth <= element.clientWidth + 1;
     // Less important buttons move into "More" first; the rest go from the end.

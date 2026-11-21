@@ -20,7 +20,7 @@
     "gzip": true
   },
   {
-    "name": "@axiomtext/math (plugin only \u2014 KaTeX and MathLive load on demand)",
+    "name": "@axiomtext/math (plugin incl. MathML paste + lazy LaTeX autocomplete; KaTeX and MathLive load on demand)",
     "path": "packages/math/dist/index.js",
     "import": "{ MathPlugin }",
     "ignore": [
@@ -33,7 +33,7 @@
       "@axiomtext/core",
       "mathlive"
     ],
-    "limit": "10 KB",
+    "limit": "14 KB",
     "gzip": true
   }
 ]

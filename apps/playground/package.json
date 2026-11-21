@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@axiomtext/convert": "workspace:*",
     "@axiomtext/core": "workspace:*",
     "@axiomtext/math": "workspace:*",
     "@axiomtext/plugin-basic-styles": "workspace:*",

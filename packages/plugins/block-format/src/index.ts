@@ -123,7 +123,7 @@ export const Indent = definePlugin({
           default: null,
           parseHTML: (el) => {
             const match = /^(\d+(?:\.\d+)?)(em|px)$/.exec(
-              el.style.marginLeft || el.style.paddingLeft || '',
+              el.style.marginInlineStart || el.style.marginLeft || el.style.paddingLeft || '',
             );
             if (!match) return null;
             const amount =
@@ -133,7 +133,8 @@ export const Indent = definePlugin({
           },
           renderHTML: (value) =>
             typeof value === 'number' && value > 0
-              ? { style: `margin-left: ${Math.min(value, MAX_INDENT) * INDENT_STEP_EM}em;` }
+              ? // Logical property: indents from the right in Arabic/Urdu text.
+                { style: `margin-inline-start: ${Math.min(value, MAX_INDENT) * INDENT_STEP_EM}em;` }
               : null,
         },
       },

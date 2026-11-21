@@ -13,7 +13,7 @@
     --ax-surface-hover: #23252b;
     --ax-fg: #ececf1;
     --ax-fg-muted: #a3a8b3;
-    --ax-fg-subtle: #737985;
+    --ax-fg-subtle: #8b919c;
     --ax-border: #26282e;
     --ax-border-strong: #33363d;
     --ax-accent: #8b85ff;
@@ -314,6 +314,137 @@
   color: var(--ax-fg-subtle);
   font: 500 12px/1 var(--ax-font);
   font-variant-numeric: tabular-nums;
+}
+
+/* Autosave status: sits at the start of the status bar. */
+.ax-statusbar__save {
+  margin-inline-end: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color var(--ax-duration) var(--ax-ease);
+}
+.ax-statusbar__save:not(:empty)::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+.ax-statusbar__save[data-status='saved'] {
+  color: var(--ax-success, #12b76a);
+}
+.ax-statusbar__save[data-status='error'] {
+  color: var(--ax-danger, #d92d20);
+}
+.ax-statusbar__save[data-status='saving']::before,
+.ax-statusbar__save[data-status='pending']::before {
+  animation: ax-pulse 1s var(--ax-ease) infinite alternate;
+}
+@keyframes ax-pulse {
+  to {
+    opacity: 0.15;
+  }
+}
+
+/* Keyboard shortcuts dialog */
+.ax-shortcuts-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgb(15 18 30 / 0.4);
+  opacity: 0;
+  transition: opacity var(--ax-duration) var(--ax-ease);
+  font-family: var(--ax-font);
+}
+.ax-shortcuts-backdrop.is-open {
+  opacity: 1;
+}
+.ax-shortcuts {
+  width: min(760px, 100%);
+  max-height: min(680px, 100%);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--ax-border);
+  border-radius: calc(var(--ax-radius) * 2);
+  background: var(--ax-surface);
+  color: var(--ax-fg);
+  box-shadow: var(--ax-shadow-lg);
+  outline: none;
+  transform: translateY(8px) scale(0.98);
+  transition: transform var(--ax-duration) var(--ax-ease-spring);
+}
+.ax-shortcuts-backdrop.is-open .ax-shortcuts {
+  transform: none;
+}
+.ax-shortcuts__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--ax-border);
+}
+.ax-shortcuts__header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.ax-shortcuts__body {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 8px 28px;
+  padding: 16px 20px 20px;
+  overflow-y: auto;
+}
+.ax-shortcuts__group h3 {
+  margin: 8px 0 6px;
+  color: var(--ax-fg-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ax-shortcuts__group dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 4px 12px;
+  margin: 0;
+  font-size: 13px;
+}
+.ax-shortcuts__group dd {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.ax-shortcuts kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 2px 6px;
+  border: 1px solid var(--ax-border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--ax-canvas);
+  font: 500 12px/1.4 var(--ax-font);
+  text-align: center;
+}
+.ax-shortcuts__or {
+  color: var(--ax-fg-subtle);
+  font-size: 11px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ax-shortcuts-backdrop,
+  .ax-shortcuts {
+    transition: none;
+  }
+  .ax-statusbar__save::before {
+    animation: none !important;
+  }
 }
 
 /* Visual equation editing (MathLive in place) */
@@ -874,6 +1005,68 @@ math-field.ax-math-field:focus-within {
   gap: 8px;
   padding: 10px;
 }
+.ax-math-editor__formats {
+  display: inline-flex;
+  gap: 2px;
+  margin-bottom: 8px;
+  padding: 2px;
+  border-radius: var(--ax-radius);
+  background: var(--ax-surface-muted, rgba(127, 127, 127, 0.1));
+}
+.ax-math-editor__format {
+  padding: 3px 10px;
+  border: 0;
+  border-radius: calc(var(--ax-radius) - 2px);
+  background: transparent;
+  color: var(--ax-fg-muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background var(--ax-duration-fast) var(--ax-ease),
+    color var(--ax-duration-fast) var(--ax-ease);
+}
+.ax-math-editor__format[aria-checked='true'] {
+  background: var(--ax-surface);
+  color: var(--ax-fg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+.ax-math-editor__field {
+  position: relative;
+}
+.ax-math-autocomplete {
+  position: absolute;
+  z-index: 2;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 240px;
+  max-height: 240px;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-radius);
+  background: var(--ax-surface);
+  box-shadow: var(--ax-shadow-lg, 0 8px 24px rgba(0, 0, 0, 0.14));
+  list-style: none;
+}
+.ax-math-autocomplete li {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 5px 8px;
+  border-radius: calc(var(--ax-radius) - 2px);
+  font-size: 13px;
+  cursor: pointer;
+}
+.ax-math-autocomplete li span {
+  color: var(--ax-fg-muted);
+}
+.ax-math-autocomplete li.is-active {
+  background: var(--ax-accent-soft, rgba(79, 70, 229, 0.1));
+  color: var(--ax-accent);
+}
 .ax-math-editor__templates {
   display: flex;
   flex-wrap: wrap;
@@ -1168,4 +1361,111 @@ math-field.ax-math-field:focus-within {
     transition-duration: 0.01ms !important;
     transition-delay: 0ms !important;
   }
+}
+
+/* ───────────────────────── Inline & balloon editors ───────────────────────── */
+.ax-inline-editor > .ProseMirror,
+.ax-balloon-editor > .ProseMirror {
+  min-height: 1.6em;
+  border-radius: var(--ax-radius);
+  outline: 1px dashed transparent;
+  outline-offset: 8px;
+  transition: outline-color var(--ax-duration-fast) var(--ax-ease);
+}
+.ax-inline-editor > .ProseMirror:hover {
+  outline-color: var(--ax-border);
+}
+.ax-inline-editor > .ProseMirror:focus {
+  outline: 2px solid var(--ax-ring);
+}
+.ax-balloon-editor > .ProseMirror:focus {
+  outline: none;
+}
+
+.ax-floating-toolbar {
+  position: fixed;
+  z-index: 900;
+  top: 0;
+  left: 0;
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-radius-lg);
+  background: var(--ax-surface);
+  box-shadow: var(--ax-shadow-lg);
+  font-family: var(--ax-font);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px) scale(0.98);
+  transition:
+    opacity var(--ax-duration-fast) var(--ax-ease),
+    transform var(--ax-duration) var(--ax-ease-spring);
+}
+.ax-floating-toolbar.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+.ax-floating-toolbar[data-kind='balloon'],
+.ax-inserter-panel {
+  width: max-content;
+  max-width: min(640px, calc(100vw - 16px));
+}
+.ax-floating-toolbar[data-kind='balloon'] .ax-toolbar,
+.ax-inserter-panel .ax-toolbar {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+.ax-floating-toolbar .ax-toolbar {
+  position: static;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.ax-inserter {
+  position: fixed;
+  z-index: 900;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--ax-border);
+  border-radius: 50%;
+  background: var(--ax-surface);
+  color: var(--ax-fg-muted);
+  box-shadow: var(--ax-shadow-sm, 0 1px 2px rgb(0 0 0 / 0.08));
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--ax-duration-fast) var(--ax-ease),
+    color var(--ax-duration-fast) var(--ax-ease),
+    border-color var(--ax-duration-fast) var(--ax-ease);
+}
+.ax-inserter.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.ax-inserter:hover,
+.ax-inserter.is-open {
+  border-color: var(--ax-accent);
+  color: var(--ax-accent);
+}
+.ax-inserter svg {
+  transition: transform var(--ax-duration) var(--ax-ease-spring);
+}
+.ax-inserter.is-open svg {
+  transform: rotate(45deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ax-floating-toolbar,
+  .ax-inserter,
+  .ax-inserter svg {
+    transition: none;
+  }
+}
+
+.ax-math-bar__text {
+  margin-top: 8px;
 }

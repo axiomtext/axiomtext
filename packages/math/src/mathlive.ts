@@ -1,3 +1,4 @@
+import { trustedTypesEnforced } from '@axiomtext/core';
 import type * as MathLiveNamespace from 'mathlive';
 import type { MathfieldElement } from 'mathlive';
 
@@ -10,6 +11,9 @@ let loading: Promise<MathLiveModule | null> | null = null;
  * Resolves to null if it can't load (old browser, blocked script): the editor then falls back to LaTeX input.
  */
 export function loadMathLive(): Promise<MathLiveModule | null> {
+  // MathLive writes innerHTML itself, which pages enforcing Trusted Types block. There the
+  // visual editor is skipped and equations are edited as LaTeX instead.
+  if (trustedTypesEnforced()) return Promise.resolve(null);
   loading ??= import('mathlive')
     .then((mod) => {
       const MF = mod.MathfieldElement;

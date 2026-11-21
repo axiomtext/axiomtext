@@ -13,6 +13,8 @@ export default tseslint.config(
       'packages/flutter/**',
       'playwright-report/**',
       'test-results/**',
+      '**/.astro/**',
+      'apps/website/public/playground/**',
     ],
   },
   js.configs.recommended,
@@ -32,9 +34,37 @@ export default tseslint.config(
     },
   },
   {
-    files: ['scripts/**', '**/*.config.{js,ts,mjs}'],
-    languageOptions: { globals: { console: 'readonly', process: 'readonly' } },
+    files: ['scripts/**', '**/scripts/**', 'benchmarks/**', '**/*.config.{js,ts,mjs}'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        URL: 'readonly',
+        setTimeout: 'readonly',
+      },
+    },
     rules: { 'no-console': 'off' },
+  },
+  {
+    // Code passed to page.evaluate() runs in the browser.
+    files: ['benchmarks/**'],
+    languageOptions: {
+      globals: {
+        window: 'readonly',
+        performance: 'readonly',
+        requestAnimationFrame: 'readonly',
+        queueMicrotask: 'readonly',
+      },
+    },
+  },
+  {
+    // Allow `_name` for values deliberately left unused (destructuring them out, typed emits).
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', destructuredArrayIgnorePattern: '^_' },
+      ],
+    },
   },
   {
     // Tests intentionally contain malicious payloads (javascript: URLs etc.).

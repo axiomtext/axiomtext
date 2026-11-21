@@ -1,3 +1,4 @@
+import { t } from '@axiomtext/i18n';
 import type { Editor } from '@axiomtext/view';
 import { h } from './dom';
 import { icon } from './icons';
@@ -54,7 +55,7 @@ export function createTableButton(editor: Editor): { element: HTMLButtonElement;
         const on = Number(cell.dataset['r']) <= r && Number(cell.dataset['c']) <= c;
         cell.classList.toggle('is-on', on);
       }
-      caption.textContent = `${c} × ${r} table`;
+      caption.textContent = t('{columns} × {rows} table', { columns: c, rows: r });
     };
     const insert = (r: number, c: number): void => {
       popover?.close();

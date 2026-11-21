@@ -1,13 +1,13 @@
+import { t } from '@axiomtext/i18n';
 import { createEditor } from '@axiomtext/view';
-import type { Editor, EditorOptions } from '@axiomtext/view';
+import type { Autosave, Editor } from '@axiomtext/view';
 import { h } from './dom';
-import { createImageBalloon, createTableBalloon } from './image-ui';
-import { createLinkUI } from './link-popover';
-import type { LinkUI } from './link-popover';
+import { attachEditorUI, prepare, saveStatusText } from './setup';
+import type { CommonEditorOptions } from './setup';
 import { createToolbar } from './toolbar';
 import type { Toolbar, ToolbarItemName } from './toolbar';
 
-export interface ClassicEditorOptions extends Omit<EditorOptions, 'element'> {
+export interface ClassicEditorOptions extends CommonEditorOptions {
   /** Element the whole editor (toolbar + content + status bar) is rendered into. */
   element: HTMLElement;
   toolbar?: readonly ToolbarItemName[];
@@ -22,6 +22,10 @@ export interface ClassicEditor {
   readonly toolbar: Toolbar;
   /** Root element (`.ax-editor`). */
   readonly element: HTMLElement;
+  /** Present when `autosave` is enabled. */
+  readonly autosave?: Autosave;
+  /** Opens the keyboard shortcuts dialog (also Ctrl/⌘ + /). */
+  showShortcuts(): void;
   destroy(): void;
 }
 
@@ -34,27 +38,30 @@ export function createClassicEditor(options: ClassicEditorOptions): ClassicEdito
     toolbar: toolbarItems,
     statusBar = true,
     document: paper = false,
-    ...editorOptions
+    ...common
   } = options;
+  const prepared = prepare(common);
 
   const body = h('div', { class: 'ax-editor__body' });
-  const root = h('div', { class: `ax-editor${paper ? ' ax-editor--document' : ''}` });
+  const root = h('div', {
+    class: `ax-editor${paper ? ' ax-editor--document' : ''}`,
+    lang: prepared.locale,
+    dir: prepared.dir,
+  });
   host.append(root);
 
-  const editor = createEditor({ ...editorOptions, element: body });
-  const linkUI: LinkUI | undefined = editor.commandNames.includes('setLink')
-    ? createLinkUI(editor)
-    : undefined;
+  const editor = createEditor({ ...prepared.editorOptions, element: body });
+  let saveState: HTMLElement | undefined;
+  const ui = attachEditorUI(editor, prepared.autosave, (status) => {
+    if (!saveState) return;
+    saveState.dataset['status'] = status;
+    saveState.textContent = saveStatusText(status);
+  });
   const toolbar = createToolbar(editor, {
     ...(toolbarItems ? { items: toolbarItems } : {}),
-    ...(linkUI ? { onLink: linkUI.open } : {}),
+    ...(ui.linkUI ? { onLink: ui.linkUI.open } : {}),
+    onShortcuts: () => ui.shortcuts.open(),
   });
-  const imageBalloon = editor.commandNames.includes('updateImage')
-    ? createImageBalloon(editor)
-    : undefined;
-  const tableBalloon = editor.commandNames.includes('insertTable')
-    ? createTableBalloon(editor)
-    : undefined;
   root.append(toolbar.element, body);
 
   let unsubscribeStats: (() => void) | undefined;
@@ -66,25 +73,43 @@ export function createClassicEditor(options: ClassicEditorOptions): ClassicEdito
       h('span', { class: 'ax-statusbar__dot', 'aria-hidden': 'true' }, ['·']),
       chars,
     ]);
+    if (prepared.autosave) {
+      saveState = h('span', { class: 'ax-statusbar__save', 'data-stat': 'save' });
+      bar.prepend(saveState);
+    }
     root.append(bar);
     const render = (): void => {
       const stats = editor.getStats();
-      words.textContent = `${numberFormat(stats.words)} ${stats.words === 1 ? 'word' : 'words'}`;
-      chars.textContent = `${numberFormat(stats.characters)} ${stats.characters === 1 ? 'character' : 'characters'}`;
+      words.textContent = t(stats.words === 1 ? '{count} word' : '{count} words', {
+        count: numberFormat(stats.words),
+      });
+      chars.textContent = t(stats.characters === 1 ? '{count} character' : '{count} characters', {
+        count: numberFormat(stats.characters),
+      });
     };
     render();
-    unsubscribeStats = editor.on('change', render);
+    // Counting words reads the whole document, so it waits until typing pauses
+    // (keeps keystrokes fast in long documents, and doesn't flood screen readers).
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const off = editor.on('change', () => {
+      clearTimeout(timer);
+      timer = setTimeout(render, 300);
+    });
+    unsubscribeStats = () => {
+      clearTimeout(timer);
+      off();
+    };
   }
 
   return {
     editor,
     toolbar,
     element: root,
+    ...(ui.autosave ? { autosave: ui.autosave } : {}),
+    showShortcuts: () => ui.shortcuts.open(),
     destroy() {
+      ui.destroy();
       unsubscribeStats?.();
-      linkUI?.destroy();
-      imageBalloon?.destroy();
-      tableBalloon?.destroy();
       toolbar.destroy();
       editor.destroy();
       root.remove();
