@@ -13,10 +13,10 @@
     "gzip": true
   },
   {
-    "name": "@axiomtext/ui (classic editor: engine + full toolbar UI, excl. feature plugins)",
+    "name": "@axiomtext/ui (classic editor: engine + full toolbar UI, excl. feature plugins; incl. on-demand comments UI and reader view)",
     "path": "packages/ui/dist/index.js",
     "import": "{ createClassicEditor }",
-    "limit": "85 KB",
+    "limit": "97 KB",
     "gzip": true
   },
   {
@@ -33,7 +33,7 @@
       "@axiomtext/core",
       "mathlive"
     ],
-    "limit": "14 KB",
+    "limit": "15 KB",
     "gzip": true
   }
 ]

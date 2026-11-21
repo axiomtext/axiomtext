@@ -105,3 +105,26 @@ Remaining small items carried into M1: performance benchmark harness, growing co
 - Toolbar button for plain columns (the engine and API exist: `insertColumns`)
 - Native-speaker review of the 9 translations
 - Comparison page vs CKEditor / TinyMCE / Tiptap / Froala
+
+## M2 — Flutter SDK beta (first version written; needs device testing)
+
+Done in code: FLT-001 (package, Android/iOS/macOS/Web), 002 (`AxiomTextEditor`), 003 (typed
+controller), 004 (events and streams), 005 (Material 3 and Cupertino toolbars and menus),
+006 (toolbar above the keyboard, haptics, caret kept visible), 007 (native math keyboard),
+008 (photo library/camera, upload function), 009 (theme from `ThemeData`), 010 (locale and RTL),
+013 (offline engine in `packages/flutter/assets/editor`, built by `packages/flutter-engine`),
+015 (semantics on native controls), 016 (prewarm, batched events, MathLive loaded on demand),
+017 (allowlisted JSON bridge, strict CSP, no navigation), 018 (example app, README, docs page).
+
+Tested here: the engine and bridge in a browser (`e2e/flutter-engine.spec.ts`, WebView and
+iframe transports). To do: `flutter analyze`, `flutter test` and the example on Android, iOS,
+macOS and Chrome; then `flutter pub publish`.
+
+Also fixed: maths with delimiters inside pasted HTML (ChatGPT) becomes equations.
+
+## Comments and readers' highlights (free; paid add-ons in CKEditor, TinyMCE and Tiptap)
+
+Comment threads saved in the document (plugin `packages/plugins/comments`, UI in
+`packages/ui/src/comments-ui.ts`), readers' highlights and the website viewer
+(`packages/viewer`, published as `axiomtext/viewer`), Flutter API and example. Tested in
+`e2e/comments.spec.ts`, `e2e/viewer.spec.ts`, `e2e/flutter-engine.spec.ts`.

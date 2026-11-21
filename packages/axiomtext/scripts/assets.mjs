@@ -51,7 +51,13 @@ for (const name of ['styles.css', 'content.css'])
 
 // Subresource Integrity hashes for the CDN entry files.
 const sri = {};
-for (const file of ['axiomtext.js', 'axiomtext.iife.js', 'axiomtext.css', 'content.css']) {
+for (const file of [
+  'axiomtext.js',
+  'axiomtext.iife.js',
+  'viewer.js',
+  'axiomtext.css',
+  'content.css',
+]) {
   const hash = createHash('sha384')
     .update(readFileSync(join(cdn, file)))
     .digest('base64');

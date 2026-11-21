@@ -1,0 +1,30 @@
+/* The editor fills the Flutter view edge to edge; the app provides the frame. */
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--ax-bg);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+#editor {
+  height: 100%;
+}
+#editor > .ax-editor {
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+}
+#editor > .ax-editor > .ax-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+/* The Flutter app shows its own toolbar. */
+body.ax-host-toolbar .ax-toolbar {
+  display: none;
+}

@@ -15,6 +15,7 @@ import { BasicStyles } from '@axiomtext/plugin-basic-styles';
 import { Indent, TextAlignment } from '@axiomtext/plugin-block-format';
 import { Blockquote, PageBreak } from '@axiomtext/plugin-blockquote';
 import { Columns } from '@axiomtext/plugin-columns';
+import { Comments } from '@axiomtext/plugin-comments';
 import { FontFamily, FontSize, Highlight, TextColor } from '@axiomtext/plugin-font';
 import { Heading } from '@axiomtext/plugin-heading';
 import { Image } from '@axiomtext/plugin-image';
@@ -51,6 +52,7 @@ export const ALL_PLUGINS: readonly AxiomPlugin[] = [
   Highlight,
   TextAlignment,
   Indent,
+  Comments,
 ];
 
 type WithPlugins<T> = Omit<T, 'plugins'> & { plugins?: readonly AxiomPlugin[] };
@@ -85,6 +87,7 @@ export * from '@axiomtext/plugin-image';
 export * from '@axiomtext/plugin-columns';
 export * from '@axiomtext/plugin-font';
 export * from '@axiomtext/plugin-block-format';
+export * from '@axiomtext/plugin-comments';
 
 // ── Math ──
 export * from '@axiomtext/math';
@@ -133,6 +136,8 @@ export {
   setLanguage,
   getLanguage,
   setIcons,
+  setImagePicker,
+  t,
   DEFAULT_TOOLBAR,
   BALLOON_TOOLBAR,
   FONT_FAMILIES,
@@ -140,7 +145,16 @@ export {
   TEXT_COLORS,
   HIGHLIGHT_COLORS,
 } from '@axiomtext/ui';
-export type { Messages, ToolbarItemName, IconName } from '@axiomtext/ui';
+export type {
+  Messages,
+  ToolbarItemName,
+  IconName,
+  CommentsOptions,
+  CommentsUI,
+} from '@axiomtext/ui';
+
+// ── Readers' highlights (the viewer itself is `axiomtext/viewer`) ──
+export type { ReaderHighlight, NotebookEntry, Viewer, ViewerOptions } from '@axiomtext/viewer';
 
 // ── Markdown (about 40 KB gzip; dropped from your bundle if you don't use it) ──
 export { toMarkdown, fromMarkdown, escapeMarkdown } from '@axiomtext/convert';

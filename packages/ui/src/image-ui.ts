@@ -5,6 +5,15 @@ import type { IconName, WrapIconName } from './icons';
 import { openPopoverPanel } from './popover';
 import type { Popover } from './popover';
 
+let imagePicker: (() => void) | null = null;
+/**
+ * Let the embedding app choose images itself (e.g. the Flutter SDK opens the phone's photo
+ * picker). While set, "Upload from computer" calls it instead of the browser's file dialog.
+ */
+export function setImagePicker(picker: (() => void) | null): void {
+  imagePicker = picker;
+}
+
 /** "Image" button: upload from the computer or insert from a URL. */
 export function createImageButton(editor: Editor): { element: HTMLButtonElement; destroy(): void } {
   const button = h(
@@ -40,7 +49,8 @@ export function createImageButton(editor: Editor): { element: HTMLButtonElement;
     );
     upload.addEventListener('click', () => {
       popover?.close();
-      fileInput.click();
+      if (imagePicker) imagePicker();
+      else fileInput.click();
     });
     const url = h('input', {
       type: 'text',

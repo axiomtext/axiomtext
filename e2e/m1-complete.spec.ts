@@ -51,6 +51,52 @@ test.describe('M1 batch 3 — math input', () => {
   });
 });
 
+test.describe('pasting maths written with delimiters', () => {
+  /** Pastes like the browser does when copying from ChatGPT: HTML plus plain text. */
+  const pasteRich = (page: Page, html: string, text: string) =>
+    page.evaluate(
+      ([h, t]) => {
+        const data = new DataTransfer();
+        data.setData('text/html', h);
+        data.setData('text/plain', t);
+        document
+          .querySelector('.ProseMirror')
+          ?.dispatchEvent(
+            new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true }),
+          );
+      },
+      [html, text],
+    );
+
+  test('\\(…\\) and \\[…\\] inside pasted HTML become equations; code is left alone', async ({
+    page,
+  }) => {
+    await openEmpty(page);
+    await editorBox(page).click();
+    await pasteRich(
+      page,
+      '<p>Einstein wrote \\(E = mc^2\\) in 1905.</p><p>\\[\\int_0^1 x\\,dx = \\tfrac12\\]</p><p>Keep <code>\\(x\\)</code> as code.</p>',
+      'Einstein wrote \\(E = mc^2\\) in 1905.',
+    );
+    const json = await api<{
+      doc: {
+        content: {
+          type: string;
+          content?: { type: string; attrs?: { latex: string }; text?: string; marks?: unknown[] }[];
+          attrs?: { latex: string };
+        }[];
+      };
+    }>(page, 'getJSON()');
+    const [first, second, third] = json.doc.content;
+    expect(first?.content?.map((n) => n.type)).toEqual(['text', 'math_inline', 'text']);
+    expect(first?.content?.[1]?.attrs?.latex).toBe('E = mc^2');
+    expect(second?.type).toBe('math_block');
+    expect(second?.attrs?.latex).toBe('\\int_0^1 x\\,dx = \\tfrac12');
+    expect(third?.content?.some((n) => n.text === '\\(x\\)' && n.marks)).toBe(true);
+    await expect(page.locator('.ax-math .katex').first()).toBeVisible();
+  });
+});
+
 test.describe('M1 batch 4 — everyday editing', () => {
   test('keyboard shortcuts dialog: Ctrl/⌘ + / and the More menu', async ({ page }) => {
     await openEmpty(page);

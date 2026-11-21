@@ -29,13 +29,17 @@ export default defineConfig({
             'guides/editor-types',
             'guides/math',
             'guides/images',
+            'guides/comments',
             'guides/saving',
             'guides/website-rendering',
             'guides/languages',
             'guides/security',
           ],
         },
-        { label: 'Frameworks', items: ['frameworks/react', 'frameworks/vue', 'frameworks/cdn'] },
+        {
+          label: 'Frameworks',
+          items: ['frameworks/react', 'frameworks/vue', 'frameworks/flutter', 'frameworks/cdn'],
+        },
         {
           label: 'Reference',
           items: [

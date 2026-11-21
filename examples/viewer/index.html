@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AxiomText viewer: comments and readers' highlights</title>
+    <!-- Local build. On a real site use https://cdn.jsdelivr.net/npm/axiomtext@0.1/dist/cdn/… -->
+    <link rel="stylesheet" href="../../packages/axiomtext/dist/cdn/content.css" />
+    <style>
+      body {
+        max-width: 680px;
+        margin: 48px auto;
+        padding: 0 16px;
+        font:
+          18px/1.7 system-ui,
+          sans-serif;
+      }
+      #notebook li {
+        margin: 6px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <p>
+      <small
+        >Try it: click the green text to see its comment. Select any words to highlight them; tap a
+        highlight to add a note. Reload: your highlights come back.</small
+      >
+    </p>
+
+    <article class="axiomtext-content">
+      <h1>Water</h1>
+      <p>Water boils at 100 °C at sea level and freezes at 0 °C.</p>
+      <p>
+        Ice is less dense than liquid water, which is
+        <mark
+          class="ax-comment"
+          data-comment-id="t1"
+          data-color="green"
+          data-thread='[{"id":"m1","author":"Teacher","text":"This is why lakes freeze from the top down.","time":1795000000000}]'
+          >why it floats</mark
+        >.
+      </p>
+      <p>A water molecule has two hydrogen atoms and one oxygen atom.</p>
+    </article>
+
+    <h2>My notebook</h2>
+    <ol id="notebook"></ol>
+
+    <script src="../../packages/axiomtext/dist/cdn/viewer.js"></script>
+    <script>
+      const KEY = 'axiomtext-demo-highlights';
+      const show = () => {
+        const list = document.getElementById('notebook');
+        list.replaceChildren(
+          ...viewer.notebook().map((entry) => {
+            const li = document.createElement('li');
+            li.textContent = `“${entry.text}” (${entry.highlight.color})${entry.highlight.note ? ' — ' + entry.highlight.note : ''}`;
+            li.style.cursor = 'pointer';
+            li.onclick = () => viewer.reveal(entry.highlight.id);
+            return li;
+          }),
+        );
+      };
+      const viewer = AxiomViewer.createViewer(document.querySelector('article'), {
+        highlights: {
+          // Your app would load and save these per reader on its server.
+          items: JSON.parse(localStorage.getItem(KEY) || '[]'),
+          onChange: (items) => {
+            localStorage.setItem(KEY, JSON.stringify(items));
+            show();
+          },
+        },
+      });
+      show();
+    </script>
+  </body>
+</html>

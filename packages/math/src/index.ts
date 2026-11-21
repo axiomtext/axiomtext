@@ -3,7 +3,7 @@ import { definePlugin, trustedHTML } from '@axiomtext/core';
 import type { EditorCommand, NodeDefinition } from '@axiomtext/core';
 import { InputRule, inputRules } from 'prosemirror-inputrules';
 import { Fragment, Slice } from 'prosemirror-model';
-import type { DOMOutputSpec, Node as PMNode, Schema } from 'prosemirror-model';
+import type { DOMOutputSpec, Node as PMNode, NodeType, Schema } from 'prosemirror-model';
 import { NodeSelection, Plugin, PluginKey, TextSelection } from 'prosemirror-state';
 import type { EditorView, NodeView } from 'prosemirror-view';
 import { openMathEditor } from './editor-popover';
@@ -29,7 +29,7 @@ export type { RenderResult } from './render';
 export { MATH_TEMPLATES, openMathEditor } from './editor-popover';
 export { GREEK_TEMPLATES, STRUCTURE_TEMPLATES, SYMBOL_TEMPLATES } from './math-bar';
 export type { MathTemplate } from './math-bar';
-export { loadMathLive } from './mathlive';
+export { loadMathLive, setMathLiveLoader } from './mathlive';
 
 const latexAttr = { latex: { default: '', validate: 'string' } } as const;
 
@@ -293,6 +293,52 @@ class MathView implements NodeView {
   }
 }
 
+/**
+ * Lets an embedding app (the Flutter SDK) drive equation editing with its own keyboard.
+ * While a host is set, MathLive's on-screen keyboard stays hidden and the host gets controls.
+ */
+export interface MathInputControls {
+  /** Insert LaTeX at the caret; `#0`/`#?` placeholders work as in the math bar templates. */
+  insert(latex: string): void;
+  /** Run an allowed MathLive command, e.g. `deleteBackward`, `moveToNextChar`. */
+  command(name: MathInputCommand): void;
+  /** Finish editing (keeps the equation). */
+  commit(): void;
+  /** Stop editing without changing the equation. */
+  cancel(): void;
+  /** Show or hide the LaTeX text box. */
+  toggleLatex(): void;
+  /** Current LaTeX. */
+  latex(): string;
+  readonly display: boolean;
+}
+export const MATH_INPUT_COMMANDS = [
+  'deleteBackward',
+  'deleteForward',
+  'moveToPreviousChar',
+  'moveToNextChar',
+  'moveUp',
+  'moveDown',
+  'moveToMathfieldStart',
+  'moveToMathfieldEnd',
+  'moveToNextPlaceholder',
+  'moveToPreviousPlaceholder',
+  'undo',
+  'redo',
+] as const;
+export type MathInputCommand = (typeof MATH_INPUT_COMMANDS)[number];
+export interface MathInputHost {
+  start(controls: MathInputControls): void;
+  /** Called on every change while editing. */
+  change?(latex: string): void;
+  end(): void;
+}
+let inputHost: MathInputHost | null = null;
+/** Set (or clear with null) the app that provides the math keyboard. */
+export function setMathInputHost(host: MathInputHost | null): void {
+  inputHost = host;
+}
+
 /** One editing session: MathLive in place + the math bar; falls back to the LaTeX popover. */
 class EditSession {
   private field: MathfieldElement | null = null;
@@ -302,6 +348,7 @@ class EditSession {
   private latexFormat: MathInputFormat = 'latex';
   private fallback: MathEditorHandle | null = null;
   private closed = false;
+  private host: MathInputHost | null = null;
   private readonly original: string;
   private cleanup: (() => void)[] = [];
 
@@ -327,7 +374,7 @@ class EditSession {
     const field = new mathlive.MathfieldElement();
     field.value = this.original;
     field.smartFence = true;
-    field.mathVirtualKeyboardPolicy = 'auto';
+    field.mathVirtualKeyboardPolicy = inputHost ? 'manual' : 'auto';
     field.setAttribute('aria-label', t('Equation editor'));
     field.classList.add('ax-math-field');
     if (this.owner.display) field.classList.add('is-block');
@@ -356,6 +403,7 @@ class EditSession {
     field.addEventListener('input', () => {
       this.syncLatex();
       this.bar?.position(dom);
+      this.host?.change?.(this.currentLatex());
     });
     // Enter commits; arrows / Tab at the edges leave the equation (MATH-038).
     field.addEventListener('change', () => this.commit());
@@ -436,6 +484,31 @@ class EditSession {
       field.executeCommand('moveToMathfieldEnd');
     }
     this.bar?.position(dom);
+    if (inputHost) {
+      this.host = inputHost;
+      this.host.start(this.controls(field));
+    }
+  }
+
+  private controls(field: MathfieldElement): MathInputControls {
+    const allowed = new Set<string>(MATH_INPUT_COMMANDS);
+    return {
+      insert: (latex) => {
+        if (this.closed) return;
+        field.executeCommand(['insert', latex, { selectionMode: 'placeholder', focus: true }]);
+        this.syncLatex();
+      },
+      command: (name) => {
+        if (this.closed || !allowed.has(name)) return;
+        field.executeCommand(name);
+        this.syncLatex();
+      },
+      commit: () => this.commit(),
+      cancel: () => this.cancel(true),
+      toggleLatex: () => this.toggleLatex(),
+      latex: () => this.currentLatex(),
+      display: this.owner.display,
+    };
   }
 
   private syncLatex(): void {
@@ -566,6 +639,9 @@ class EditSession {
 
   private teardown(): void {
     this.closed = true;
+    const host = this.host;
+    this.host = null;
+    host?.end();
     this.cleanup.forEach((fn) => fn());
     this.cleanup = [];
     if (window.mathVirtualKeyboard?.visible) window.mathVirtualKeyboard.hide();
@@ -647,6 +723,79 @@ export function textMathSlice(schema: Schema, text: string): Slice | null {
   }
   const open = (node: PMNode | undefined): number => (node?.type === paragraph ? 1 : 0);
   return new Slice(Fragment.from(blocks), open(blocks[0]), open(blocks.at(-1)));
+}
+
+/**
+ * Turns maths written with delimiters inside pasted rich text into equations. Pasting from
+ * ChatGPT and many sites puts HTML on the clipboard whose text still says `\\(E = mc^2\\)`.
+ * Text in code (inline code or code blocks) is left alone. A paragraph holding only
+ * `\\[…\\]` or `$$…$$` becomes a block equation.
+ */
+export function convertTextMathInSlice(slice: Slice, schema: Schema): Slice {
+  const inline = schema.nodes['math_inline'];
+  const block = schema.nodes['math_block'];
+  if (!inline) return slice;
+  const code = schema.marks['code'];
+  const isCode = (node: PMNode): boolean => !!code && code.isInSet(node.marks) !== undefined;
+  const allowsInline = (type: NodeType): boolean => type.contentMatch.matchType(inline) !== null;
+
+  const onlyDisplayMath = (node: PMNode): string | null => {
+    if (!node.isTextblock || node.childCount === 0) return null;
+    let plain = true;
+    node.forEach((child) => {
+      if (!child.isText || isCode(child)) plain = false;
+    });
+    if (!plain) return null;
+    const parts = splitTextMath(node.textContent.trim());
+    const only = parts.length === 1 ? parts[0] : undefined;
+    return only?.type === 'math' && only.display ? only.latex : null;
+  };
+
+  const mapContent = (fragment: Fragment, parent: NodeType | null, top: boolean): Fragment => {
+    const out: PMNode[] = [];
+    let changed = false;
+    fragment.forEach((node, _offset, index) => {
+      if (node.isText) {
+        const text = node.text ?? '';
+        if (isCode(node) || (parent && !allowsInline(parent)) || !hasTextMath(text)) {
+          out.push(node);
+          return;
+        }
+        for (const part of splitTextMath(text)) {
+          if (part.type === 'text') {
+            if (part.text) out.push(schema.text(part.text, node.marks));
+          } else out.push(inline.create({ latex: part.latex }));
+        }
+        changed = true;
+        return;
+      }
+      if (node.type.spec.code || node.isAtom) {
+        out.push(node);
+        return;
+      }
+      // A paragraph that is only a display equation becomes a block equation, unless it sits at
+      // an open edge of the slice (then it is merged into the current paragraph and stays inline).
+      const atOpenEdge =
+        top &&
+        ((index === 0 && slice.openStart > 0) ||
+          (index === fragment.childCount - 1 && slice.openEnd > 0));
+      const display = block && !atOpenEdge ? onlyDisplayMath(node) : null;
+      if (display !== null && block) {
+        out.push(block.create({ latex: display }));
+        changed = true;
+        return;
+      }
+      const content = mapContent(node.content, node.type, false);
+      if (content !== node.content) {
+        out.push(node.copy(content));
+        changed = true;
+      } else out.push(node);
+    });
+    return changed ? Fragment.fromArray(out) : fragment;
+  };
+
+  const content = mapContent(slice.content, null, true);
+  return content === slice.content ? slice : new Slice(content, slice.openStart, slice.openEnd);
 }
 
 /** Inserts an inline equation (opens the editor). */
@@ -734,6 +883,8 @@ export const MathPlugin = definePlugin({
           // Pasting notes or Markdown with $…$, $$…$$, \(…\), \[…\] gives real equations.
           clipboardTextParser: (text, _context, _plain, view) =>
             (hasTextMath(text) ? textMathSlice(view.state.schema, text) : null) as Slice,
+          // …and so does rich text (HTML) whose text still has the delimiters, e.g. from ChatGPT.
+          transformPasted: (slice, view) => convertTextMathInSlice(slice, view.state.schema),
           // While the visual editor is opening, swallow typing so it can't overwrite the equation.
           handleKeyDown: (view) => opening.has(view),
           handleTextInput: (view) => opening.has(view),

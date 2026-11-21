@@ -1,0 +1,20 @@
+{
+  "name": "@axiomtext/flutter-engine",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The editor engine bundled into the Flutter SDK (packages/flutter/assets/editor). Internal.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "devDependencies": {
+    "@axiomtext/bridge-protocol": "workspace:*",
+    "axiomtext": "workspace:*",
+    "esbuild": "^0.27.0",
+    "katex": "^0.19.1",
+    "mathlive": "^0.111.4"
+  }
+}

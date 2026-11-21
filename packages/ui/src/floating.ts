@@ -1,6 +1,9 @@
 import { createEditor } from '@axiomtext/view';
 import type { Autosave, Editor } from '@axiomtext/view';
 import { h } from './dom';
+import { loadCommentsUI, loadReaderView } from './comments-loader';
+import type { CommentsUI } from './comments-loader';
+import type { Viewer } from '@axiomtext/viewer';
 import { icon } from './icons';
 import { attachEditorUI, prepare } from './setup';
 import type { CommonEditorOptions } from './setup';
@@ -20,6 +23,7 @@ export const BALLOON_TOOLBAR: readonly ToolbarItemName[] = [
   '|',
   'link',
   'math',
+  'comment',
   'more',
 ];
 
@@ -48,12 +52,16 @@ export interface FloatingEditor {
   readonly element: HTMLElement;
   readonly autosave?: Autosave;
   showShortcuts(): void;
+  /** The comments UI, when the editor was created with `comments`. */
+  readonly comments: Promise<CommentsUI> | null;
+  /** Read-only editors: comment threads on click and readers' highlights (see `highlights`). */
+  readonly reader: Promise<Viewer> | null;
   destroy(): void;
 }
 
 /** Overlays that belong to the editor UI: focus moving into them keeps the toolbar open. */
 const OVERLAYS =
-  '.ax-floating-toolbar, .ax-popover, .ax-menu, .ax-math-editor, .ax-math-bar, .ax-shortcuts-backdrop, .ax-balloon, math-field, .ML__keyboard';
+  '.ax-comments-panel, .ax-floating-toolbar, .ax-popover, .ax-menu, .ax-math-editor, .ax-math-bar, .ax-shortcuts-backdrop, .ax-balloon, math-field, .ML__keyboard';
 
 const GAP = 8;
 
@@ -72,10 +80,13 @@ function createFloatingEditor(options: FloatingEditorOptions, kind: Kind): Float
   const ui = attachEditorUI(editor, prepared.autosave);
 
   const items = toolbarItems ?? (kind === 'balloon' ? BALLOON_TOOLBAR : undefined);
+  const comments = loadCommentsUI(editor, prepared.comments, document.body);
+  const reader = loadReaderView(editor, prepared.highlights, !prepared.comments);
   const toolbar = createToolbar(editor, {
     ...(items ? { items } : {}),
     ...(ui.linkUI ? { onLink: ui.linkUI.open } : {}),
     onShortcuts: () => ui.shortcuts.open(),
+    ...comments.handlers,
     // The inline toolbar is as wide as the editor; the balloon sizes to its buttons.
     overflow: kind === 'inline',
   });
@@ -122,10 +133,27 @@ function createFloatingEditor(options: FloatingEditorOptions, kind: Kind): Float
     inserter = { button, panel, toolbar: insertToolbar };
   }
 
+  // Shared overlays (math bar, popovers, menus) count as "inside" only for the editor that
+  // opened them: the one that had focus when focus moved into the overlay. Otherwise every
+  // inline editor on the page would show its toolbar when one opens the math bar.
+  let ownsOverlay = false;
+  const ownToolbar = (node: Element): boolean =>
+    toolbar.element.contains(node) ||
+    !!inserter?.button.contains(node) ||
+    !!inserter?.panel.contains(node);
+  const onOwnership = (event: FocusEvent): void => {
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target) return;
+    if (root.contains(target) || ownToolbar(target)) ownsOverlay = true;
+    else if (!target.closest(OVERLAYS)) ownsOverlay = false;
+    // Focus moving into a shared overlay keeps the current owner.
+  };
   const focusInside = (): boolean => {
     if (editor.hasFocus()) return true;
     const active = document.activeElement;
-    return !!active && active !== document.body && !!active.closest(OVERLAYS);
+    if (!active || active === document.body) return false;
+    if (ownToolbar(active)) return true;
+    return ownsOverlay && !!active.closest(OVERLAYS);
   };
 
   let visible = false;
@@ -210,6 +238,7 @@ function createFloatingEditor(options: FloatingEditorOptions, kind: Kind): Float
       editor.focus();
     }
   };
+  document.addEventListener('focusin', onOwnership, true);
   document.addEventListener('focusin', onFocusChange);
   document.addEventListener('focusout', onFocusChange);
   document.addEventListener('keydown', onKey);
@@ -222,9 +251,14 @@ function createFloatingEditor(options: FloatingEditorOptions, kind: Kind): Float
     element: root,
     ...(ui.autosave ? { autosave: ui.autosave } : {}),
     showShortcuts: () => ui.shortcuts.open(),
+    comments: comments.ui,
+    reader,
     destroy() {
+      void comments.ui?.then((c) => c.destroy());
+      void reader?.then((v) => v.destroy());
       cancelAnimationFrame(pending);
       offs.forEach((off) => off());
+      document.removeEventListener('focusin', onOwnership, true);
       document.removeEventListener('focusin', onFocusChange);
       document.removeEventListener('focusout', onFocusChange);
       document.removeEventListener('keydown', onKey);

@@ -1,5 +1,49 @@
 # @axiomtext/vue
 
+## 0.2.0
+
+### Minor Changes
+
+- Comments and readers' highlights, free:
+
+  - **Comments** (`comments: { author }`): select text → Comment; threads with replies, editing,
+    resolve/reopen, a comments panel with Open and Resolved tabs, comment-only mode for reviewers.
+    Threads are saved inside the document (JSON and HTML). Commands and `listCommentThreads(json)`
+    for apps and servers.
+  - **Readers' highlights and notes** on read-only content: colours, private notes, a notebook
+    list. Drawn with the CSS Highlight API (the page is not changed) and anchored by quote,
+    context and position so they survive later edits. Stored by your app per reader.
+  - **`axiomtext/viewer`** (about 5 KB gzip, also `dist/cdn/viewer.js`): for websites showing saved
+    content: comment threads open on click, and readers can highlight and take notes.
+
+- Any highlight colour, and a redesigned comments UI:
+
+  - Comments and reader highlights can use **any colour** (palette, system colour picker or hex),
+    not just the six presets, and a **Highlight background** switch (on by default) to underline
+    the text instead. New `fill` option on `addComment`, new `setCommentFill` command,
+    `setCommentColor` accepts `#rrggbb`; reader highlights get an optional `fill`.
+  - Redesigned comment box, thread balloons and comments panel: avatars, colour-tinted quotes,
+    a live preview, a sliding tab indicator and smooth animations (reduced-motion respected).
+  - Fix: the thread balloon stays next to its text after the colour changes, and the reader's
+    menu no longer closes when scrolling inside it.
+
+### Patch Changes
+
+- Fix: with several inline or balloon editors on one page, opening the math bar (or a popover) in
+  one editor made every editor show its floating toolbar on top of it. Shared overlays now count
+  as "inside" only for the editor that opened them.
+
+  Pasting HTML whose text contains maths delimiters (`\(…\)`, `\[…\]`, `$…$`, `$$…$$`), as ChatGPT
+  puts on the clipboard, now creates equations.
+
+  The math bar and popovers now sit above floating toolbars, and the stacking order can be raised
+  for apps with high modals: `--ax-z-toolbar` (1000), `--ax-z-overlay` (1100), `--ax-z-dialog` (1300).
+
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+  - axiomtext@0.2.0
+
 ## 0.1.1
 
 - Now built on the single `axiomtext` package. Install with `npm install axiomtext @axiomtext/vue`.

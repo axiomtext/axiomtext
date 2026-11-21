@@ -42,6 +42,8 @@ export type ToolbarItemName =
   | 'horizontalRule'
   | 'pageBreak'
   | 'shortcuts'
+  | 'comment'
+  | 'commentsPanel'
   | 'more'
   | '|';
 
@@ -65,6 +67,7 @@ export const DEFAULT_TOOLBAR: readonly ToolbarItemName[] = [
   'image',
   'table',
   'math',
+  'comment',
   '|',
   'align',
   'bulletedList',
@@ -73,6 +76,7 @@ export const DEFAULT_TOOLBAR: readonly ToolbarItemName[] = [
   'outdent',
   'indent',
   '|',
+  'commentsPanel',
   'more',
 ];
 
@@ -87,6 +91,7 @@ const OVERFLOW_PRIORITY: readonly ToolbarItemName[] = [
   'bulletedList',
   'link',
   'math',
+  'commentsPanel',
 ];
 
 /** Items always shown in the "More" menu. */
@@ -305,6 +310,19 @@ const BUTTONS: Record<ButtonName, ButtonSpec> = {
     shortcut: 'Mod-/',
     run: () => false, // opened through ToolbarOptions.onShortcuts
   },
+  comment: {
+    label: 'Comment',
+    icon: 'comment',
+    shortcut: 'Mod-Alt-m',
+    requires: 'addComment',
+    run: () => false, // opened through ToolbarOptions.onComment
+    enabled: (e) => !e.getSelectionState().empty,
+  },
+  commentsPanel: {
+    label: 'Comments',
+    icon: 'comments',
+    run: () => false, // opened through ToolbarOptions.onCommentsPanel
+  },
 };
 
 export const FONT_FAMILIES: readonly { label: string; value: string | null }[] = [
@@ -351,6 +369,10 @@ export interface ToolbarOptions {
   onLink?: () => void;
   /** Called by the "Keyboard shortcuts" item (the classic editor opens its help dialog). */
   onShortcuts?: () => void;
+  /** Called by the "Comment" item (shown only when given). */
+  onComment?: () => void;
+  /** Called by the "Comments" item that opens the list of threads (shown only when given). */
+  onCommentsPanel?: () => void;
   /** Accessible name of the toolbar. */
   ariaLabel?: string;
   /**
@@ -409,7 +431,12 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
   });
   const has = (command: string): boolean => editor.commandNames.includes(command);
 
-  const handlers: Handlers = { link: options.onLink, shortcuts: options.onShortcuts };
+  const handlers: Handlers = {
+    link: options.onLink,
+    shortcuts: options.onShortcuts,
+    comment: options.onComment,
+    commentsPanel: options.onCommentsPanel,
+  };
   const available = (name: ToolbarItemName): boolean => {
     switch (name) {
       case '|':
@@ -433,6 +460,10 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
         return has('setTextAlign');
       case 'shortcuts':
         return options.onShortcuts !== undefined;
+      case 'comment':
+        return options.onComment !== undefined && has('addComment');
+      case 'commentsPanel':
+        return options.onCommentsPanel !== undefined && has('addComment');
       default: {
         const req = BUTTONS[name].requires;
         return req === undefined || has(req);

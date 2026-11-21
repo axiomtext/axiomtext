@@ -1,6 +1,6 @@
 {
   "name": "axiomtext",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Free, MIT-licensed rich text editor with a visual math editor built in. Classic, inline and balloon editors, tables, images, Markdown, 10 languages.",
   "license": "MIT",
   "type": "module",
@@ -29,6 +29,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./viewer": {
+      "types": "./dist/viewer.d.ts",
+      "import": "./dist/viewer.js"
     },
     "./styles.css": {
       "types": "./dist/styles.css.d.ts",
@@ -83,6 +87,7 @@
     "@axiomtext/plugin-block-format": "workspace:*",
     "@axiomtext/plugin-blockquote": "workspace:*",
     "@axiomtext/plugin-columns": "workspace:*",
+    "@axiomtext/plugin-comments": "workspace:*",
     "@axiomtext/plugin-font": "workspace:*",
     "@axiomtext/plugin-heading": "workspace:*",
     "@axiomtext/plugin-image": "workspace:*",
@@ -90,7 +95,8 @@
     "@axiomtext/plugin-list": "workspace:*",
     "@axiomtext/plugin-table": "workspace:*",
     "@axiomtext/ui": "workspace:*",
-    "@axiomtext/view": "workspace:*"
+    "@axiomtext/view": "workspace:*",
+    "@axiomtext/viewer": "workspace:*"
   },
   "jsdelivr": "dist/cdn/axiomtext.iife.js",
   "unpkg": "dist/cdn/axiomtext.iife.js",

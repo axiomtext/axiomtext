@@ -9,6 +9,7 @@ import { Table } from '@axiomtext/plugin-table';
 import { Link } from '@axiomtext/plugin-link';
 import { List } from '@axiomtext/plugin-list';
 import { Heading } from '@axiomtext/plugin-heading';
+import { Comments } from '@axiomtext/plugin-comments';
 import { createBalloonEditor, createClassicEditor, createInlineEditor } from '@axiomtext/ui';
 import type { Messages } from '@axiomtext/ui';
 import type { DocumentJSON } from '@axiomtext/core';
@@ -132,6 +133,7 @@ const plugins = [
   Highlight,
   TextAlignment,
   Indent,
+  Comments,
 ];
 
 // ── Editor ─────────────────────────────────────────────
@@ -149,6 +151,15 @@ async function mount(content: DocumentJSON | undefined): Promise<void> {
     ...(translations ? { translations } : {}),
     // ?autosave keeps your draft in this browser between visits.
     ...(params.has('autosave') ? { autosave: true } : {}),
+    // Comments: on by default in the playground. ?comments=only lets you comment but not edit.
+    ...(params.get('comments') === 'off'
+      ? {}
+      : {
+          comments: {
+            author: { name: 'You', id: 'you' },
+            ...(params.get('comments') === 'only' ? { only: true } : {}),
+          },
+        }),
     plugins,
     placeholder: 'Start writing…',
     ariaLabel: 'Document body',

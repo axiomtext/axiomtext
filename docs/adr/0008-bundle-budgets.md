@@ -24,3 +24,26 @@ The classic editor UI (toolbar with menus, colour picker, table grid, image and 
 
 ## Consequences
 Still competitive with CKEditor 5 and TinyMCE builds; heavy features (math, code highlighting, conversion) stay lazy-loaded.
+
+## Update (M2, Flutter SDK)
+
+Math budget raised from 14 KB to 15 KB (gzip). The plugin now converts maths written with
+delimiters inside pasted HTML (`\(…\)` from ChatGPT and similar sites) into equations, and lets an
+embedding app drive equation editing with its own keyboard (`setMathInputHost`, used by the
+Flutter SDK) and supply its own MathLive loader (`setMathLiveLoader`). Together these added
+about 0.4 KB.
+
+## Update (comments and readers' highlights)
+
+UI budget raised from 85 KB to 94 KB (gzip). size-limit counts code loaded on demand: the
+comments UI (about 3 KB) and the reader view for read-only editors (about 4.5 KB) are separate
+chunks that download only when an editor is created with `comments` or `highlights`. What every
+editor loads up front grew by about 1 KB (the Comment buttons and their icons). The website
+viewer, `axiomtext/viewer`, is about 5 KB on its own and doesn't load the editor.
+
+## Update (any highlight colour, redesigned comments UI)
+
+UI budget raised from 94 KB to 97 KB (gzip). The growth (about 1.9 KB) is the shared colour
+picker (presets, palette, hex and system picker, background switch, preview) and the redesigned
+thread and panel code. It's all in the on-demand comments and reader chunks; what every editor
+loads up front is unchanged. The new styles are CSS, outside this budget.

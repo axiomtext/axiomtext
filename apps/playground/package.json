@@ -17,6 +17,7 @@
     "@axiomtext/plugin-block-format": "workspace:*",
     "@axiomtext/plugin-blockquote": "workspace:*",
     "@axiomtext/plugin-columns": "workspace:*",
+    "@axiomtext/plugin-comments": "workspace:*",
     "@axiomtext/plugin-font": "workspace:*",
     "@axiomtext/plugin-heading": "workspace:*",
     "@axiomtext/plugin-image": "workspace:*",

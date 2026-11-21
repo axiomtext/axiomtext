@@ -1,6 +1,6 @@
 {
   "name": "@axiomtext/react",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "The AxiomText rich text and math editor as a React component.",
   "license": "MIT",
   "type": "module",

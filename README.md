@@ -61,10 +61,11 @@ when you want them.
 | **Tables**     | Insert from a grid, add/remove rows & columns, merge/split cells, header rows, cell colours, column resizing                                                                                                                                               |
 | **Images**     | Upload, paste, drag & drop, resize, captions, alt text; wrap modes: in line, left, right, break text, **text on both sides**; move with arrow keys; pluggable upload adapters                                                                              |
 | **Math**       | Inline & block equations; **click-to-edit visual editor**; LaTeX with autocomplete; AsciiMath; structure/symbol/Greek palettes; math keyboard; `$…$`, `\(…\)`, `$$` triggers; paste MathML from Wikipedia, ChatGPT, MathJax pages; tested on 500 equations |
+| **Comments**   | Comment threads on text (reply, edit, resolve, comments panel, comment-only mode), saved in the document; readers' colour highlights and private notes on read-only content that survive later edits                                                       |
 | **Writing**    | Markdown shortcuts, undo/redo, word & character count, keyboard shortcuts dialog (Ctrl/⌘ + /), placeholder, read-only mode                                                                                                                                 |
 | **Data**       | JSON (lossless, versioned), HTML, Markdown import/export, plain text; autosave to the browser or your server; paste cleanup for Word, Google Docs and web pages                                                                                            |
 | **Editors**    | Classic (fixed toolbar), inline (floating toolbar), balloon (toolbar on selection + "+" inserter); headless mode for custom UIs                                                                                                                            |
-| **Frameworks** | Vanilla JS, React, Vue, CDN `<script>` / ES module                                                                                                                                                                                                         |
+| **Frameworks** | Vanilla JS, React, Vue, Flutter, CDN `<script>` / ES module                                                                                                                                                                                                |
 | **Languages**  | UI in English, বাংলা, हिन्दी, العربية, Español, Français, Deutsch, Português, 简体中文, 日本語; right-to-left; IME input                                                                                                                                    |
 | **Look**       | Modern UI, light & dark themes, smooth (and reduced-motion-aware) animations, custom icons, CSS variables                                                                                                                                                  |
 
@@ -149,6 +150,23 @@ const doc = ref(savedJson);
 </template>
 ```
 
+### Flutter
+
+```bash
+flutter pub add axiomtext
+```
+
+```dart
+final controller = AxiomTextController();
+
+AxiomTextEditor(controller: controller, placeholder: 'Start writing…');
+
+final json = await controller.getJson(); // the same JSON as the web editor
+```
+
+Android, iOS, macOS and Web, offline. It has a native Material or Cupertino toolbar above the
+keyboard and a native math keyboard. See [`packages/flutter`](packages/flutter).
+
 ### Editor types
 
 ```js
@@ -227,6 +245,25 @@ createClassicEditor({
 
 Without an adapter, images are embedded in the document (base64) — handy for demos, no server needed.
 
+### Comments and readers' highlights
+
+```js
+createClassicEditor({ element, comments: { author: { name: 'Ana', id: 'user-42' } } });
+```
+
+Select text → **Comment**; click commented text for its thread (reply, edit, resolve). Threads
+are saved inside the document. On read-only pages, readers can highlight in colours and add
+private notes, saved per reader by your app, which stay on the right words even if the text is
+edited later:
+
+```js
+import { createViewer } from 'axiomtext/viewer'; // ~5 KB gzip, no editor needed
+
+createViewer(article, { highlights: { items: saved, onChange: save } });
+```
+
+See [Comments & highlights](https://axiomtext.dev/guides/comments/).
+
 ### Languages and right-to-left
 
 ```js
@@ -298,11 +335,12 @@ Every command, per plugin: [axiomtext.dev/reference/plugins](https://axiomtext.d
 
 ## Packages
 
-| Package                              | What it is                                                                       |
-| ------------------------------------ | -------------------------------------------------------------------------------- |
-| [`axiomtext`](packages/axiomtext)    | The editor: every feature, styles, 10 languages, TypeScript types and CDN builds |
-| [`@axiomtext/react`](packages/react) | React component (install with `axiomtext`)                                       |
-| [`@axiomtext/vue`](packages/vue)     | Vue 3 component with `v-model` (install with `axiomtext`)                        |
+| Package                                   | What it is                                                                       |
+| ----------------------------------------- | -------------------------------------------------------------------------------- |
+| [`axiomtext`](packages/axiomtext)         | The editor: every feature, styles, 10 languages, TypeScript types and CDN builds |
+| [`@axiomtext/react`](packages/react)      | React component (install with `axiomtext`)                                       |
+| [`@axiomtext/vue`](packages/vue)          | Vue 3 component with `v-model` (install with `axiomtext`)                        |
+| [`axiomtext` (pub.dev)](packages/flutter) | Flutter widget and controller (Android, iOS, macOS, Web)                         |
 
 Features you don't use are left out of your bundle, and the visual math editor, Markdown and
 languages load only when needed. Inside this repository the editor is split into smaller
@@ -381,7 +419,8 @@ Packages are published to npm from your computer with your npm login and 2FA —
 - [x] **M1 — v0.1 alpha:** core editing, tables, images, visual math editor, Markdown, autosave,
       classic/inline/balloon editors, React & Vue, CDN, 10 languages, docs site
 - [ ] **M2 — v0.5 beta:** advanced tables, paste from Word/Excel, find & replace, mentions,
-      slash menu, code blocks, media embeds, Angular & Svelte, **Flutter SDK beta**
+      slash menu, code blocks, media embeds, Angular & Svelte, **Flutter SDK beta** (first version
+      in [`packages/flutter`](packages/flutter))
 - [ ] **M3 — v1.0:** pagination & page setup, footnotes, table of contents, **Word (DOCX)
       import/export**, PDF export, equation numbering
 

@@ -11,6 +11,11 @@ import {
   BetweenVerticalStart,
   Ellipsis,
   Highlighter,
+  MessageSquarePlus,
+  MessagesSquare,
+  CircleCheck,
+  RotateCcw,
+  NotebookPen,
   Image as ImageIcon,
   IndentDecrease,
   IndentIncrease,
@@ -111,6 +116,12 @@ const icons = {
   keyboard: Keyboard,
   plus: Plus,
   fullWidth: RectangleHorizontal,
+  comment: MessageSquarePlus,
+  comments: MessagesSquare,
+  resolve: CircleCheck,
+  reopen: RotateCcw,
+  edit: Pencil,
+  note: NotebookPen,
 } as const;
 
 export type IconName = keyof typeof icons;

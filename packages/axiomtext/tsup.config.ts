@@ -9,7 +9,7 @@ export default defineConfig([
   // one package; ProseMirror, KaTeX, MathLive, markdown-it and Lucide stay normal dependencies.
   // Splitting keeps the lazily loaded parts (visual math editor, languages) as separate chunks.
   {
-    entry: ['src/index.ts', 'src/locales/*.ts'],
+    entry: ['src/index.ts', 'src/viewer.ts', 'src/locales/*.ts'],
     format: ['esm'],
     dts: { resolve: [/^@axiomtext\//] },
     noExternal: [/^@axiomtext\//],
@@ -33,6 +33,21 @@ export default defineConfig([
     treeshake: true,
     sourcemap: true,
     target: 'es2022',
+    banner,
+  },
+  // CDN, website viewer only: global `AxiomViewer` (comment bubbles, readers' highlights).
+  {
+    entry: { viewer: 'src/viewer.ts' },
+    outDir: 'dist/cdn',
+    format: ['iife'],
+    globalName: 'AxiomViewer',
+    outExtension: () => ({ js: '.js' }),
+    noExternal: [/.*/],
+    platform: 'browser',
+    minify: true,
+    treeshake: true,
+    sourcemap: true,
+    target: 'es2020',
     banner,
   },
   // CDN, classic script: one file, global `AxiomText`.

@@ -13,7 +13,12 @@ export { createMenuButton } from './menu-button';
 export type { MenuButton, MenuButtonOptions, MenuItem } from './menu-button';
 export { createColorButton, HIGHLIGHT_COLORS, TEXT_COLORS } from './color-button';
 export { createTableButton } from './table-button';
-export { createImageBalloon, createImageButton, createTableBalloon } from './image-ui';
+export {
+  createImageBalloon,
+  createImageButton,
+  createTableBalloon,
+  setImagePicker,
+} from './image-ui';
 export { openPopoverPanel } from './popover';
 export type { Popover, PopoverOptions } from './popover';
 export { createShortcutDialog } from './shortcut-dialog';
@@ -28,3 +33,5 @@ export {
 } from './floating';
 export type { FloatingEditor, FloatingEditorOptions } from './floating';
 export type { CommonEditorOptions } from './setup';
+export type { CommentsUI } from './comments-loader';
+export type { CommentsOptions } from './setup';

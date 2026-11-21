@@ -2,6 +2,9 @@ import { t } from '@axiomtext/i18n';
 import { createEditor } from '@axiomtext/view';
 import type { Autosave, Editor } from '@axiomtext/view';
 import { h } from './dom';
+import { loadCommentsUI, loadReaderView } from './comments-loader';
+import type { CommentsUI } from './comments-loader';
+import type { Viewer } from '@axiomtext/viewer';
 import { attachEditorUI, prepare, saveStatusText } from './setup';
 import type { CommonEditorOptions } from './setup';
 import { createToolbar } from './toolbar';
@@ -26,6 +29,10 @@ export interface ClassicEditor {
   readonly autosave?: Autosave;
   /** Opens the keyboard shortcuts dialog (also Ctrl/⌘ + /). */
   showShortcuts(): void;
+  /** The comments UI, when the editor was created with `comments`. */
+  readonly comments: Promise<CommentsUI> | null;
+  /** Read-only editors: comment threads on click and readers' highlights (see `highlights`). */
+  readonly reader: Promise<Viewer> | null;
   destroy(): void;
 }
 
@@ -57,10 +64,16 @@ export function createClassicEditor(options: ClassicEditorOptions): ClassicEdito
     saveState.dataset['status'] = status;
     saveState.textContent = saveStatusText(status);
   });
+  const comments = loadCommentsUI(editor, prepared.comments, root);
+  const reader = loadReaderView(editor, prepared.highlights, !prepared.comments);
+  // Commenting only: the toolbar offers just the comment buttons.
+  const items = prepared.comments?.only ? (['comment', 'commentsPanel'] as const) : toolbarItems;
   const toolbar = createToolbar(editor, {
-    ...(toolbarItems ? { items: toolbarItems } : {}),
+    ...(items ? { items } : {}),
+    ...(prepared.comments?.only ? { more: [] } : {}),
     ...(ui.linkUI ? { onLink: ui.linkUI.open } : {}),
     onShortcuts: () => ui.shortcuts.open(),
+    ...comments.handlers,
   });
   root.append(toolbar.element, body);
 
@@ -107,7 +120,11 @@ export function createClassicEditor(options: ClassicEditorOptions): ClassicEdito
     element: root,
     ...(ui.autosave ? { autosave: ui.autosave } : {}),
     showShortcuts: () => ui.shortcuts.open(),
+    comments: comments.ui,
+    reader,
     destroy() {
+      void comments.ui?.then((c) => c.destroy());
+      void reader?.then((v) => v.destroy());
       ui.destroy();
       unsubscribeStats?.();
       toolbar.destroy();
