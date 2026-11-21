@@ -43,7 +43,8 @@
     "@axiomtext/view": "workspace:*",
     "lucide": "^1.77.0",
     "@axiomtext/plugin-comments": "workspace:*",
-    "@axiomtext/viewer": "workspace:*"
+    "@axiomtext/viewer": "workspace:*",
+    "@axiomtext/plugin-marks": "workspace:*"
   },
   "devDependencies": {
     "@axiomtext/plugin-basic-styles": "workspace:*",

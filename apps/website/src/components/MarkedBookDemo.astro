@@ -1,0 +1,267 @@
+---
+// Marked book demo: a teacher marks a chapter; the student's reading view updates live.
+---
+
+<div class="book-demo not-content">
+  <section class="book-demo__pane" aria-labelledby="book-teacher">
+    <header>
+      <h3 id="book-teacher">Teacher</h3>
+      <p>Select text, then <strong>Mark</strong> (or <kbd>Alt</kbd>+<kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>).</p>
+    </header>
+    <div class="book-demo__editor" data-role="teacher"></div>
+  </section>
+  <section class="book-demo__pane" aria-labelledby="book-student">
+    <header>
+      <h3 id="book-student">Student</h3>
+      <p>Tap a mark, filter with the legend, or select text to highlight.</p>
+    </header>
+    <div class="book-demo__editor" data-role="student"></div>
+  </section>
+  <div class="book-demo__chip" role="dialog" aria-label="Linked questions" hidden>
+    <span class="book-demo__chip-type"></span>
+    <strong class="book-demo__chip-text"></strong>
+    <button type="button" class="book-demo__practise"></button>
+  </div>
+  <div class="book-demo__toast" role="status" hidden></div>
+</div>
+
+<script>
+  import 'axiomtext/styles.css';
+  import { createClassicEditor } from 'axiomtext';
+  import type { DocumentJSON, MarkClickEvent, MarkTypeDef } from 'axiomtext';
+
+  const types: MarkTypeDef[] = [
+    { id: 'important', label: 'Important', color: '#16a34a', style: 'fill' },
+    { id: 'marked', label: 'Marked', color: '#2563eb', style: 'underline' },
+    { id: 'pyq', label: 'Past exam question', color: '#b45309', style: 'box' },
+  ];
+
+  const text = (t: string, marks?: unknown[]) => ({ type: 'text', text: t, ...(marks ? { marks } : {}) });
+  const mark = (type: string, id: string, questions: string[]) => ({
+    type: 'marker',
+    attrs: { type, id, data: { questionIds: questions }, badge: String(questions.length) },
+  });
+  const p = (...content: unknown[]) => ({ type: 'paragraph', content });
+
+  const chapter = {
+    version: 1,
+    doc: {
+      type: 'doc',
+      content: [
+        { type: 'page', attrs: { number: 23 } },
+        { type: 'heading', attrs: { level: 2 }, content: [text('Photosynthesis')] },
+        p(
+          text('Green plants make their own food by '),
+          text('photosynthesis', [mark('important', 'm1', ['q1', 'q2', 'q3'])]),
+          text(', using light energy captured by chlorophyll.'),
+        ),
+        p(
+          text('The overall reaction is '),
+          { type: 'math_inline', attrs: { latex: '6CO_2 + 6H_2O \\rightarrow C_6H_{12}O_6 + 6O_2' } },
+          text('.'),
+        ),
+        p(text('Leaves are thin and flat, so light reaches most of their cells.')),
+        p(
+          text('Water enters the roots by '),
+          text('osmosis', [mark('pyq', 'm2', ['q4', 'q5'])]),
+          text(' and travels up the xylem.'),
+        ),
+        { type: 'page', attrs: { number: 24 } },
+        p(text('Stomata open in the day and close at night.')),
+        p(
+          text('The rate of photosynthesis depends on '),
+          text('light, carbon dioxide and temperature', [mark('marked', 'm3', ['q6'])]),
+          text('.'),
+        ),
+        p(text('Plants also respire all the time, day and night.')),
+      ],
+    },
+  } as DocumentJSON;
+
+  const root = document.querySelector<HTMLElement>('.book-demo');
+  const teacherEl = root?.querySelector<HTMLElement>('[data-role="teacher"]');
+  const studentEl = root?.querySelector<HTMLElement>('[data-role="student"]');
+  const chip = root?.querySelector<HTMLElement>('.book-demo__chip');
+  const toast = root?.querySelector<HTMLElement>('.book-demo__toast');
+
+  if (root && teacherEl && studentEl && chip && toast && !root.dataset.ready) {
+    root.dataset.ready = '';
+
+    let toastTimer: ReturnType<typeof setTimeout> | undefined;
+    const say = (message: string): void => {
+      toast.textContent = message;
+      toast.hidden = false;
+      requestAnimationFrame(() => toast.classList.add('is-open'));
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('is-open');
+        setTimeout(() => (toast.hidden = true), 200);
+      }, 2600);
+    };
+
+    const closeChip = (): void => {
+      chip.classList.remove('is-open');
+      chip.hidden = true;
+    };
+    const showChip = (event: MarkClickEvent): void => {
+      const type = types.find((t) => t.id === event.type);
+      const questions = Array.isArray(event.data?.['questionIds']) ? event.data['questionIds'].length : 0;
+      chip.style.setProperty('--ax-mark', type?.color ?? '#4f46e5');
+      (chip.querySelector('.book-demo__chip-type') as HTMLElement).textContent =
+        `${type?.label ?? 'Mark'}${event.page ? ` · page ${event.page}` : ''}`;
+      (chip.querySelector('.book-demo__chip-text') as HTMLElement).textContent = `“${event.text}”`;
+      const practise = chip.querySelector('.book-demo__practise') as HTMLButtonElement;
+      practise.textContent = questions
+        ? `Practise ${questions} question${questions === 1 ? '' : 's'}`
+        : 'No questions linked yet';
+      practise.disabled = !questions;
+      practise.onclick = () => {
+        closeChip();
+        say(`Opening ${questions} question${questions === 1 ? '' : 's'} on “${event.text}”`);
+      };
+      const box = root.getBoundingClientRect();
+      chip.hidden = false;
+      chip.style.left = `${Math.max(8, Math.min(event.rect.left - box.left, box.width - chip.offsetWidth - 8))}px`;
+      chip.style.top = `${event.rect.bottom - box.top + 8}px`;
+      requestAnimationFrame(() => chip.classList.add('is-open'));
+    };
+    document.addEventListener('pointerdown', (e) => {
+      if (!chip.hidden && !chip.contains(e.target as Node)) closeChip();
+    });
+
+    const teacher = createClassicEditor({
+      element: teacherEl,
+      content: chapter,
+      statusBar: false,
+      marks: { types },
+      toolbar: ['undo', 'redo', '|', 'blockStyle', 'bold', 'italic', '|', 'mark', 'page', 'math'],
+      ariaLabel: 'Chapter (teacher)',
+    });
+    const student = createClassicEditor({
+      element: studentEl,
+      content: chapter,
+      editable: false,
+      statusBar: false,
+      marks: { types, onClick: showChip },
+      highlights: { items: [] },
+      selectionActions: [{ id: 'ask', label: 'Ask AI' }],
+      onSelectionAction: (e) => say(`Asking about “${e.text}”${e.page ? ` (page ${e.page})` : ''}`),
+      ariaLabel: 'Chapter (student)',
+    });
+
+    // The student sees the teacher's marks as soon as they're made.
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    teacher.editor.on('change', () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => student.editor.setJSON(teacher.editor.getJSON()), 250);
+    });
+  }
+</script>
+
+<style>
+  .book-demo {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-block: 1.5rem;
+  }
+  .book-demo__pane {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+  .book-demo__pane header h3 {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  .book-demo__pane header p {
+    margin: 2px 0 0;
+    font-size: 0.82rem;
+    color: var(--sl-color-gray-3);
+  }
+  .book-demo__editor {
+    min-height: 420px;
+  }
+  .book-demo__editor :global(.ax-editor__body) {
+    max-height: 520px;
+    overflow: auto;
+  }
+  .book-demo__chip {
+    --ax-mark: #4f46e5;
+    position: absolute;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: min(300px, calc(100% - 16px));
+    padding: 12px 14px;
+    border: 1px solid color-mix(in srgb, var(--ax-mark) 35%, transparent);
+    border-radius: 14px;
+    background: var(--sl-color-bg, #fff);
+    box-shadow: 0 16px 40px -12px rgb(0 0 0 / 0.3);
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+    transition:
+      opacity 160ms ease,
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .book-demo__chip:global(.is-open) {
+    opacity: 1;
+    transform: none;
+  }
+  .book-demo__chip-type {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ax-mark);
+  }
+  .book-demo__chip-text {
+    font-size: 0.9rem;
+  }
+  .book-demo__practise {
+    align-self: flex-start;
+    height: 34px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--ax-mark);
+    color: #fff;
+    font: 600 0.85rem/1 inherit;
+    cursor: pointer;
+    transition: filter 140ms ease;
+  }
+  .book-demo__practise:hover {
+    filter: brightness(1.08);
+  }
+  .book-demo__practise:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  .book-demo__toast {
+    position: fixed;
+    z-index: 50;
+    left: 50%;
+    bottom: 24px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: var(--sl-color-gray-1, #111);
+    color: var(--sl-color-black, #fff);
+    font-size: 0.85rem;
+    opacity: 0;
+    transform: translate(-50%, 8px);
+    transition:
+      opacity 180ms ease,
+      transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .book-demo__toast:global(.is-open) {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .book-demo__chip,
+    .book-demo__toast {
+      transition: none;
+    }
+  }
+</style>

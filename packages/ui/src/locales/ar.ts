@@ -219,6 +219,18 @@ const messages: Messages = {
   'Highlight background': 'تمييز الخلفية',
   'Choose a photo': 'اختر صورة',
   'Take a photo': 'التقط صورة',
+  Mark: 'علامة',
+  Marks: 'العلامات',
+  'Remove mark': 'إزالة العلامة',
+  'Page number': 'رقم الصفحة',
+  'Page {number}': 'صفحة {number}',
+  '… {count} paragraph': '… فقرة واحدة',
+  '… {count} paragraphs': '… {count} فقرات',
+  'Only marked': 'المعلَّم فقط',
+  'Show everything': 'عرض الكل',
+  'Bijoy text converted to Unicode': 'تم تحويل نص بيجوي إلى يونيكود',
+  'Keep original': 'الإبقاء على الأصل',
+  'PDF document': 'مستند PDF',
 };
 
 export default messages;

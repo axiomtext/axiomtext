@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts', 'src/picker.ts'],
+  entry: ['src/index.ts', 'src/picker.ts', 'src/anchor.ts'],
   format: ['esm'],
   dts: true,
   sourcemap: true,

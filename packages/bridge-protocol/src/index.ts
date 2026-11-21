@@ -54,6 +54,21 @@ export const METHODS = [
   'toggleCommentsPanel',
   'getHighlights',
   'setHighlights',
+  'setMark',
+  'removeMark',
+  'setMarkData',
+  'setMarkBadge',
+  'getMarks',
+  'getPages',
+  'insertPage',
+  'scrollToPage',
+  'setMarkFilter',
+  'getNotebook',
+  'revealHighlight',
+  'openPdf',
+  'setPdfAnnotations',
+  'getPdfAnnotations',
+  'pdfScrollToPage',
 ] as const;
 export type Method = (typeof METHODS)[number];
 
@@ -74,6 +89,9 @@ export const EVENTS = [
   'error',
   'commentsChange',
   'highlightsChange',
+  'markTap',
+  'selectionAction',
+  'pdfChange',
 ] as const;
 export type EventName = (typeof EVENTS)[number];
 
@@ -146,6 +164,14 @@ export interface InitParams {
   };
   /** Readers' highlights and notes on read-only content (axiomtext/viewer format). */
   highlights?: { items?: JsonValue[]; readOnly?: boolean };
+  /** Marked books: the app's mark types (`markTap` events), reading filter and legend. */
+  marks?: {
+    types: { id: string; label: string; color: string; style?: string }[];
+    filter?: 'all' | 'marked' | string[];
+    legend?: boolean;
+  };
+  /** Read-only: your items in the menu for selected text (`selectionAction` events). */
+  selectionActions?: { id: string; label: string }[];
 }
 
 /** Formatting at the cursor, sent as the `state` event for native toolbars. */

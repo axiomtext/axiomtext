@@ -16,7 +16,7 @@
     "name": "@axiomtext/ui (classic editor: engine + full toolbar UI, excl. feature plugins; incl. on-demand comments UI and reader view)",
     "path": "packages/ui/dist/index.js",
     "import": "{ createClassicEditor }",
-    "limit": "97 KB",
+    "limit": "100 KB",
     "gzip": true
   },
   {

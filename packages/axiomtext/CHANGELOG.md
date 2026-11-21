@@ -1,5 +1,29 @@
 # axiomtext
 
+## 0.3.0
+
+### Minor Changes
+
+- Marked books, PDFs, Bangla and server rendering:
+
+  - **Marks:** your own mark types (`marks: { types }`, fill / underline / double underline / box)
+    with app data, badges and a click event; a Mark menu (Alt+1…9, Alt+0 removes); commands
+    `setMark`, `removeMark`, `setMarkData`, `setMarkBadge`, `setMarkType`, `selectMark`;
+    `listMarks(json)`.
+  - **Page numbers:** a page block ("Page 23", in the reader's digits), `insertPage`,
+    `setPageNumber`, `scrollToPage`, `listPages(json)`; marks and highlights report their page.
+  - **Reading:** a legend with counts and filters ("Only marked" folds other paragraphs), and
+    `selectionActions` / `onSelectionAction` for your own buttons on selected text — in read-only
+    editors and on websites (`axiomtext/viewer`).
+  - **`axiomtext/pdf`:** mark, highlight and annotate existing PDFs with pdf.js (optional peer
+    dependency `pdfjs-dist`).
+  - **`axiomtext/server`:** `renderHTML(json, { markTypes })`, the same HTML as `getHTML()` without a
+    browser, plus `listMarks`, `listPages`, `listCommentThreads`.
+  - **Bijoy → Unicode:** pasted SutonnyMJ / Bijoy Bangla becomes Unicode with a Keep original notice;
+    `convertBijoy(text)` for import scripts.
+  - **Long documents** open faster (lazy equations, off-screen blocks skip layout).
+  - Read-only editors no longer show the formatting toolbar.
+
 ## 0.2.0
 
 ### Minor Changes

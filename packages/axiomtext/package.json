@@ -1,6 +1,6 @@
 {
   "name": "axiomtext",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Free, MIT-licensed rich text editor with a visual math editor built in. Classic, inline and balloon editors, tables, images, Markdown, 10 languages.",
   "license": "MIT",
   "type": "module",
@@ -34,6 +34,14 @@
       "types": "./dist/viewer.d.ts",
       "import": "./dist/viewer.js"
     },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
+    },
+    "./pdf": {
+      "types": "./dist/pdf.d.ts",
+      "import": "./dist/pdf.js"
+    },
     "./styles.css": {
       "types": "./dist/styles.css.d.ts",
       "default": "./dist/styles.css"
@@ -53,7 +61,8 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "!dist/cdn/**/*.map"
+    "!dist/cdn/**/*.map",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "scripts": {
     "build": "tsup && node scripts/assets.mjs",
@@ -83,7 +92,9 @@
     "@axiomtext/core": "workspace:*",
     "@axiomtext/i18n": "workspace:*",
     "@axiomtext/math": "workspace:*",
+    "@axiomtext/pdf": "workspace:*",
     "@axiomtext/plugin-basic-styles": "workspace:*",
+    "@axiomtext/plugin-bijoy": "workspace:*",
     "@axiomtext/plugin-block-format": "workspace:*",
     "@axiomtext/plugin-blockquote": "workspace:*",
     "@axiomtext/plugin-columns": "workspace:*",
@@ -93,6 +104,7 @@
     "@axiomtext/plugin-image": "workspace:*",
     "@axiomtext/plugin-link": "workspace:*",
     "@axiomtext/plugin-list": "workspace:*",
+    "@axiomtext/plugin-marks": "workspace:*",
     "@axiomtext/plugin-table": "workspace:*",
     "@axiomtext/ui": "workspace:*",
     "@axiomtext/view": "workspace:*",
@@ -102,5 +114,13 @@
   "unpkg": "dist/cdn/axiomtext.iife.js",
   "publishConfig": {
     "access": "public"
+  },
+  "peerDependencies": {
+    "pdfjs-dist": ">=5"
+  },
+  "peerDependenciesMeta": {
+    "pdfjs-dist": {
+      "optional": true
+    }
   }
 }

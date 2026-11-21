@@ -163,9 +163,32 @@ const isMathUi = (target: EventTarget | null): boolean =>
  * Shows the equation with KaTeX; when the user clicks it (or presses Enter on it), it turns into a
  * visual MathLive editor in place, with the caret where the user clicked (MATH-003, MATH-038).
  */
+/**
+ * Equations far from the screen render when they come near it: KaTeX for hundreds of equations
+ * at once is what makes long chapters slow to open on low-end phones.
+ */
+const lazyRenders = new WeakMap<Element, () => void>();
+const lazyObserver =
+  typeof IntersectionObserver === 'function'
+    ? new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            lazyObserver?.unobserve(entry.target);
+            const run = lazyRenders.get(entry.target);
+            lazyRenders.delete(entry.target);
+            run?.();
+          }
+        },
+        { rootMargin: '1200px 0px' },
+      )
+    : null;
+
 class MathView implements NodeView {
   dom: HTMLElement;
   private session: EditSession | null = null;
+  /** Rendered at least once (lazy rendering only delays the first render). */
+  private shown = false;
 
   constructor(
     public node: PMNode,
@@ -212,6 +235,21 @@ class MathView implements NodeView {
       this.dom.textContent = latex;
       return;
     }
+    // Off screen in a long document: show the source for now, render when it comes near.
+    if (lazyObserver && !this.shown && this.view.state.doc.childCount > 40) {
+      this.dom.classList.add('is-pending');
+      this.dom.textContent = latex;
+      lazyRenders.set(this.dom, () => {
+        this.shown = true;
+        this.render();
+      });
+      lazyObserver.observe(this.dom);
+      return;
+    }
+    this.dom.classList.remove('is-pending');
+    lazyObserver?.unobserve(this.dom);
+    lazyRenders.delete(this.dom);
+    this.shown = true;
     const result = renderLatex(latex, this.display);
     if (result.html) {
       this.dom.innerHTML = trustedHTML(result.html); // KaTeX output, trust:false
@@ -290,6 +328,8 @@ class MathView implements NodeView {
   destroy(): void {
     this.session?.cancel();
     this.session = null;
+    lazyObserver?.unobserve(this.dom);
+    lazyRenders.delete(this.dom);
   }
 }
 

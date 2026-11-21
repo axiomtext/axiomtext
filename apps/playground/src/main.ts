@@ -10,6 +10,8 @@ import { Link } from '@axiomtext/plugin-link';
 import { List } from '@axiomtext/plugin-list';
 import { Heading } from '@axiomtext/plugin-heading';
 import { Comments } from '@axiomtext/plugin-comments';
+import { Marks, Pages } from '@axiomtext/plugin-marks';
+import { BijoyPaste } from '@axiomtext/plugin-bijoy';
 import { createBalloonEditor, createClassicEditor, createInlineEditor } from '@axiomtext/ui';
 import type { Messages } from '@axiomtext/ui';
 import type { DocumentJSON } from '@axiomtext/core';
@@ -134,6 +136,9 @@ const plugins = [
   TextAlignment,
   Indent,
   Comments,
+  Marks,
+  Pages,
+  BijoyPaste,
 ];
 
 // ── Editor ─────────────────────────────────────────────
@@ -160,6 +165,14 @@ async function mount(content: DocumentJSON | undefined): Promise<void> {
             ...(params.get('comments') === 'only' ? { only: true } : {}),
           },
         }),
+    // Marked books: three mark types like a school textbook (Mark menu, Alt+1/2/3).
+    marks: {
+      types: [
+        { id: 'important', label: 'Important', color: '#16a34a', style: 'fill' as const },
+        { id: 'marked', label: 'Marked', color: '#2563eb', style: 'underline' as const },
+        { id: 'pyq', label: 'Past exam question', color: '#b45309', style: 'box' as const },
+      ],
+    },
     plugins,
     placeholder: 'Start writing…',
     ariaLabel: 'Document body',

@@ -16,6 +16,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./bijoy": {
+      "types": "./dist/bijoy.d.ts",
+      "import": "./dist/bijoy.js"
     }
   },
   "main": "./dist/index.js",

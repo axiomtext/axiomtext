@@ -224,6 +224,34 @@ export const sampleDocument: DocumentJSON = {
           },
         ],
       },
+      h(2, 'Marked books'),
+      { type: 'page', attrs: { number: 23 } },
+      p(
+        t('Mark text the way a textbook does: '),
+        styled('important ideas', 'marker', {
+          type: 'important',
+          id: 'm-important',
+          data: null,
+          badge: null,
+        }),
+        t(', '),
+        styled('lines to remember', 'marker', {
+          type: 'marked',
+          id: 'm-marked',
+          data: null,
+          badge: null,
+        }),
+        t(' and '),
+        styled('past exam questions', 'marker', {
+          type: 'pyq',
+          id: 'm-pyq',
+          data: null,
+          badge: '3',
+        }),
+        t(
+          '. Select some text and pick a type from the Mark menu (or press Alt+1, Alt+2, Alt+3). Add a page number from the More menu.',
+        ),
+      ),
       {
         type: 'paragraph',
         attrs: { textAlign: 'center' },

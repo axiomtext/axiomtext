@@ -65,9 +65,28 @@ export function createClassicEditor(options: ClassicEditorOptions): ClassicEdito
     saveState.textContent = saveStatusText(status);
   });
   const comments = loadCommentsUI(editor, prepared.comments, root);
-  const reader = loadReaderView(editor, prepared.highlights, !prepared.comments);
+  const reader = loadReaderView(editor, prepared.highlights, !prepared.comments, {
+    ...prepared.selectionActions,
+    ...(prepared.marks
+      ? {
+          marks: {
+            types: prepared.marks.types,
+            ...(prepared.marks.legend === false ? { legend: false } : {}),
+            ...(prepared.marks.filter ? { filter: prepared.marks.filter } : {}),
+            // The editor folds paragraphs itself; the legend drives it.
+            onFilterChange: (filter) => editor.execute('setMarkFilter', filter),
+          },
+        }
+      : {}),
+  });
   // Commenting only: the toolbar offers just the comment buttons.
-  const items = prepared.comments?.only ? (['comment', 'commentsPanel'] as const) : toolbarItems;
+  // Read-only: no formatting toolbar unless one was asked for.
+  const readOnly = prepared.editorOptions.editable === false && !prepared.comments?.only;
+  const items = prepared.comments?.only
+    ? (['comment', 'commentsPanel'] as const)
+    : readOnly && !toolbarItems
+      ? ([] as const)
+      : toolbarItems;
   const toolbar = createToolbar(editor, {
     ...(items ? { items } : {}),
     ...(prepared.comments?.only ? { more: [] } : {}),

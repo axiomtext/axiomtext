@@ -17,8 +17,11 @@ export interface TestView {
 }
 
 /** Low-level engine harness for plugin tests (input rules, keymaps, node views). */
-export function createTestView(plugins: readonly AxiomPlugin[]): TestView {
-  const schema = buildSchema(plugins);
+export function createTestView(
+  plugins: readonly AxiomPlugin[],
+  config?: Readonly<Record<string, unknown>>,
+): TestView {
+  const schema = buildSchema(plugins, config);
   const keymaps = plugins.flatMap((p) => (p.keymap ? [p.keymap(schema)] : []));
   const state = EditorState.create({
     schema,

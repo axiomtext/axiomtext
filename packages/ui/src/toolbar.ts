@@ -10,6 +10,7 @@ import { createMenuButton } from './menu-button';
 import type { MenuItem } from './menu-button';
 import { formatShortcut } from './shortcuts';
 import { createTableButton } from './table-button';
+import { normalizeMarkTypes } from '@axiomtext/plugin-marks/data';
 
 export type ToolbarItemName =
   | 'undo'
@@ -44,6 +45,8 @@ export type ToolbarItemName =
   | 'shortcuts'
   | 'comment'
   | 'commentsPanel'
+  | 'mark'
+  | 'page'
   | 'more'
   | '|';
 
@@ -62,6 +65,7 @@ export const DEFAULT_TOOLBAR: readonly ToolbarItemName[] = [
   'strikethrough',
   'textColor',
   'highlight',
+  'mark',
   '|',
   'link',
   'image',
@@ -102,6 +106,7 @@ export const DEFAULT_MORE: readonly ToolbarItemName[] = [
   'blockquote',
   'horizontalRule',
   'pageBreak',
+  'page',
   'mathBlock',
   'clearFormatting',
   'shortcuts',
@@ -129,6 +134,7 @@ type ButtonName = Exclude<
   | 'image'
   | 'table'
   | 'align'
+  | 'mark'
   | 'more'
 >;
 
@@ -323,7 +329,27 @@ const BUTTONS: Record<ButtonName, ButtonSpec> = {
     icon: 'comments',
     run: () => false, // opened through ToolbarOptions.onCommentsPanel
   },
+  page: {
+    label: 'Page number',
+    icon: 'page',
+    requires: 'insertPage',
+    run: exec('insertPage'),
+  },
 };
+
+/** How a mark type looks in the Mark menu (the same as in the text). */
+export function markPreviewStyle(color: string, style: string): string {
+  switch (style) {
+    case 'underline':
+      return `text-decoration: underline 2px ${color}; text-underline-offset: 3px`;
+    case 'double':
+      return `text-decoration: underline double ${color}; text-underline-offset: 3px`;
+    case 'box':
+      return `box-shadow: inset 0 0 0 1.5px ${color}; border-radius: 3px; padding: 0 4px`;
+    default:
+      return `background: color-mix(in srgb, ${color} 26%, transparent); border-radius: 3px; padding: 0 4px`;
+  }
+}
 
 export const FONT_FAMILIES: readonly { label: string; value: string | null }[] = [
   { label: 'Default font', value: null },
@@ -430,6 +456,9 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
     'aria-orientation': 'horizontal',
   });
   const has = (command: string): boolean => editor.commandNames.includes(command);
+  const markTypes = normalizeMarkTypes(
+    (editor.config['marks'] as { types?: readonly unknown[] } | undefined)?.types,
+  );
 
   const handlers: Handlers = {
     link: options.onLink,
@@ -458,6 +487,8 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
         return has('insertTable');
       case 'align':
         return has('setTextAlign');
+      case 'mark':
+        return has('setMark') && markTypes.length > 0;
       case 'shortcuts':
         return options.onShortcuts !== undefined;
       case 'comment':
@@ -666,6 +697,46 @@ export function createToolbar(editor: Editor, options: ToolbarOptions = {}): Too
           element: menu.element,
           focusTarget: menu.element,
           update: menu.update,
+          destroy: menu.destroy,
+        };
+        break;
+      }
+      case 'mark': {
+        const current = (): string | null => {
+          const v = editor.getMarkAttrs('marker')?.['type'];
+          return typeof v === 'string' ? v : null;
+        };
+        const menu = createMenuButton(editor, {
+          label: 'Mark',
+          icon: 'mark',
+          items: () => [
+            ...markTypes.map((m, i) => ({
+              label: m.label,
+              previewStyle: markPreviewStyle(m.color, m.style),
+              ...(i < 9 ? { shortcut: `Alt-${i + 1}` } : {}),
+              run: (e: Editor) => e.execute('setMark', m.id),
+              active: () => current() === m.id,
+              enabled: (e: Editor) => !e.getSelectionState().empty,
+            })),
+            {
+              label: 'Remove mark',
+              icon: 'eraser' as const,
+              shortcut: 'Alt-0',
+              run: (e: Editor) => e.execute('removeMark'),
+              enabled: (e: Editor) => e.can('removeMark'),
+            },
+          ],
+        });
+        entry = {
+          name,
+          element: menu.element,
+          focusTarget: menu.element,
+          update: () => {
+            menu.update();
+            const type = markTypes.find((m) => m.id === current());
+            menu.element.classList.toggle('is-active', !!type);
+            menu.element.style.setProperty('--ax-mark', type?.color ?? '');
+          },
           destroy: menu.destroy,
         };
         break;

@@ -20,6 +20,10 @@
     "./picker": {
       "types": "./dist/picker.d.ts",
       "import": "./dist/picker.js"
+    },
+    "./anchor": {
+      "types": "./dist/anchor.d.ts",
+      "import": "./dist/anchor.js"
     }
   },
   "main": "./dist/index.js",
@@ -34,6 +38,7 @@
   },
   "dependencies": {
     "@axiomtext/i18n": "workspace:*",
-    "@axiomtext/plugin-comments": "workspace:*"
+    "@axiomtext/plugin-comments": "workspace:*",
+    "@axiomtext/plugin-marks": "workspace:*"
   }
 }

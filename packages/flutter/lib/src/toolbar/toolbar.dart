@@ -103,6 +103,12 @@ enum AxiomToolbarItem {
   /// The list of comment threads (shown when comments are turned on).
   commentsPanel,
 
+  /// Mark the selected text with one of the editor's mark types (shown when there are some).
+  mark,
+
+  /// Insert a page-number block.
+  page,
+
   /// A thin separator between groups.
   divider;
 
@@ -117,6 +123,7 @@ enum AxiomToolbarItem {
     underline,
     textColor,
     highlight,
+    mark,
     divider,
     math,
     image,
@@ -141,6 +148,7 @@ enum AxiomToolbarItem {
     mathBlock,
     horizontalRule,
     clearFormatting,
+    page,
     commentsPanel,
   ];
 }
@@ -169,6 +177,7 @@ class AxiomToolbar extends StatelessWidget {
     this.items = AxiomToolbarItem.defaults,
     this.style = AxiomToolbarStyle.adaptive,
     this.onImage,
+    this.markTypes = const [],
     this.height = 48,
   });
 
@@ -183,6 +192,9 @@ class AxiomToolbar extends StatelessWidget {
 
   /// Called by the image button. Without it the image button is hidden.
   final VoidCallback? onImage;
+
+  /// The editor's mark types, for the Mark menu (hidden without any).
+  final List<AxiomMarkType> markTypes;
 
   /// Height of the bar.
   final double height;
@@ -243,6 +255,7 @@ class AxiomToolbar extends StatelessWidget {
         AxiomToolbarItem.comment ||
         AxiomToolbarItem.commentsPanel =>
           controller.info?.comments ?? false,
+        AxiomToolbarItem.mark => markTypes.isNotEmpty,
         _ => true,
       };
 
@@ -405,6 +418,13 @@ class AxiomToolbar extends StatelessWidget {
       case AxiomToolbarItem.commentsPanel:
         return button(Icons.forum_outlined, l('Comments'),
             () => controller.toggleCommentsPanel());
+      case AxiomToolbarItem.mark:
+        return button(Icons.bookmark_border, l('Mark'),
+            () => showMarkSheet(context, controller, markTypes, cupertino),
+            enabled: !state.selectionEmpty);
+      case AxiomToolbarItem.page:
+        return button(Icons.menu_book_outlined, l('Page number'),
+            () => controller.insertPage());
     }
   }
 }

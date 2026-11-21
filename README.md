@@ -54,20 +54,23 @@ when you want them.
 
 ## Features
 
-| Area           | What you get                                                                                                                                                                                                                                               |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Text**       | Bold, italic, underline, strikethrough, sub/superscript, inline code, font family & size, text colour, highlight, clear formatting                                                                                                                         |
-| **Blocks**     | Paragraphs, headings 1–6, quotes, bulleted / numbered / to-do lists, alignment, indentation, horizontal lines, page breaks, columns                                                                                                                        |
-| **Tables**     | Insert from a grid, add/remove rows & columns, merge/split cells, header rows, cell colours, column resizing                                                                                                                                               |
-| **Images**     | Upload, paste, drag & drop, resize, captions, alt text; wrap modes: in line, left, right, break text, **text on both sides**; move with arrow keys; pluggable upload adapters                                                                              |
-| **Math**       | Inline & block equations; **click-to-edit visual editor**; LaTeX with autocomplete; AsciiMath; structure/symbol/Greek palettes; math keyboard; `$…$`, `\(…\)`, `$$` triggers; paste MathML from Wikipedia, ChatGPT, MathJax pages; tested on 500 equations |
-| **Comments**   | Comment threads on text (reply, edit, resolve, comments panel, comment-only mode), saved in the document; readers' colour highlights and private notes on read-only content that survive later edits                                                       |
-| **Writing**    | Markdown shortcuts, undo/redo, word & character count, keyboard shortcuts dialog (Ctrl/⌘ + /), placeholder, read-only mode                                                                                                                                 |
-| **Data**       | JSON (lossless, versioned), HTML, Markdown import/export, plain text; autosave to the browser or your server; paste cleanup for Word, Google Docs and web pages                                                                                            |
-| **Editors**    | Classic (fixed toolbar), inline (floating toolbar), balloon (toolbar on selection + "+" inserter); headless mode for custom UIs                                                                                                                            |
-| **Frameworks** | Vanilla JS, React, Vue, Flutter, CDN `<script>` / ES module                                                                                                                                                                                                |
-| **Languages**  | UI in English, বাংলা, हिन्दी, العربية, Español, Français, Deutsch, Português, 简体中文, 日本語; right-to-left; IME input                                                                                                                                    |
-| **Look**       | Modern UI, light & dark themes, smooth (and reduced-motion-aware) animations, custom icons, CSS variables                                                                                                                                                  |
+| Area             | What you get                                                                                                                                                                                                                                               |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Text**         | Bold, italic, underline, strikethrough, sub/superscript, inline code, font family & size, text colour, highlight, clear formatting                                                                                                                         |
+| **Blocks**       | Paragraphs, headings 1–6, quotes, bulleted / numbered / to-do lists, alignment, indentation, horizontal lines, page breaks, columns                                                                                                                        |
+| **Tables**       | Insert from a grid, add/remove rows & columns, merge/split cells, header rows, cell colours, column resizing                                                                                                                                               |
+| **Images**       | Upload, paste, drag & drop, resize, captions, alt text; wrap modes: in line, left, right, break text, **text on both sides**; move with arrow keys; pluggable upload adapters                                                                              |
+| **Math**         | Inline & block equations; **click-to-edit visual editor**; LaTeX with autocomplete; AsciiMath; structure/symbol/Greek palettes; math keyboard; `$…$`, `\(…\)`, `$$` triggers; paste MathML from Wikipedia, ChatGPT, MathJax pages; tested on 500 equations |
+| **Comments**     | Comment threads on text (reply, edit, resolve, comments panel, comment-only mode), saved in the document; readers' colour highlights and private notes on read-only content that survive later edits                                                       |
+| **Marked books** | Your own mark types (Important, Past exam question…) with app data, badges and taps; page numbers; a legend and reading filters; selection actions; the same marks on existing PDFs (`axiomtext/pdf`)                                                      |
+| **Bangla**       | Pasted Bijoy (SutonnyMJ) text becomes Unicode automatically, with Keep original; `convertBijoy()` for imports                                                                                                                                              |
+| **Server**       | `axiomtext/server`: `renderHTML(json)` gives the same HTML as the editor, without a browser                                                                                                                                                                |
+| **Writing**      | Markdown shortcuts, undo/redo, word & character count, keyboard shortcuts dialog (Ctrl/⌘ + /), placeholder, read-only mode                                                                                                                                 |
+| **Data**         | JSON (lossless, versioned), HTML, Markdown import/export, plain text; autosave to the browser or your server; paste cleanup for Word, Google Docs and web pages                                                                                            |
+| **Editors**      | Classic (fixed toolbar), inline (floating toolbar), balloon (toolbar on selection + "+" inserter); headless mode for custom UIs                                                                                                                            |
+| **Frameworks**   | Vanilla JS, React, Vue, Flutter, CDN `<script>` / ES module                                                                                                                                                                                                |
+| **Languages**    | UI in English, বাংলা, हिन्दी, العربية, Español, Français, Deutsch, Português, 简体中文, 日本語; right-to-left; IME input                                                                                                                                    |
+| **Look**         | Modern UI, light & dark themes, smooth (and reduced-motion-aware) animations, custom icons, CSS variables                                                                                                                                                  |
 
 ## Quick start
 
@@ -341,6 +344,9 @@ Every command, per plugin: [axiomtext.dev/reference/plugins](https://axiomtext.d
 | [`@axiomtext/react`](packages/react)      | React component (install with `axiomtext`)                                       |
 | [`@axiomtext/vue`](packages/vue)          | Vue 3 component with `v-model` (install with `axiomtext`)                        |
 | [`axiomtext` (pub.dev)](packages/flutter) | Flutter widget and controller (Android, iOS, macOS, Web)                         |
+
+Entry points: `axiomtext` (editors), `axiomtext/viewer` (websites), `axiomtext/server`
+(rendering on your server) and `axiomtext/pdf` (PDF annotation, with `pdfjs-dist`).
 
 Features you don't use are left out of your bundle, and the visual math editor, Markdown and
 languages load only when needed. Inside this repository the editor is split into smaller

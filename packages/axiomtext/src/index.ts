@@ -10,18 +10,7 @@
  * and the heavy parts (the visual math editor, Markdown, languages) load only when needed.
  */
 import type { AxiomPlugin } from '@axiomtext/core';
-import { MathPlugin } from '@axiomtext/math';
-import { BasicStyles } from '@axiomtext/plugin-basic-styles';
-import { Indent, TextAlignment } from '@axiomtext/plugin-block-format';
-import { Blockquote, PageBreak } from '@axiomtext/plugin-blockquote';
-import { Columns } from '@axiomtext/plugin-columns';
-import { Comments } from '@axiomtext/plugin-comments';
-import { FontFamily, FontSize, Highlight, TextColor } from '@axiomtext/plugin-font';
-import { Heading } from '@axiomtext/plugin-heading';
-import { Image } from '@axiomtext/plugin-image';
-import { Link } from '@axiomtext/plugin-link';
-import { List } from '@axiomtext/plugin-list';
-import { Table } from '@axiomtext/plugin-table';
+import { ALL_PLUGINS } from './plugins';
 import {
   createBalloonEditor as balloon,
   createClassicEditor as classic,
@@ -34,26 +23,7 @@ import type {
   FloatingEditorOptions,
 } from '@axiomtext/ui';
 
-/** Every feature plugin, in a sensible order. */
-export const ALL_PLUGINS: readonly AxiomPlugin[] = [
-  BasicStyles,
-  Heading,
-  List,
-  Blockquote,
-  PageBreak,
-  Link,
-  MathPlugin,
-  Table,
-  Image,
-  Columns,
-  FontFamily,
-  FontSize,
-  TextColor,
-  Highlight,
-  TextAlignment,
-  Indent,
-  Comments,
-];
+export { ALL_PLUGINS } from './plugins';
 
 type WithPlugins<T> = Omit<T, 'plugins'> & { plugins?: readonly AxiomPlugin[] };
 
@@ -88,6 +58,8 @@ export * from '@axiomtext/plugin-columns';
 export * from '@axiomtext/plugin-font';
 export * from '@axiomtext/plugin-block-format';
 export * from '@axiomtext/plugin-comments';
+export * from '@axiomtext/plugin-marks';
+export { BijoyPaste, convertBijoyHTML, convertSelectionFromBijoy } from '@axiomtext/plugin-bijoy';
 
 // ── Math ──
 export * from '@axiomtext/math';
@@ -151,11 +123,25 @@ export type {
   IconName,
   CommentsOptions,
   CommentsUI,
+  MarksOptions,
 } from '@axiomtext/ui';
 
 // ── Readers' highlights (the viewer itself is `axiomtext/viewer`) ──
-export type { ReaderHighlight, NotebookEntry, Viewer, ViewerOptions } from '@axiomtext/viewer';
+export type {
+  ReaderHighlight,
+  NotebookEntry,
+  Viewer,
+  ViewerOptions,
+  SelectionActionEvent,
+} from '@axiomtext/viewer';
 
 // ── Markdown (about 40 KB gzip; dropped from your bundle if you don't use it) ──
-export { toMarkdown, fromMarkdown, escapeMarkdown } from '@axiomtext/convert';
+export {
+  toMarkdown,
+  fromMarkdown,
+  escapeMarkdown,
+  convertBijoy,
+  looksLikeBijoy,
+  isBijoyFont,
+} from '@axiomtext/convert';
 export type { ToMarkdownOptions } from '@axiomtext/convert';

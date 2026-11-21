@@ -35,5 +35,9 @@ export 'src/media.dart'
         pickAndInsertImage;
 export 'src/models.dart';
 export 'src/theme.dart' show AxiomEditorTheme;
+export 'src/toolbar/sheets.dart' show AxiomMarkSample;
+export 'src/view/markdown.dart' show markdownToDocument;
+export 'src/view/pdf_view.dart' show AxiomPdfView;
+export 'src/view/text_view.dart' show AxiomTextView;
 export 'src/toolbar/toolbar.dart'
     show AxiomToolbar, AxiomToolbarItem, AxiomToolbarStyle;

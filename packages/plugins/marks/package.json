@@ -1,0 +1,46 @@
+{
+  "name": "@axiomtext/plugin-marks",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Named mark types (important, marked, \u2026) with app data, and page-number blocks, for marked books. Internal: published as part of the axiomtext package.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "homepage": "https://axiomtext.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/axiomtext/axiomtext.git",
+    "directory": "packages/plugins/marks"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./data": {
+      "types": "./dist/data.d.ts",
+      "import": "./dist/data.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@axiomtext/core": "workspace:*",
+    "@axiomtext/i18n": "workspace:*",
+    "prosemirror-model": "^1.25.13",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.43.0"
+  },
+  "devDependencies": {
+    "@axiomtext/view": "workspace:*",
+    "@axiomtext/test-utils": "workspace:*"
+  }
+}

@@ -28,3 +28,25 @@ body {
 body.ax-host-toolbar .ax-toolbar {
   display: none;
 }
+/* shrinkWrap: the host sizes the view to the content, so the page is as tall as the content
+   (not the view), and the measured height can shrink again. */
+html:has(body.ax-measure),
+body.ax-measure,
+body.ax-measure #editor,
+body.ax-measure #editor > .ax-editor {
+  height: auto;
+  min-height: 0;
+}
+body.ax-measure .ax-editor__body,
+body.ax-measure .ax-editor__body > .axiomtext-content {
+  min-height: 0;
+}
+
+/* PDF annotation: the pages scroll inside the view. */
+#pdf {
+  min-height: 100%;
+  background: color-mix(in srgb, var(--ax-fg, #111827) 5%, var(--ax-bg, #fff));
+}
+#pdf .ax-pdf {
+  padding: 12px 8px 32px;
+}

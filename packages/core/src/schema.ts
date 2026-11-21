@@ -28,8 +28,14 @@ const baseNodes: Record<string, NodeSpec> = {
   },
 };
 
-/** Builds the document schema from the base nodes plus all plugins. */
-export function buildSchema(plugins: readonly AxiomPlugin[]): Schema {
+/**
+ * Builds the document schema from the base nodes plus all plugins. `config` holds per-editor
+ * plugin settings (e.g. `{ marks: { types } }`), read with `getPluginConfig`.
+ */
+export function buildSchema(
+  plugins: readonly AxiomPlugin[],
+  config: Readonly<Record<string, unknown>> = {},
+): Schema {
   const names = new Set<string>();
   const nodes: Record<string, NodeSpec> = { ...baseNodes };
   const marks: Record<string, MarkSpec> = {};
@@ -73,7 +79,17 @@ export function buildSchema(plugins: readonly AxiomPlugin[]): Schema {
     if (spec) nodes[type] = withGlobalAttributes(spec, attributes);
   }
 
-  return new Schema({ nodes, marks });
+  const schema = new Schema({ nodes, marks });
+  schema.cached[CONFIG_KEY] = config;
+  return schema;
+}
+
+const CONFIG_KEY = 'axConfig';
+
+/** A plugin's per-editor settings (from `EditorOptions.config`), e.g. `getPluginConfig(schema, 'marks')`. */
+export function getPluginConfig<T = unknown>(schema: Schema, key: string): T | undefined {
+  const config = schema.cached[CONFIG_KEY] as Record<string, unknown> | undefined;
+  return config?.[key] as T | undefined;
 }
 
 const isAttrsObject = (value: unknown): value is Record<string, string> =>

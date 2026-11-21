@@ -219,6 +219,18 @@ const messages: Messages = {
   'Highlight background': 'पृष्ठभूमि हाइलाइट करें',
   'Choose a photo': 'फ़ोटो चुनें',
   'Take a photo': 'फ़ोटो लें',
+  Mark: 'निशान',
+  Marks: 'निशान',
+  'Remove mark': 'निशान हटाएँ',
+  'Page number': 'पृष्ठ संख्या',
+  'Page {number}': 'पृष्ठ {number}',
+  '… {count} paragraph': '… {count} अनुच्छेद',
+  '… {count} paragraphs': '… {count} अनुच्छेद',
+  'Only marked': 'केवल चिह्नित',
+  'Show everything': 'सब दिखाएँ',
+  'Bijoy text converted to Unicode': 'बिजॉय पाठ यूनिकोड में बदला गया',
+  'Keep original': 'मूल रखें',
+  'PDF document': 'PDF दस्तावेज़',
 };
 
 export default messages;

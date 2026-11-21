@@ -34,4 +34,4 @@ export {
 export type { FloatingEditor, FloatingEditorOptions } from './floating';
 export type { CommonEditorOptions } from './setup';
 export type { CommentsUI } from './comments-loader';
-export type { CommentsOptions } from './setup';
+export type { CommentsOptions, MarksOptions } from './setup';

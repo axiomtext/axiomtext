@@ -1,0 +1,43 @@
+{
+  "name": "@axiomtext/plugin-bijoy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pasted Bijoy (SutonnyMJ) Bangla becomes Unicode automatically, with a Keep original option. Internal: published as part of the axiomtext package.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "homepage": "https://axiomtext.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/axiomtext/axiomtext.git",
+    "directory": "packages/plugins/bijoy"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@axiomtext/convert": "workspace:*",
+    "@axiomtext/core": "workspace:*",
+    "@axiomtext/i18n": "workspace:*",
+    "prosemirror-history": "^1.5.2",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.43.0"
+  },
+  "devDependencies": {
+    "@axiomtext/view": "workspace:*",
+    "@axiomtext/test-utils": "workspace:*"
+  }
+}

@@ -2,7 +2,7 @@ name: axiomtext
 description: >-
   Free, open-source rich text editor for Flutter with a visual math equation editor built in.
   Tables, images, Markdown, 10 languages. Android, iOS, macOS and Web.
-version: 0.1.1
+version: 0.2.0
 homepage: https://axiomtext.dev
 repository: https://github.com/axiomtext/axiomtext/tree/main/packages/flutter
 issue_tracker: https://github.com/axiomtext/axiomtext/issues
@@ -27,7 +27,9 @@ platforms:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_math_fork: ^0.7.4
   image_picker: ^1.1.2
+  markdown: ^7.3.0
   meta: ^1.11.0
   url_launcher: ^6.3.0
   web: ^1.1.0

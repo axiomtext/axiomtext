@@ -13,19 +13,20 @@ import 'engine_view_base.dart';
 bool get engineSupported =>
     Platform.isAndroid || Platform.isIOS || Platform.isMacOS;
 
-_WebViewEngine? _warm;
+/// Engines loaded ahead of time, used first by the next editors.
+final List<_WebViewEngine> _warm = [];
 
 /// Creates the engine host: a WebView with the bundled editor page.
-EngineView createEngineView() {
-  final warm = _warm;
-  _warm = null;
-  return warm ?? _WebViewEngine();
-}
+EngineView createEngineView() =>
+    _warm.isNotEmpty ? _warm.removeAt(0) : _WebViewEngine();
 
-/// Starts loading an engine ahead of time so the first editor opens faster (FLT-016).
-void prewarmEngine() {
-  if (!engineSupported || _warm != null) return;
-  _warm = _WebViewEngine();
+/// Loads up to [count] engines ahead of time so editors open faster (FLT-016), e.g. several
+/// read-only views in a list.
+void prewarmEngine([int count = 1]) {
+  if (!engineSupported) return;
+  while (_warm.length < count.clamp(1, 6)) {
+    _warm.add(_WebViewEngine());
+  }
 }
 
 class _WebViewEngine extends EngineView {

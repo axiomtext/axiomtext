@@ -47,6 +47,21 @@ const List<String> bridgeMethods = [
   'toggleCommentsPanel',
   'getHighlights',
   'setHighlights',
+  'setMark',
+  'removeMark',
+  'setMarkData',
+  'setMarkBadge',
+  'getMarks',
+  'getPages',
+  'insertPage',
+  'scrollToPage',
+  'setMarkFilter',
+  'getNotebook',
+  'revealHighlight',
+  'openPdf',
+  'setPdfAnnotations',
+  'getPdfAnnotations',
+  'pdfScrollToPage',
 ];
 
 /// Events the engine may send to Dart.
@@ -66,6 +81,9 @@ const List<String> bridgeEvents = [
   'error',
   'commentsChange',
   'highlightsChange',
+  'markTap',
+  'selectionAction',
+  'pdfChange',
 ];
 
 /// A call from Dart to the engine.

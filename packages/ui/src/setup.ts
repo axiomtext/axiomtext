@@ -1,5 +1,6 @@
 import type { ViewerOptions } from '@axiomtext/viewer';
 import type { CommentThreadSummary } from '@axiomtext/plugin-comments/data';
+import type { MarkClickEvent, MarkFilter, MarkTypeDef } from '@axiomtext/plugin-marks';
 import { getLanguage, setLanguage, t } from '@axiomtext/i18n';
 import type { Messages } from '@axiomtext/i18n';
 import { createAutosave, loadDraft } from '@axiomtext/view';
@@ -14,6 +15,7 @@ import { createImageBalloon, createTableBalloon } from './image-ui';
 import { setIcons } from './icons';
 import type { IconName, WrapIconName } from './icons';
 import { createLinkUI } from './link-popover';
+import { createPageBalloon } from './page-ui';
 import type { LinkUI } from './link-popover';
 import { createShortcutDialog } from './shortcut-dialog';
 import type { ShortcutDialog } from './shortcut-dialog';
@@ -43,6 +45,30 @@ export interface CommonEditorOptions extends Omit<EditorOptions, 'element'> {
    * the editor isn't editable; store them per reader with `onChange`. See `axiomtext/viewer`.
    */
   highlights?: ViewerOptions['highlights'];
+  /**
+   * Named mark types for marked books ("Important", "Marked", …): a Mark menu for writers, and
+   * for readers a legend, a filter and a tap event. See `MarksOptions`.
+   */
+  marks?: MarksOptions;
+  /**
+   * Read-only editors: extra items in the menu shown when a reader selects text
+   * (e.g. `{ id: 'ask', label: 'Ask AI' }`). See `ViewerOptions.selectionActions`.
+   */
+  selectionActions?: ViewerOptions['selectionActions'];
+  /** Called when a reader picks one of your `selectionActions`. */
+  onSelectionAction?: ViewerOptions['onSelectionAction'];
+}
+
+/** Marks settings (marked books). */
+export interface MarksOptions {
+  /** The kinds of marks you offer, e.g. `{ id: 'important', label: 'Important', color: '#16a34a', style: 'fill' }`. */
+  types: readonly MarkTypeDef[];
+  /** A reader clicked or tapped a mark (read-only editors): show your own popup. */
+  onClick?: (event: MarkClickEvent) => void;
+  /** Which marks to show while reading; other paragraphs fold away. Default: `'all'`. */
+  filter?: MarkFilter;
+  /** Show the legend of mark types above read-only content. Default: true. */
+  legend?: boolean;
 }
 
 /** Comments settings (COL-001…006). */
@@ -68,12 +94,34 @@ export interface Prepared {
   editorOptions: Omit<EditorOptions, 'element'>;
   comments: CommentsOptions | null;
   highlights: NonNullable<ViewerOptions['highlights']> | null;
+  marks: MarksOptions | null;
+  selectionActions: Pick<ViewerOptions, 'selectionActions' | 'onSelectionAction'>;
 }
 
 /** Applies language and icons, and picks the starting content (a saved draft if any). */
 export function prepare(options: CommonEditorOptions): Prepared {
-  const { language, translations, autosave, icons, comments, highlights, ...editorOptions } =
-    options;
+  const {
+    language,
+    translations,
+    autosave,
+    icons,
+    comments,
+    highlights,
+    marks,
+    selectionActions,
+    onSelectionAction,
+    ...editorOptions
+  } = options;
+  if (marks) {
+    editorOptions.config = {
+      ...editorOptions.config,
+      marks: {
+        types: marks.types,
+        ...(marks.onClick ? { onClick: marks.onClick } : {}),
+        ...(marks.filter ? { filter: marks.filter } : {}),
+      },
+    };
+  }
   if (comments?.only) editorOptions.editable = false;
   if (language) setLanguage(language, translations);
   if (icons) setIcons(icons);
@@ -88,6 +136,11 @@ export function prepare(options: CommonEditorOptions): Prepared {
     editorOptions,
     comments: comments ?? null,
     highlights: highlights ?? null,
+    marks: marks ?? null,
+    selectionActions: {
+      ...(selectionActions ? { selectionActions } : {}),
+      ...(onSelectionAction ? { onSelectionAction } : {}),
+    },
   };
 }
 
@@ -121,6 +174,9 @@ export function attachEditorUI(
   const tableBalloon = editor.commandNames.includes('insertTable')
     ? createTableBalloon(editor)
     : undefined;
+  const pageBalloon = editor.commandNames.includes('setPageNumber')
+    ? createPageBalloon(editor)
+    : undefined;
   const autosave = autosaveOptions
     ? createAutosave(editor, {
         ...autosaveOptions,
@@ -140,6 +196,7 @@ export function attachEditorUI(
       linkUI?.destroy();
       imageBalloon?.destroy();
       tableBalloon?.destroy();
+      pageBalloon?.destroy();
     },
   };
 }

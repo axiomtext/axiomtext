@@ -1,3 +1,19 @@
+## 0.2.0
+
+- **Marked books:** your own mark types (`markTypes`: label, colour, fill / underline / double /
+  box) with app data, badges and taps (`onMarkTap`); the Mark menu (`AxiomToolbarItem.mark`,
+  Alt+1…9); page-number blocks (`AxiomToolbarItem.page`, `insertPage`, `scrollToPage`); a legend
+  and reading filters (`markFilter`, `setMarkFilter`).
+- **Selection actions** for readers (`selectionActions`, `onSelectionAction`), and
+  `controller.notebook()` / `revealHighlight()` for a "My notes" screen.
+- **`AxiomPdfView`:** mark and highlight existing PDFs (pdf.js inside the bundled engine, offline).
+- **`AxiomTextView`:** read-only content drawn with Flutter widgets, equations included, for long
+  lists. Adds `flutter_math_fork` and `markdown` as dependencies.
+- Pasted **Bijoy** (SutonnyMJ) Bangla becomes Unicode, with Keep original.
+- Long chapters open faster (equations render near the screen; far paragraphs aren't laid out),
+  `shrinkWrap` heights also shrink, and `AxiomTextEditor.prewarm(count: 3)`.
+- Read-only editors no longer show the formatting toolbar.
+
 ## 0.1.1
 
 - No analyzer notices on Flutter 3.47+ (the `material.dart` / `cupertino.dart` deprecation);

@@ -16,7 +16,7 @@ export type {
   NodeDefinition,
   PluginMessages,
 } from './plugin';
-export { buildSchema } from './schema';
+export { buildSchema, getPluginConfig } from './schema';
 export { sanitizeUrl, DEFAULT_ALLOWED_PROTOCOLS } from './url';
 export { markInputRule } from './input-rules';
 export { sanitizeColor, sanitizeFontFamily, sanitizeFontSize } from './css';

@@ -47,3 +47,12 @@ UI budget raised from 94 KB to 97 KB (gzip). The growth (about 1.9 KB) is the sh
 picker (presets, palette, hex and system picker, background switch, preview) and the redesigned
 thread and panel code. It's all in the on-demand comments and reader chunks; what every editor
 loads up front is unchanged. The new styles are CSS, outside this budget.
+
+## Update (marked books)
+
+UI budget raised from 97 KB to 100 KB (gzip). About 1 KB is loaded by every editor: the Mark menu,
+the page-number balloon and reading mark types. The rest (legend, reading filter, mark taps and
+selection actions) is in the on-demand reader chunk used by read-only content. The marks and Bijoy
+plugins themselves are feature plugins, outside this budget; PDF annotation (`axiomtext/pdf`) and
+server rendering (`axiomtext/server`) are separate entry points and pdf.js is an optional peer
+dependency, so none of them add to the editor.

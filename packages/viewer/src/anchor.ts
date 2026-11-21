@@ -22,7 +22,7 @@ const CONTEXT = 32;
 
 /** Text that isn't part of the readable text (hidden MathML copies of equations, scripts). */
 const SKIP =
-  '.katex-mathml, script, style, noscript, template, [aria-hidden="true"]:not(.katex-html)';
+  '.katex-mathml, script, style, noscript, template, .ax-legend, .ax-fold, .ax-mark-badge, [aria-hidden="true"]:not(.katex-html)';
 
 /** The element's readable text as one string, with a map back to its text nodes. */
 export interface TextModel {

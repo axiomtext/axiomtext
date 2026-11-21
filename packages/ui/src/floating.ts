@@ -81,7 +81,20 @@ function createFloatingEditor(options: FloatingEditorOptions, kind: Kind): Float
 
   const items = toolbarItems ?? (kind === 'balloon' ? BALLOON_TOOLBAR : undefined);
   const comments = loadCommentsUI(editor, prepared.comments, document.body);
-  const reader = loadReaderView(editor, prepared.highlights, !prepared.comments);
+  const reader = loadReaderView(editor, prepared.highlights, !prepared.comments, {
+    ...prepared.selectionActions,
+    ...(prepared.marks
+      ? {
+          marks: {
+            types: prepared.marks.types,
+            ...(prepared.marks.legend === false ? { legend: false } : {}),
+            ...(prepared.marks.filter ? { filter: prepared.marks.filter } : {}),
+            // The editor folds paragraphs itself; the legend drives it.
+            onFilterChange: (filter) => editor.execute('setMarkFilter', filter),
+          },
+        }
+      : {}),
+  });
   const toolbar = createToolbar(editor, {
     ...(items ? { items } : {}),
     ...(ui.linkUI ? { onLink: ui.linkUI.open } : {}),

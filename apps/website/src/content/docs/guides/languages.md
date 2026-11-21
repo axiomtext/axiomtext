@@ -35,3 +35,27 @@ translations on GitHub.
 Input methods (IMEs) for languages such as Japanese, Chinese, Korean, Bangla and Hindi work as
 expected; Japanese and Bangla composition are covered by automated tests. Word count uses the
 browser's language-aware word breaking.
+
+## Bijoy to Unicode
+
+Text from old Bangla Word files, PDFs and textbooks is often in **Bijoy** (SutonnyMJ and other
+"MJ" fonts): Latin letters that only look like Bangla in that font. When such text is pasted,
+AxiomText turns it into real Unicode Bangla, which searches, copies and displays correctly
+everywhere, and shows a short notice with **Keep original** in case you want it as it was.
+
+- Text in a Bijoy font (Word and web pages say so in the pasted HTML) is always converted.
+  Mixed paragraphs work: only the Bijoy parts change.
+- Plain text is converted only when it clearly looks like Bijoy. English is never converted.
+- `editor.execute('convertSelectionFromBijoy')` converts selected text that was pasted as it was.
+
+For import scripts, `convertBijoy(text)` and `looksLikeBijoy(text)` work anywhere, including
+your server (`axiomtext/server`):
+
+```js
+import { convertBijoy } from 'axiomtext';
+
+convertBijoy('Avgvi †mvbvi evsjv'); // "আমার সোনার বাংলা"
+```
+
+The conversion table is adapted from the MIT-licensed
+[bijoy2unicode](https://www.npmjs.com/package/bijoy2unicode) package.

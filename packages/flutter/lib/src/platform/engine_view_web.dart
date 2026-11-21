@@ -13,7 +13,7 @@ bool get engineSupported => true;
 EngineView createEngineView() => _IframeEngine();
 
 /// Nothing to prepare on the web: the iframe loads when it's first shown.
-void prewarmEngine() {}
+void prewarmEngine([int count = 1]) {}
 
 int _nextViewId = 0;
 

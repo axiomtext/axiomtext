@@ -32,6 +32,8 @@ export interface EditorOptions {
   editable?: boolean;
   /** Accessible name of the editing area. */
   ariaLabel?: string;
+  /** Per-editor plugin settings, e.g. `{ marks: { types: [...] } }`. */
+  config?: Readonly<Record<string, unknown>>;
 }
 
 /**
@@ -108,6 +110,8 @@ export interface Editor {
   canRedo(): boolean;
   /** The editable DOM element (for focus management by UI components). */
   readonly dom: HTMLElement;
+  /** Per-editor plugin settings given in `EditorOptions.config`. */
+  readonly config: Readonly<Record<string, unknown>>;
   /** Focus the editor; optionally put the cursor at the start or end of the document. */
   focus(position?: 'start' | 'end'): void;
   setEditable(editable: boolean): void;
@@ -159,9 +163,12 @@ export function countStats(text: string): EditorStats {
   return { words, characters };
 }
 
+/** Top-level blocks from which a document counts as long (rendering shortcuts kick in). */
+const LARGE_DOCUMENT = 120;
+
 export function createEditor(options: EditorOptions): Editor {
   const plugins = options.plugins ?? [];
-  const schema: Schema = buildSchema(plugins);
+  const schema: Schema = buildSchema(plugins, options.config);
   const commands = collectCommands(plugins);
   const listeners = new Map<EditorEvent, Set<Listener>>();
   let editable = options.editable ?? true;
@@ -219,12 +226,14 @@ export function createEditor(options: EditorOptions): Editor {
   const view = new EditorView(options.element, {
     state: buildState(toDoc(options.content ?? createEmptyDocument())),
     editable: () => editable,
-    attributes: {
-      class: 'axiomtext-content',
+    attributes: (state) => ({
+      // Long documents: blocks off screen skip layout and painting until they come near.
+      class:
+        state.doc.childCount > LARGE_DOCUMENT ? 'axiomtext-content ax-large' : 'axiomtext-content',
       role: 'textbox',
       'aria-multiline': 'true',
       'aria-label': options.ariaLabel ?? 'Rich text editor',
-    },
+    }),
     transformPastedHTML: cleanPastedHTML,
     dispatchTransaction(tr) {
       const next = view.state.apply(tr);
@@ -363,6 +372,7 @@ export function createEditor(options: EditorOptions): Editor {
     get dom() {
       return view.dom;
     },
+    config: options.config ?? {},
     focus(position) {
       if (position) {
         const selection =

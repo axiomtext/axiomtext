@@ -96,6 +96,12 @@ class AxiomTextEditor extends StatefulWidget {
     this.onCommentsChanged,
     this.highlights,
     this.onHighlightsChanged,
+    this.markTypes = const [],
+    this.markFilter,
+    this.showMarkLegend = true,
+    this.onMarkTap,
+    this.selectionActions = const [],
+    this.onSelectionAction,
     this.onReady,
     this.onChanged,
     this.loadingBuilder,
@@ -187,6 +193,26 @@ class AxiomTextEditor extends StatefulWidget {
   final void Function(List<AxiomReaderHighlight> highlights)?
       onHighlightsChanged;
 
+  /// Marked books: the kinds of marks you offer ("Important", "Marked"…). Writers get a Mark
+  /// menu (toolbar item [AxiomToolbarItem.mark], Alt+1, Alt+2…); readers get a legend, a
+  /// filter and [onMarkTap].
+  final List<AxiomMarkType> markTypes;
+
+  /// Which marks to show while reading (other paragraphs fold away). Default: all.
+  final AxiomMarkFilter? markFilter;
+
+  /// Show the legend of [markTypes] above read-only content.
+  final bool showMarkLegend;
+
+  /// A reader tapped a mark (read-only): show your own sheet, e.g. questions to practise.
+  final void Function(AxiomMark mark)? onMarkTap;
+
+  /// Read-only: your items in the menu shown when a reader selects text (e.g. "Ask AI").
+  final List<AxiomSelectionAction> selectionActions;
+
+  /// A reader picked one of [selectionActions].
+  final void Function(AxiomSelectionActionEvent event)? onSelectionAction;
+
   /// Called once the editor has started.
   final void Function(AxiomTextController controller)? onReady;
 
@@ -196,9 +222,9 @@ class AxiomTextEditor extends StatefulWidget {
   /// Shown while the editor starts. Defaults to an empty area in the editor's colour.
   final WidgetBuilder? loadingBuilder;
 
-  /// Starts loading the editor engine in the background, so the first editor opens
-  /// instantly. Call it early, e.g. in `main()` after `WidgetsFlutterBinding.ensureInitialized()`.
-  static void prewarm() => prewarmEngine();
+  /// Loads the editor in the background so it opens instantly. Call it early (for example in
+  /// `main`). [count] engines are kept ready, e.g. 3 for a list of read-only questions.
+  static void prewarm({int count = 1}) => prewarmEngine(count);
 
   /// Whether this platform can show the editor (Android, iOS, macOS and the web).
   static bool get isSupported => engineSupported;
@@ -214,6 +240,8 @@ class _AxiomTextEditorState extends State<AxiomTextEditor> {
   StreamSubscription<void>? _changes;
   StreamSubscription<List<AxiomCommentThread>>? _commentChanges;
   StreamSubscription<List<AxiomReaderHighlight>>? _highlightChanges;
+  StreamSubscription<AxiomMark>? _markTaps;
+  StreamSubscription<AxiomSelectionActionEvent>? _selectionActions;
   bool _started = false;
   bool _ready = false;
   double? _contentHeight;
@@ -248,6 +276,10 @@ class _AxiomTextEditorState extends State<AxiomTextEditor> {
         .listen((threads) => widget.onCommentsChanged?.call(threads));
     _highlightChanges = _controller.onHighlightsChange
         .listen((items) => widget.onHighlightsChanged?.call(items));
+    _markTaps =
+        _controller.onMarkTap.listen((mark) => widget.onMarkTap?.call(mark));
+    _selectionActions = _controller.onSelectionAction
+        .listen((event) => widget.onSelectionAction?.call(event));
     view.onLoaded = _start;
     // A prewarmed engine is loaded already: start after the first frame, when the theme and
     // locale can be read.
@@ -261,6 +293,10 @@ class _AxiomTextEditorState extends State<AxiomTextEditor> {
     unawaited(_changes?.cancel());
     unawaited(_commentChanges?.cancel());
     unawaited(_highlightChanges?.cancel());
+    unawaited(_markTaps?.cancel());
+    unawaited(_selectionActions?.cancel());
+    _markTaps = null;
+    _selectionActions = null;
     _events = null;
     _changes = null;
     _commentChanges = null;
@@ -382,6 +418,17 @@ class _AxiomTextEditorState extends State<AxiomTextEditor> {
           'highlights': {
             'items': [for (final h in widget.highlights!) h.toMap()],
           },
+        if (widget.markTypes.isNotEmpty)
+          'marks': {
+            'types': [for (final t in widget.markTypes) t.toMap()],
+            if (widget.markFilter != null)
+              'filter': widget.markFilter!.toJson(),
+            if (!widget.showMarkLegend) 'legend': false,
+          },
+        if (widget.selectionActions.isNotEmpty)
+          'selectionActions': [
+            for (final a in widget.selectionActions) a.toMap()
+          ],
       });
       if (!mounted) return;
       setState(() => _ready = true);
@@ -524,6 +571,7 @@ class _AxiomTextEditorState extends State<AxiomTextEditor> {
                     : widget.toolbarItems,
             style: widget.toolbarStyle,
             onImage: widget.imagePicker == null ? null : _pickImage,
+            markTypes: widget.markTypes,
           )
         : null;
     final showToolbar =

@@ -16,6 +16,9 @@ import {
   CircleCheck,
   RotateCcw,
   NotebookPen,
+  Bookmark,
+  BookOpenText,
+  Eraser,
   Image as ImageIcon,
   IndentDecrease,
   IndentIncrease,
@@ -122,6 +125,9 @@ const icons = {
   reopen: RotateCcw,
   edit: Pencil,
   note: NotebookPen,
+  mark: Bookmark,
+  page: BookOpenText,
+  eraser: Eraser,
 } as const;
 
 export type IconName = keyof typeof icons;

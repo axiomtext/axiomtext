@@ -25,3 +25,22 @@ The editor only produces safe HTML, but anyone can send anything to your API. Sa
 on the server (for example with DOMPurify or your framework's sanitizer), or store JSON and render
 HTML from it.
 :::
+
+## Marks, comments and highlights
+
+Saved HTML keeps marks, comments and page numbers. To let readers tap them, filter by mark type
+and highlight passages, add the viewer (about 8 KB gzip, without the editor):
+
+```js
+import { createViewer } from 'axiomtext/viewer';
+
+createViewer(document.querySelector('.axiomtext-content'), {
+  marks: { types: markTypes, onClick: (mark) => showQuestions(mark.data) }, // legend + filter
+  highlights: { items: saved, onChange: save },                            // readers' highlights
+  selectionActions: [{ id: 'ask', label: 'Ask AI' }],
+  onSelectionAction: ({ text, page }) => askAi(text, page),
+});
+```
+
+See [marked books](/guides/marked-books/) and [comments & highlights](/guides/comments/). To make
+the HTML on your server, use [`renderHTML`](/guides/server-rendering/).

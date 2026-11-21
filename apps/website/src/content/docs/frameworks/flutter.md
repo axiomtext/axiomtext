@@ -150,15 +150,68 @@ The controller also has `replyToComment`, `resolveComment`, `deleteCommentThread
 `onCommentsChange` and `onHighlightsChange`. See
 [Comments & highlights](/guides/comments/) for how they work.
 
+## Marked books and PDFs
+
+Named marks with app data, page numbers, a legend, reading filters and tap events, the same as on
+the web:
+
+```dart
+AxiomTextEditor(
+  readOnly: true,
+  initialContent: AxiomContent.json(chapter),
+  markTypes: const [
+    AxiomMarkType(id: 'important', label: 'গুরুত্বপূর্ণ', color: Color(0xFF16A34A)),
+    AxiomMarkType(id: 'pyq', label: 'পূর্বের বছরের প্রশ্ন', color: Color(0xFFB45309),
+        style: AxiomMarkStyle.box),
+  ],
+  onMarkTap: (mark) => showQuestions(mark.data?['questionIds'], mark.page),
+  selectionActions: const [AxiomSelectionAction(id: 'ask', label: 'Ask AI')],
+  onSelectionAction: (event) => askAi(event.text),
+);
+```
+
+Writers get `AxiomToolbarItem.mark` and `AxiomToolbarItem.page` on the toolbar. The controller has
+`setMark`, `removeMark`, `setMarkData`, `getMarkData`, `setMarkBadge`, `getMarks`, `getPages`,
+`insertPage`, `scrollToPage`, `setMarkFilter`, `notebook()` and `revealHighlight`. See
+[marked books](/guides/marked-books/).
+
+`AxiomPdfView(bytes: pdf, markTypes: …, markMode: isTeacher)` shows an existing PDF with the same
+marks, highlights and notes. See [PDF annotation](/guides/pdf-annotation/).
+
+## Native view (no WebView)
+
+`AxiomTextView` draws content with Flutter widgets: headings, lists, tables, images, links,
+colours, page numbers, comments, marks (with badges and taps) and equations (via
+`flutter_math_fork`). It's read-only and light enough for long lists such as quiz questions and
+answer options.
+
+```dart
+ListView.builder(
+  itemCount: questions.length,
+  itemBuilder: (context, i) => AxiomTextView(
+    content: AxiomContent.json(questions[i]), // or AxiomContent.markdown('Solve \$x^2 = 4\$')
+    markTypes: markTypes,
+    onMarkTap: practise,
+  ),
+);
+```
+
+Use `AxiomTextEditor` to edit, or for anything the native view doesn't draw.
+
 ## Faster first open
 
 ```dart
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   AxiomTextEditor.prewarm(); // loads the editor in the background
+  // For a screen with several read-only editors: AxiomTextEditor.prewarm(count: 3);
   runApp(const MyApp());
 }
 ```
+
+Long chapters open fast: equations render as they come near the screen and paragraphs far
+below aren't laid out until you scroll to them. With `shrinkWrap: true` the editor reports its
+exact height, growing and shrinking with the content.
 
 ## Same documents everywhere
 

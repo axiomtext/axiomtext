@@ -219,6 +219,18 @@ const messages: Messages = {
   'Highlight background': '背景をハイライト',
   'Choose a photo': '写真を選ぶ',
   'Take a photo': '写真を撮る',
+  Mark: 'マーク',
+  Marks: 'マーク一覧',
+  'Remove mark': 'マークを削除',
+  'Page number': 'ページ番号',
+  'Page {number}': '{number}ページ',
+  '… {count} paragraph': '… {count}段落',
+  '… {count} paragraphs': '… {count}段落',
+  'Only marked': 'マークのみ',
+  'Show everything': 'すべて表示',
+  'Bijoy text converted to Unicode': 'Bijoy のテキストを Unicode に変換しました',
+  'Keep original': '元のまま残す',
+  'PDF document': 'PDF 文書',
 };
 
 export default messages;

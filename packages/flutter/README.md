@@ -10,6 +10,9 @@ so it works offline with no server.
 - A native Material 3 or Cupertino toolbar that sits above the keyboard, or the editor's own toolbar
 - Comments (threads, replies, resolve) saved in the document, and readers' own highlights and
   notes on read-only content
+- Marked books: your own mark types (Important, Past exam question…) with app data, badges, tap
+  events, page numbers, a legend and reading filters; the same marks on existing PDFs
+- `AxiomTextView`: content drawn natively (no WebView) for long lists of questions
 - JSON (lossless), HTML and Markdown in and out
 - Follows your app's theme, light and dark, and its locale: 10 interface languages including
   Arabic (right to left) and Bangla
@@ -131,12 +134,61 @@ await controller.addComment(
 await controller.setCommentStyle(threadId, color: AxiomHighlightColor.green, fill: true);
 ```
 
+### Marked books
+
+```dart
+AxiomTextEditor(
+  readOnly: true,
+  initialContent: AxiomContent.json(chapter),
+  markTypes: const [
+    AxiomMarkType(id: 'important', label: 'গুরুত্বপূর্ণ', color: Color(0xFF16A34A)),
+    AxiomMarkType(id: 'pyq', label: 'পূর্বের বছরের প্রশ্ন', color: Color(0xFFB45309),
+        style: AxiomMarkStyle.box),
+  ],
+  onMarkTap: (mark) => showQuestions(mark.data?['questionIds'], mark.page),
+  selectionActions: const [AxiomSelectionAction(id: 'ask', label: 'Ask AI')],
+  onSelectionAction: (event) => askAi(event.text),
+);
+
+await controller.setMark('important', data: {'questionIds': ['q1', 'q2']}, badge: '2');
+await controller.getMarks();        // with text, data and page
+await controller.insertPage(23);
+await controller.scrollToPage(23);
+await controller.setMarkFilter(AxiomMarkFilter.marked); // fold unmarked paragraphs
+await controller.notebook();        // the reader's highlights, for a "My notes" screen
+```
+
+Writers get the Mark menu (`AxiomToolbarItem.mark`, Alt+1…9) and `AxiomToolbarItem.page`.
+
+### PDFs
+
+```dart
+AxiomPdfView(
+  bytes: pdfBytes,
+  markTypes: markTypes,
+  markMode: isTeacher, // teachers mark; students highlight and take notes
+  annotations: [for (final m in saved) AxiomPdfAnnotation.fromMap(m)],
+  onChanged: (items) => save([for (final a in items) a.toMap()]),
+  onMarkTap: (mark) => showQuestions(mark.data),
+);
+```
+
+### Native view (no WebView)
+
+```dart
+AxiomTextView(content: AxiomContent.json(question), markTypes: markTypes, onMarkTap: practise)
+AxiomTextView(content: AxiomContent.markdown(r'Solve $x^2 = 4$'))
+```
+
+Draws headings, lists, tables, images, links, colours, page numbers, comments, marks and
+equations with Flutter widgets: light enough for long lists. Read-only.
+
 ### Faster first open
 
 ```dart
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  AxiomTextEditor.prewarm(); // loads the editor in the background
+  AxiomTextEditor.prewarm(); // loads the editor in the background (count: 3 for several views)
   runApp(const MyApp());
 }
 ```
@@ -156,7 +208,8 @@ never open inside the editor.
 
 ## Example
 
-[`example/`](example) has four demos: notes, math homework, a document and a comment box.
+[`example/`](example) has demos for notes, math homework, a document, a reading view, a marked
+book, a native quiz list and a comment box.
 
 ## License
 

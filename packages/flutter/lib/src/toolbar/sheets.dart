@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../controller.dart';
+import '../models.dart';
 import 'toolbar.dart';
 
 /// One choice in a menu.
@@ -493,6 +494,147 @@ Future<void> showLinkDialog(
     await controller.execute(AxiomCommands.unsetLink);
   } else {
     await controller.execute(AxiomCommands.setLink, [result]);
+  }
+  await controller.focus();
+}
+
+/// A sample of how a mark type looks, for menus and legends.
+class AxiomMarkSample extends StatelessWidget {
+  /// Draws [label] in [type]'s style.
+  const AxiomMarkSample({super.key, required this.type, this.label});
+
+  /// The mark type.
+  final AxiomMarkType type;
+
+  /// Text to draw (default: the type's label).
+  final String? label;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = type.color;
+    final base = DefaultTextStyle.of(context).style;
+    final text = Text(
+      label ?? type.label,
+      style: switch (type.style) {
+        AxiomMarkStyle.underline => base.copyWith(
+            decoration: TextDecoration.underline,
+            decorationColor: color,
+            decorationThickness: 2,
+          ),
+        AxiomMarkStyle.double => base.copyWith(
+            decoration: TextDecoration.underline,
+            decorationStyle: TextDecorationStyle.double,
+            decorationColor: color,
+          ),
+        _ => base,
+      },
+    );
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOutCubic,
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+      decoration: switch (type.style) {
+        AxiomMarkStyle.fill => BoxDecoration(
+            color: color.withValues(alpha: 0.26),
+            borderRadius: BorderRadius.circular(4),
+          ),
+        AxiomMarkStyle.box => BoxDecoration(
+            border: Border.all(color: color, width: 1.5),
+            borderRadius: BorderRadius.circular(4),
+          ),
+        _ => const BoxDecoration(),
+      },
+      child: text,
+    );
+  }
+}
+
+/// Mark the selection with one of [types], or remove the mark there.
+Future<void> showMarkSheet(
+  BuildContext context,
+  AxiomTextController controller,
+  List<AxiomMarkType> types,
+  bool cupertino,
+) async {
+  final l = controller.label;
+  // null: remove; a type id: apply it.
+  final _Picked<String?>? picked;
+  if (cupertino) {
+    picked = await showCupertinoModalPopup<_Picked<String?>>(
+      context: context,
+      builder: (context) => CupertinoActionSheet(
+        title: Text(l('Mark')),
+        actions: [
+          for (final type in types)
+            CupertinoActionSheetAction(
+              onPressed: () => Navigator.pop(context, _Picked<String?>(type.id)),
+              child: DefaultTextStyle.merge(
+                style: TextStyle(
+                    color: CupertinoColors.label.resolveFrom(context)),
+                child: AxiomMarkSample(type: type),
+              ),
+            ),
+          CupertinoActionSheetAction(
+            isDestructiveAction: true,
+            onPressed: () => Navigator.pop(context, const _Picked<String?>(null)),
+            child: Text(l('Remove mark')),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l('Cancel')),
+        ),
+      ),
+    );
+  } else {
+    picked = await showModalBottomSheet<_Picked<String?>>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (context) => SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.7),
+          child: ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.only(bottom: 8),
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+                child: Text(l('Mark'),
+                    style: Theme.of(context).textTheme.titleMedium),
+              ),
+              for (final type in types)
+                ListTile(
+                  leading: Icon(Icons.bookmark, color: type.color),
+                  title: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: AxiomMarkSample(type: type),
+                  ),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  onTap: () =>
+                      Navigator.pop(context, _Picked<String?>(type.id)),
+                ),
+              const Divider(indent: 16, endIndent: 16),
+              ListTile(
+                leading: const Icon(Icons.format_color_reset_outlined),
+                title: Text(l('Remove mark')),
+                onTap: () =>
+                    Navigator.pop(context, const _Picked<String?>(null)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  if (picked == null) return;
+  final id = picked.value;
+  if (id == null) {
+    await controller.removeMark();
+  } else {
+    await controller.setMark(id);
   }
   await controller.focus();
 }

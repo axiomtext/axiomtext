@@ -1,0 +1,130 @@
+---
+title: Marked books
+description: Named marks (Important, Marked, Past exam question…) with app data, taps, badges, page numbers, a legend and reading filters — for textbooks and study apps.
+---
+
+import MarkedBookDemo from '../../../components/MarkedBookDemo.astro';
+
+Teachers mark the important lines of a chapter; students read it with those marks, filter by
+them, add their own highlights and tap a mark to practise the questions linked to it. Marks are
+part of the document, so the same JSON works in the web editor, on your website and in Flutter.
+
+<MarkedBookDemo />
+
+## Mark types
+
+Your app defines the kinds of marks. Each has an id (stored in documents), a label, a colour and
+a style: `fill`, `underline`, `double` (double underline) or `box`.
+
+```js
+import { createClassicEditor } from 'axiomtext';
+
+const markTypes = [
+  { id: 'important', label: 'গুরুত্বপূর্ণ', color: '#16a34a', style: 'fill' },
+  { id: 'marked', label: 'দাগানো', color: '#2563eb', style: 'underline' },
+  { id: 'pyq', label: 'পূর্বের বছরের প্রশ্ন', color: '#b45309', style: 'box' },
+];
+
+const { editor } = createClassicEditor({ element, marks: { types: markTypes } });
+```
+
+Writers get a **Mark** menu on the toolbar. <kbd>Alt</kbd>+<kbd>1</kbd>…<kbd>9</kbd> apply the
+types in order and <kbd>Alt</kbd>+<kbd>0</kbd> removes the mark at the cursor. A mark is stored as
+`{ type, id }` (plus optional data and badge) and survives copy and paste, undo and HTML.
+
+| Command | What it does |
+| --- | --- |
+| `setMark(typeId, { id?, data?, badge? })` | Marks the selected text (replacing a mark there). |
+| `removeMark(id?)` | Removes a mark everywhere, or the marks in the selection. |
+| `setMarkData(id, data)` | Any JSON object kept with the mark, e.g. `{ questionIds: [...] }`. |
+| `setMarkBadge(id, '3')` | A small badge after the mark, e.g. a question count. |
+| `setMarkType(id, typeId)`, `selectMark(id)` | Change a mark's type; select and scroll to it. |
+
+```js
+editor.execute('setMark', 'pyq', { id: 'm42', data: { questionIds: ['q1', 'q2'] }, badge: 2 });
+
+import { listMarks } from 'axiomtext';
+listMarks(editor.getJSON());
+// [{ id: 'm42', type: 'pyq', text: '…', data: {…}, badge: '2', page: 23, anchor: {…} }]
+```
+
+`listMarks` works on saved JSON without an editor, on your server too.
+
+## Page numbers
+
+A **page** block marks where a printed page starts, labelled in the reader's language and digits
+("Page 23", "পৃষ্ঠা ২৩"). Insert one from **More → Page number** (it continues the numbering);
+select it to change the number. The label isn't part of the text, so copying and searching ignore
+it.
+
+```js
+editor.execute('insertPage', 23);
+editor.execute('scrollToPage', 23);
+listPages(editor.getJSON()); // [{ number: 23, index: 0 }, …]
+```
+
+Marks, reader highlights and selection actions report the `page` they're on.
+
+## Reading: taps, legend and filters
+
+On read-only content (a read-only editor, or [your website](/guides/website-rendering/) with
+`axiomtext/viewer`) readers see a legend of the mark types with counts. Tapping a type shows or
+hides it; **Only marked** folds every paragraph without a mark into "… 3 paragraphs", which
+expands on tap.
+
+```js
+createClassicEditor({
+  element,
+  content: chapter,
+  editable: false,
+  marks: {
+    types: markTypes,
+    filter: 'all', // 'marked', or ['important', 'pyq']
+    legend: true,
+    onClick: ({ id, type, text, data, page, rect }) => showQuestions(data.questionIds, rect),
+  },
+  highlights: { items: myHighlights, onChange: saveHighlights }, // readers' own highlights
+  selectionActions: [
+    { id: 'ask', label: 'Ask AI' },
+    { id: 'practise', label: 'Practise' },
+  ],
+  onSelectionAction: ({ actionId, text, anchor, page }) => run(actionId, text, page),
+});
+```
+
+`onClick` gives you the mark's data and its position on screen, so you can show your own chip
+("3 questions · Practise"). Selection actions add your buttons to the menu readers get when they
+select text, with the same anchor (quote and context) as reader highlights.
+
+## Flutter
+
+```dart
+AxiomTextEditor(
+  readOnly: true,
+  initialContent: AxiomContent.json(chapter),
+  markTypes: const [
+    AxiomMarkType(id: 'important', label: 'গুরুত্বপূর্ণ', color: Color(0xFF16A34A)),
+    AxiomMarkType(id: 'pyq', label: 'পূর্বের বছরের প্রশ্ন', color: Color(0xFFB45309),
+        style: AxiomMarkStyle.box),
+  ],
+  markFilter: AxiomMarkFilter.marked,
+  onMarkTap: (mark) => showQuestions(mark.data?['questionIds']),
+  selectionActions: const [AxiomSelectionAction(id: 'ask', label: 'Ask AI')],
+  onSelectionAction: (event) => askAi(event.text),
+);
+
+await controller.setMark('important', data: {'questionIds': ['q1']});
+await controller.getMarks();       // List<AxiomMark>
+await controller.scrollToPage(23);
+await controller.notebook();       // the reader's highlights in reading order, with pages
+```
+
+For long lists (quiz questions, answer options) use
+[`AxiomTextView`](/frameworks/flutter/#native-view-no-webview): the same content drawn with Flutter
+widgets, marks and equations included, without a WebView.
+
+## Related
+
+- [PDF annotation](/guides/pdf-annotation/): the same marks on an existing PDF.
+- [Server rendering](/guides/server-rendering/): `renderHTML(json, { markTypes })` for SEO pages and emails.
+- [Languages](/guides/languages/#bijoy-to-unicode): pasted Bijoy (SutonnyMJ) Bangla becomes Unicode.

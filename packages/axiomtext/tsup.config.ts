@@ -1,5 +1,10 @@
 import { defineConfig } from 'tsup';
 
+/** ASCII-only output (non-ASCII as \u escapes): works on pages served in any charset. */
+const esbuildOptions = (options: { charset?: string }): void => {
+  options.charset = 'ascii';
+};
+
 const banner = {
   js: '/*! AxiomText — free rich text & math editor. MIT License. https://axiomtext.dev */',
 };
@@ -9,10 +14,11 @@ export default defineConfig([
   // one package; ProseMirror, KaTeX, MathLive, markdown-it and Lucide stay normal dependencies.
   // Splitting keeps the lazily loaded parts (visual math editor, languages) as separate chunks.
   {
-    entry: ['src/index.ts', 'src/viewer.ts', 'src/locales/*.ts'],
+    entry: ['src/index.ts', 'src/viewer.ts', 'src/server.ts', 'src/pdf.ts', 'src/locales/*.ts'],
     format: ['esm'],
     dts: { resolve: [/^@axiomtext\//] },
     noExternal: [/^@axiomtext\//],
+    external: ['pdfjs-dist'],
     splitting: true,
     sourcemap: true,
     clean: true,
@@ -20,6 +26,7 @@ export default defineConfig([
     platform: 'browser',
     target: 'es2022',
     banner,
+    esbuildOptions,
   },
   // CDN, ES module: math (KaTeX, MathLive) and languages load as separate chunks on demand.
   {
@@ -34,6 +41,7 @@ export default defineConfig([
     sourcemap: true,
     target: 'es2022',
     banner,
+    esbuildOptions,
   },
   // CDN, website viewer only: global `AxiomViewer` (comment bubbles, readers' highlights).
   {
@@ -49,6 +57,7 @@ export default defineConfig([
     sourcemap: true,
     target: 'es2020',
     banner,
+    esbuildOptions,
   },
   // CDN, classic script: one file, global `AxiomText`.
   {
@@ -64,5 +73,6 @@ export default defineConfig([
     sourcemap: true,
     target: 'es2020',
     banner,
+    esbuildOptions,
   },
 ]);

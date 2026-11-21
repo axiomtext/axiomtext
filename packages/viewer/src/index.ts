@@ -28,6 +28,16 @@ import type { CommentColor, CommentEntry, PresetColor } from '@axiomtext/plugin-
 import { anchor, describe, offsetOf, rangeOf, textModel } from './anchor';
 import type { TextAnchor, TextModel } from './anchor';
 import { avatar, createColorPicker, setHighlightVars } from './picker';
+import {
+  countMarks,
+  createLegend,
+  drawBadges,
+  foldBlocks,
+  markClickEvent,
+  pageOf,
+  styleMarks,
+} from './marks';
+import type { MarkClickEvent, MarkFilter, MarkTypeDef } from './marks';
 import type { ColorChoice } from './picker';
 
 export type { TextAnchor } from './anchor';
@@ -35,6 +45,7 @@ export { anchor, describe as describeAnchor } from './anchor';
 export type { CommentColor, PresetColor } from '@axiomtext/plugin-comments/data';
 export { createColorPicker } from './picker';
 export type { ColorChoice, ColorPickerOptions } from './picker';
+export type { MarkClickEvent, MarkFilter, MarkTypeDef, MarkStyle, MarkData } from './marks';
 
 /** A reader's highlight, with an optional private note. Store these per reader. */
 export interface ReaderHighlight {
@@ -50,6 +61,8 @@ export interface ReaderHighlight {
   /** Milliseconds since 1970. */
   created: number;
   updated?: number;
+  /** Number of the page block before it when it was made, if the content has pages. */
+  page?: number | null;
 }
 
 /** A highlight in reading order, for a "notebook" view. */
@@ -59,6 +72,19 @@ export interface NotebookEntry {
   text: string;
   /** True when the text is no longer in the document (the highlight can't be shown). */
   orphaned: boolean;
+  /** Number of the page block before it now, or null. */
+  page: number | null;
+}
+
+/** A reader picked one of your `selectionActions`. */
+export interface SelectionActionEvent {
+  actionId: string;
+  /** The selected text. */
+  text: string;
+  /** Where it is (the same anchor model as reader highlights). */
+  anchor: TextAnchor;
+  /** Number of the page block before it, or null. */
+  page: number | null;
 }
 
 export interface ViewerOptions {
@@ -75,6 +101,25 @@ export interface ViewerOptions {
     /** Read-only: show highlights and notes but don't allow changes. */
     readOnly?: boolean;
   };
+  /** Marked books: the app's mark types, tap events, legend and reading filter. */
+  marks?: {
+    types: readonly MarkTypeDef[];
+    /** A reader tapped a mark: show your own popup (questions to practise, a note…). */
+    onClick?: (event: MarkClickEvent) => void;
+    /** Show the legend above the content (or put it in your own element). Default: true. */
+    legend?: boolean | HTMLElement;
+    /** Which marks to show; other paragraphs fold into "… 3 paragraphs". Default: `'all'`. */
+    filter?: MarkFilter;
+    /** Called when the reader changes the filter in the legend. */
+    onFilterChange?: (filter: MarkFilter) => void;
+  };
+  /**
+   * Your own items in the menu shown when a reader selects text, e.g.
+   * `[{ id: 'ask', label: 'Ask AI' }, { id: 'practice', label: 'Practise' }]`.
+   */
+  selectionActions?: readonly { id: string; label: string }[];
+  /** Called when a reader picks one of `selectionActions`. */
+  onSelectionAction?: (event: SelectionActionEvent) => void;
   /** Interface language and texts (e.g. `'bn'` with `axiomtext/locales/bn`). */
   language?: string;
   translations?: Messages;
@@ -91,6 +136,8 @@ export interface Viewer {
   reveal(id: string): void;
   /** Re-anchors highlights after the content changed. */
   refresh(): void;
+  /** Which marks to show while reading (see `ViewerOptions.marks.filter`). */
+  setMarkFilter(filter: MarkFilter): void;
   destroy(): void;
 }
 
@@ -289,6 +336,13 @@ export function createViewer(root: HTMLElement, options: ViewerOptions = {}): Vi
   // New highlights use the colour picked last.
   let lastChoice: ColorChoice = { color: colors[0] ?? 'yellow', fill: true };
   const canEdit = !!hl && hl.readOnly !== true;
+  const marksOptions = options.marks;
+  const actions = (options.selectionActions ?? []).filter(
+    (a) => typeof a.id === 'string' && typeof a.label === 'string',
+  );
+  const selecting = canEdit || actions.length > 0;
+  let markFilter: MarkFilter = marksOptions?.filter ?? 'all';
+  let undoMarks: (() => void)[] = [];
   // Inside the editor (read-only) the DOM belongs to the editor engine: never change it.
   const managedDom = !!root.closest('.ProseMirror') || root.classList.contains('ProseMirror');
   const useApi = cssHighlights() !== null;
@@ -300,6 +354,8 @@ export function createViewer(root: HTMLElement, options: ViewerOptions = {}): Vi
   let model = textModel(root);
   let placed = new Map<string, { start: number; end: number }>();
   let muting = false;
+  const watch: { observer?: MutationObserver } = {};
+  let legend: ReturnType<typeof createLegend> | undefined;
 
   const emit = (): void => hl?.onChange?.([...items]);
 
@@ -335,7 +391,17 @@ export function createViewer(root: HTMLElement, options: ViewerOptions = {}): Vi
       }
       model = textModel(root);
     }
+    if (marksOptions && !managedDom) {
+      // Plain pages: colours from the app's types, badges, and folding for the filter.
+      undoMarks.forEach((undo) => undo());
+      styleMarks(root, marksOptions.types);
+      undoMarks = [drawBadges(root), foldBlocks(root, markFilter)];
+      model = textModel(root);
+    }
+    legend?.update();
     muting = false;
+    // Our own changes to the page aren't content changes.
+    watch.observer?.takeRecords();
   };
 
   const highlightsAt = (offset: number): ReaderHighlight[] =>
@@ -441,6 +507,9 @@ export function createViewer(root: HTMLElement, options: ViewerOptions = {}): Vi
       created: Date.now(),
     };
     if (!choice.fill) h.fill = false;
+    const startNode = rangeOf(model, start, end)?.startContainer;
+    const page = startNode ? pageOf(root, startNode) : null;
+    if (page !== null) h.page = page;
     items = [...items, h];
     window.getSelection()?.removeAllRanges();
     render();
@@ -469,10 +538,32 @@ export function createViewer(root: HTMLElement, options: ViewerOptions = {}): Vi
         highlight.hidden = true;
       },
     });
-    const menu = el('div', { class: 'ax-reader-menu' }, [
-      picker.element,
-      el('div', { class: 'ax-comment-actions' }, [note, highlight]),
-    ]);
+    const actionButtons = actions.map((action) => {
+      const button = el('button', { type: 'button', class: 'ax-btn', 'data-action': action.id }, [
+        action.label,
+      ]);
+      button.addEventListener('click', () => {
+        bubble.close();
+        const range = rangeOf(model, at.start, at.end);
+        options.onSelectionAction?.({
+          actionId: action.id,
+          text: model.text.slice(at.start, at.end),
+          anchor: describe(model.text, at.start, at.end),
+          page: range ? pageOf(root, range.startContainer) : null,
+        });
+      });
+      return button;
+    });
+    const menu = el(
+      'div',
+      { class: 'ax-reader-menu' },
+      canEdit
+        ? [
+            picker.element,
+            el('div', { class: 'ax-comment-actions' }, [...actionButtons, note, highlight]),
+          ]
+        : [el('div', { class: 'ax-reader-actions' }, actionButtons)],
+    );
     highlight.addEventListener('click', () => {
       bubble.close();
       create(at.start, at.end, lastChoice);
@@ -582,11 +673,20 @@ export function createViewer(root: HTMLElement, options: ViewerOptions = {}): Vi
         return;
       }
     }
+    const marked = target?.closest<HTMLElement>('mark.ax-mark[data-mark-id]');
+    // Inside a read-only editor the editor's marks plugin reports taps itself.
+    if (marked && root.contains(marked) && marksOptions?.onClick && !managedDom) {
+      const info = markClickEvent(root, marked);
+      if (info) {
+        marksOptions.onClick(info);
+        return;
+      }
+    }
     const mark = target?.closest<HTMLElement>('mark.ax-comment');
     if (showComments && mark && root.contains(mark)) openComments(mark);
   };
   root.addEventListener('click', onClick);
-  if (canEdit) {
+  if (selecting) {
     root.addEventListener('mouseup', onSelectionEnd);
     root.addEventListener('touchend', onSelectionEnd);
     root.addEventListener('keyup', onKeyUp);
@@ -600,6 +700,33 @@ export function createViewer(root: HTMLElement, options: ViewerOptions = {}): Vi
     refreshTimer = setTimeout(render, 100);
   });
   observer.observe(root, { childList: true, characterData: true, subtree: true });
+  watch.observer = observer;
+
+  const setMarkFilter = (filter: MarkFilter): void => {
+    markFilter = filter;
+    legend?.setFilter(filter);
+    if (managedDom) marksOptions?.onFilterChange?.(filter);
+    else render();
+  };
+  if (marksOptions && marksOptions.legend !== false && marksOptions.types.length) {
+    legend = createLegend(
+      marksOptions.types,
+      () => countMarks(root),
+      markFilter,
+      (filter) => {
+        markFilter = filter;
+        if (managedDom) marksOptions.onFilterChange?.(filter);
+        else {
+          marksOptions.onFilterChange?.(filter);
+          render();
+        }
+      },
+    );
+    if (marksOptions.legend instanceof HTMLElement) marksOptions.legend.append(legend.element);
+    // Inside the editor the content belongs to the editor engine: put the legend above it.
+    else if (managedDom) root.before(legend.element);
+    else root.prepend(legend.element);
+  }
   render();
 
   return {
@@ -614,15 +741,17 @@ export function createViewer(root: HTMLElement, options: ViewerOptions = {}): Vi
       return [...items]
         .map((h) => {
           const at = placed.get(h.id);
+          const range = at ? rangeOf(model, at.start, at.end) : null;
           return {
             highlight: h,
             text: at ? model.text.slice(at.start, at.end) : h.anchor.exact,
             orphaned: !at,
+            page: range ? pageOf(root, range.startContainer) : (h.page ?? null),
             start: at?.start ?? Number.MAX_SAFE_INTEGER,
           };
         })
         .sort((a, b) => a.start - b.start)
-        .map(({ highlight, text, orphaned }) => ({ highlight, text, orphaned }));
+        .map(({ highlight, text, orphaned, page }) => ({ highlight, text, orphaned, page }));
     },
     reveal(id) {
       const at = placed.get(id);
@@ -634,6 +763,7 @@ export function createViewer(root: HTMLElement, options: ViewerOptions = {}): Vi
       setTimeout(() => openHighlight(h), 350);
     },
     refresh: render,
+    setMarkFilter,
     destroy() {
       observer.disconnect();
       clearTimeout(refreshTimer);

@@ -9,3 +9,4 @@
 export { toMarkdown, escapeMarkdown } from './markdown-out';
 export type { ToMarkdownOptions } from './markdown-out';
 export { fromMarkdown } from './markdown-in';
+export { convertBijoy, isBijoyFont, looksLikeBijoy, hasBanglaUnicode } from './bijoy';

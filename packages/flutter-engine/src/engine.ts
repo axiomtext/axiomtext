@@ -10,6 +10,7 @@
  */
 import {
   ALL_PLUGINS,
+  DEFAULT_TOOLBAR,
   FONT_FAMILIES,
   FONT_SIZES,
   HIGHLIGHT_COLORS,
@@ -22,6 +23,9 @@ import {
   getLanguage,
   isDocumentJSON,
   listCommentThreads,
+  listMarks,
+  listPages,
+  createMarkId,
   migrateDocument,
   setImagePicker,
   setLanguage,
@@ -33,6 +37,8 @@ import {
 import type {
   ClassicEditor,
   CommentColor,
+  MarkFilter,
+  MarkTypeDef,
   DocumentJSON,
   ReaderHighlight,
   Editor,
@@ -51,6 +57,8 @@ import ja from 'axiomtext/locales/ja';
 import pt from 'axiomtext/locales/pt';
 import zh from 'axiomtext/locales/zh';
 import { errorMessage, eventMessage, parseCall, resultMessage } from '@axiomtext/bridge-protocol';
+import { createPdfAnnotator } from 'axiomtext/pdf';
+import type { PdfAnnotation, PdfAnnotator } from 'axiomtext/pdf';
 import type {
   EditorState,
   EventName,
@@ -190,6 +198,8 @@ function create(params: InitParams, content: DocumentJSON | { html: string } | n
       )
     : ALL_PLUGINS;
   const nativeToolbar = params.toolbar === 'none';
+  // The host sizes the view to the content: draw everything so the height is exact.
+  document.body.classList.toggle('ax-measure', params.reportHeight === true);
   document.body.classList.toggle('ax-host-toolbar', nativeToolbar);
   classic = createClassicEditor({
     element: root,
@@ -199,11 +209,10 @@ function create(params: InitParams, content: DocumentJSON | { html: string } | n
     ...(params.ariaLabel ? { ariaLabel: params.ariaLabel } : {}),
     statusBar: params.statusBar ?? false,
     document: params.document ?? false,
-    ...(nativeToolbar
-      ? { toolbar: [] }
-      : params.toolbarItems
-        ? { toolbar: params.toolbarItems as ToolbarItemName[] }
-        : {}),
+    // Always explicit: the app may switch a read-only editor to editing later.
+    toolbar: nativeToolbar
+      ? []
+      : ((params.toolbarItems as ToolbarItemName[] | undefined) ?? [...DEFAULT_TOOLBAR]),
     ...(content && !('html' in content) ? { content } : {}),
     ...(params.comments
       ? {
@@ -225,10 +234,59 @@ function create(params: InitParams, content: DocumentJSON | { html: string } | n
           },
         }
       : {}),
+    ...(params.marks
+      ? {
+          marks: {
+            types: params.marks.types as MarkTypeDef[],
+            ...(params.marks.filter ? { filter: params.marks.filter as MarkFilter } : {}),
+            ...(params.marks.legend === false ? { legend: false } : {}),
+            onClick: (event) => emit('markTap', event as unknown as Record<string, JsonValue>),
+          },
+        }
+      : {}),
+    ...(params.selectionActions?.length
+      ? {
+          selectionActions: params.selectionActions,
+          onSelectionAction: (event) =>
+            emit('selectionAction', event as unknown as Record<string, JsonValue>),
+        }
+      : {}),
   });
   if (content && 'html' in content) setContent(content);
   wireEvents(classic.editor);
 }
+
+// ── PDF annotation (axiomtext/pdf) ──────────────────────────────
+
+let pdf: PdfAnnotator | null = null;
+let pdfJsPromise: Promise<unknown> | null = null;
+
+/** Loads the bundled pdf.js script (global `AxiomPdfJs`) the first time a PDF is opened. */
+function loadPdfJs(): Promise<unknown> {
+  pdfJsPromise ??= new Promise((resolve, reject) => {
+    const existing = (globalThis as { AxiomPdfJs?: unknown }).AxiomPdfJs;
+    if (existing) {
+      resolve(existing);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'pdf.js';
+    script.onload = () => resolve((globalThis as { AxiomPdfJs?: unknown }).AxiomPdfJs);
+    script.onerror = () => reject(new Error('Could not load pdf.js.'));
+    document.head.append(script);
+  });
+  return pdfJsPromise;
+}
+
+const fromBase64 = (value: string): Uint8Array => {
+  const binary = atob(value);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+};
+
+const isObject = (value: unknown): value is Record<string, JsonValue> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 // ── Events, batched once per frame (FLT-016) ──────────────────────
 
@@ -311,7 +369,13 @@ function readState(e: Editor): EditorState {
 
 function reportHeight(): void {
   if (!init?.reportHeight) return;
-  const height = Math.ceil(document.documentElement.scrollHeight);
+  // The content's own height (the page's scrollHeight never shrinks below the view, so the
+  // host could grow the editor but never make it smaller again).
+  const box = root.getBoundingClientRect();
+  const style = getComputedStyle(document.body);
+  const height = Math.ceil(
+    box.height + box.top + window.scrollY + (Number.parseFloat(style.paddingBottom) || 0),
+  );
   if (height !== lastHeight) {
     lastHeight = height;
     emit('height', { height });
@@ -348,7 +412,12 @@ addEventListener('resize', () => {
     classic.editor.getSelectionElement()?.scrollIntoView({ block: 'nearest' });
   }
 });
-new ResizeObserver(reportHeight).observe(document.body);
+const heightObserver = new ResizeObserver(reportHeight);
+heightObserver.observe(document.body);
+heightObserver.observe(root);
+// Late layout changes: web fonts and images finishing loading.
+void document.fonts?.ready.then(reportHeight);
+document.addEventListener('load', () => requestAnimationFrame(reportHeight), true);
 
 // Links never navigate inside the editor. In read-only mode a tap is reported to Dart.
 document.addEventListener(
@@ -403,6 +472,7 @@ const methods: Record<
       version: 1,
       commands: [...editor().commandNames],
       comments: !!init.comments,
+      marks: !!init.marks,
       language: getLanguage().locale,
       dir: getLanguage().dir,
       fontFamilies: FONT_FAMILIES.map((f) => ({ label: t(f.label), value: f.value })),
@@ -553,6 +623,106 @@ const methods: Record<
   async setHighlights(p) {
     const items = Array.isArray(p['items']) ? p['items'] : [];
     (await classic?.reader)?.setHighlights(items as unknown as ReaderHighlight[]);
+  },
+  setMark(p) {
+    const id = typeof p['id'] === 'string' ? p['id'] : createMarkId();
+    const ok = editor().execute('setMark', str(p['type'], 'type'), {
+      id,
+      ...(isObject(p['data']) ? { data: p['data'] } : {}),
+      ...(typeof p['badge'] === 'string' || typeof p['badge'] === 'number'
+        ? { badge: p['badge'] }
+        : {}),
+    });
+    return ok ? id : null;
+  },
+  removeMark: (p) =>
+    editor().execute('removeMark', ...(typeof p['id'] === 'string' ? [p['id']] : [])),
+  setMarkData: (p) =>
+    editor().execute('setMarkData', str(p['id'], 'id'), isObject(p['data']) ? p['data'] : null),
+  setMarkBadge: (p) =>
+    editor().execute(
+      'setMarkBadge',
+      str(p['id'], 'id'),
+      typeof p['badge'] === 'string' || typeof p['badge'] === 'number' ? p['badge'] : null,
+    ),
+  getMarks: () => listMarks(editor().getJSON()) as unknown as JsonValue,
+  getPages: () => listPages(editor().getJSON()) as unknown as JsonValue,
+  insertPage: (p) =>
+    editor().execute('insertPage', ...(typeof p['number'] === 'number' ? [p['number']] : [])),
+  scrollToPage: (p) => {
+    const n = p['number'];
+    return typeof n === 'number' && editor().execute('scrollToPage', n);
+  },
+  async setMarkFilter(p) {
+    const f = p['filter'];
+    const filter: MarkFilter =
+      f === 'marked'
+        ? 'marked'
+        : Array.isArray(f)
+          ? f.filter((x): x is string => typeof x === 'string')
+          : 'all';
+    editor().execute('setMarkFilter', filter);
+    (await classic?.reader)?.setMarkFilter(filter);
+  },
+  async getNotebook() {
+    return ((await classic?.reader)?.notebook() ?? []) as unknown as JsonValue;
+  },
+  async revealHighlight(p) {
+    (await classic?.reader)?.reveal(str(p['id'], 'id'));
+  },
+  async openPdf(p) {
+    const data = str(p['data'], 'data');
+    pdf?.destroy();
+    const pdfjs = await loadPdfJs();
+    root.hidden = true;
+    let host = document.getElementById('pdf');
+    if (!host) {
+      host = document.createElement('div');
+      host.id = 'pdf';
+      document.body.append(host);
+    }
+    const actions = Array.isArray(p['selectionActions'])
+      ? (p['selectionActions'] as { id: string; label: string }[])
+      : [];
+    pdf = await createPdfAnnotator(host, {
+      source: fromBase64(data),
+      pdfjs,
+      markTypes: Array.isArray(p['markTypes']) ? (p['markTypes'] as unknown as MarkTypeDef[]) : [],
+      mode: p['mode'] === 'mark' ? 'mark' : 'read',
+      highlights: p['highlights'] !== false,
+      annotations: Array.isArray(p['annotations'])
+        ? (p['annotations'] as unknown as PdfAnnotation[])
+        : [],
+      onChange: (items) => emit('pdfChange', { annotations: items as unknown as JsonValue }),
+      onMarkClick: ({ annotation, rect }) =>
+        emit('markTap', {
+          id: annotation.id,
+          type: annotation.type ?? '',
+          text: annotation.anchor.exact,
+          data: (annotation.data ?? null) as JsonValue,
+          badge: annotation.badge ?? null,
+          page: annotation.page,
+          rect: rect as unknown as JsonValue,
+        }),
+      ...(actions.length
+        ? {
+            selectionActions: actions,
+            onSelectionAction: (event) =>
+              emit('selectionAction', event as unknown as Record<string, JsonValue>),
+          }
+        : {}),
+    });
+    return { pageCount: pdf.pageCount };
+  },
+  setPdfAnnotations(p) {
+    pdf?.setAnnotations(
+      Array.isArray(p['items']) ? (p['items'] as unknown as PdfAnnotation[]) : [],
+    );
+  },
+  getPdfAnnotations: () => (pdf?.annotations ?? []) as unknown as JsonValue,
+  pdfScrollToPage(p) {
+    const n = p['page'];
+    if (typeof n === 'number') pdf?.scrollToPage(n);
   },
   mathInsert(p) {
     mathControls?.insert(str(p['latex'], 'latex'));

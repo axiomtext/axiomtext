@@ -1,4 +1,4 @@
-import 'dart:ui' show Color;
+import 'dart:ui' show Color, Rect;
 
 import 'package:flutter/foundation.dart';
 
@@ -264,6 +264,7 @@ class AxiomEngineInfo {
   const AxiomEngineInfo({
     required this.commands,
     this.comments = false,
+    this.marks = false,
     required this.language,
     required this.textDirection,
     this.fontFamilies = const [],
@@ -290,6 +291,7 @@ class AxiomEngineInfo {
             if (c is String) c,
       ],
       comments: map['comments'] == true,
+      marks: map['marks'] == true,
       language: _string(map['language']) ?? 'en',
       textDirection: map['dir'] == 'rtl' ? 'rtl' : 'ltr',
       fontFamilies: options(map['fontFamilies'], 'label'),
@@ -308,6 +310,9 @@ class AxiomEngineInfo {
 
   /// Whether comments are turned on (the editor was given a comment author).
   final bool comments;
+
+  /// Whether mark types were given (marked books).
+  final bool marks;
 
   /// Interface language in use.
   final String language;
@@ -577,6 +582,7 @@ class AxiomReaderHighlight {
     this.fill = true,
     this.note,
     this.updated,
+    this.page,
   });
 
   /// Reads a highlight saved with [toMap] or sent by the editor.
@@ -592,6 +598,7 @@ class AxiomReaderHighlight {
       anchor: anchor,
       note: _string(map['note']),
       created: DateTime.fromMillisecondsSinceEpoch(_int(map['created'])),
+      page: map['page'] is num ? (map['page']! as num).toInt() : null,
       updated: map['updated'] is num
           ? DateTime.fromMillisecondsSinceEpoch(
               (map['updated']! as num).toInt())
@@ -623,6 +630,9 @@ class AxiomReaderHighlight {
   /// When it was last changed.
   final DateTime? updated;
 
+  /// Number of the page block before it when it was made, or null.
+  final int? page;
+
   /// A JSON-ready map to store.
   Map<String, Object?> toMap() => {
         'id': id,
@@ -632,5 +642,299 @@ class AxiomReaderHighlight {
         'anchor': anchor,
         'created': created.millisecondsSinceEpoch,
         if (updated != null) 'updated': updated!.millisecondsSinceEpoch,
+        if (page != null) 'page': page,
       };
+}
+
+// ── Marked books ─────────────────────────────────────────────────
+
+/// How a mark type looks.
+enum AxiomMarkStyle {
+  /// A coloured background.
+  fill,
+
+  /// A coloured underline.
+  underline,
+
+  /// A double underline.
+  double,
+
+  /// A box around the text.
+  box,
+}
+
+/// A kind of mark your app offers, e.g. "Important" in green.
+///
+/// Writers apply marks from the toolbar's Mark menu (or Alt+1, Alt+2…); readers see them, can
+/// filter by them and tap them ([AxiomTextEditor.onMarkTap]).
+@immutable
+class AxiomMarkType {
+  /// Creates a mark type. [id] is stored in documents: keep it stable.
+  const AxiomMarkType({
+    required this.id,
+    required this.label,
+    required this.color,
+    this.style = AxiomMarkStyle.fill,
+  });
+
+  /// Stable id (letters, digits, `-` and `_`).
+  final String id;
+
+  /// Name shown in the menu and legend.
+  final String label;
+
+  /// The mark's colour.
+  final Color color;
+
+  /// How it looks.
+  final AxiomMarkStyle style;
+
+  /// The parameters sent to the engine.
+  Map<String, Object?> toMap() => {
+        'id': id,
+        'label': label,
+        'color': '#${(color.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}',
+        'style': style.name,
+      };
+}
+
+/// A mark in the document.
+@immutable
+class AxiomMark {
+  /// Creates a mark (usually you get these from the editor).
+  const AxiomMark({
+    required this.id,
+    required this.type,
+    required this.text,
+    this.data,
+    this.badge,
+    this.page,
+    this.anchor = const {},
+    this.rect,
+  });
+
+  /// Reads a mark sent by the engine.
+  factory AxiomMark.fromMap(Map<String, Object?> map) {
+    final rect = map['rect'];
+    return AxiomMark(
+      id: _string(map['id']) ?? '',
+      type: _string(map['type']) ?? '',
+      text: _string(map['text']) ?? '',
+      data: map['data'] is Map<String, Object?>
+          ? map['data']! as Map<String, Object?>
+          : null,
+      badge: _string(map['badge']),
+      page: map['page'] is num ? (map['page']! as num).toInt() : null,
+      anchor: map['anchor'] is Map<String, Object?>
+          ? map['anchor']! as Map<String, Object?>
+          : const {},
+      rect: rect is Map<String, Object?>
+          ? Rect.fromLTRB(
+              _double(rect['left']),
+              _double(rect['top']),
+              _double(rect['right']),
+              _double(rect['bottom']),
+            )
+          : null,
+    );
+  }
+
+  /// Unique id of this mark.
+  final String id;
+
+  /// The mark type's id.
+  final String type;
+
+  /// The marked text.
+  final String text;
+
+  /// Your app's data on the mark (question ids, a note…), or null.
+  final Map<String, Object?>? data;
+
+  /// The small label shown on the mark, or null.
+  final String? badge;
+
+  /// Number of the page block before it, or null.
+  final int? page;
+
+  /// The quote with some context (`exact`, `prefix`, `suffix`).
+  final Map<String, Object?> anchor;
+
+  /// Where it is in the editor (taps only), in the editor view's coordinates.
+  final Rect? rect;
+}
+
+/// A page-number block.
+@immutable
+class AxiomPage {
+  /// Creates a page.
+  const AxiomPage({required this.number, required this.index});
+
+  /// Reads a page sent by the engine.
+  factory AxiomPage.fromMap(Map<String, Object?> map) => AxiomPage(
+        number: _int(map['number']),
+        index: _int(map['index']),
+      );
+
+  /// The page number.
+  final int number;
+
+  /// Index among the document's top-level blocks.
+  final int index;
+}
+
+/// Which marks to show while reading; other paragraphs fold into "… 3 paragraphs".
+@immutable
+class AxiomMarkFilter {
+  const AxiomMarkFilter._(this._value);
+
+  /// Everything (no folding).
+  static const all = AxiomMarkFilter._('all');
+
+  /// Only paragraphs with a mark.
+  static const marked = AxiomMarkFilter._('marked');
+
+  /// Only paragraphs with these mark types.
+  factory AxiomMarkFilter.types(List<String> typeIds) =>
+      AxiomMarkFilter._(List<String>.unmodifiable(typeIds));
+
+  final Object _value;
+
+  /// The value sent to the engine.
+  Object toJson() => _value;
+}
+
+/// An item you add to the menu shown when a reader selects text.
+@immutable
+class AxiomSelectionAction {
+  /// Creates an action, e.g. `AxiomSelectionAction(id: 'ask', label: 'Ask AI')`.
+  const AxiomSelectionAction({required this.id, required this.label});
+
+  /// Your id, sent back in [AxiomSelectionActionEvent.actionId].
+  final String id;
+
+  /// Button text.
+  final String label;
+
+  /// The parameters sent to the engine.
+  Map<String, Object?> toMap() => {'id': id, 'label': label};
+}
+
+/// A reader picked one of your [AxiomSelectionAction]s.
+@immutable
+class AxiomSelectionActionEvent {
+  /// Creates an event.
+  const AxiomSelectionActionEvent({
+    required this.actionId,
+    required this.text,
+    required this.anchor,
+    this.page,
+  });
+
+  /// Reads an event sent by the engine.
+  factory AxiomSelectionActionEvent.fromMap(Map<String, Object?> map) =>
+      AxiomSelectionActionEvent(
+        actionId: _string(map['actionId']) ?? '',
+        text: _string(map['text']) ?? '',
+        anchor: map['anchor'] is Map<String, Object?>
+            ? map['anchor']! as Map<String, Object?>
+            : const {},
+        page: map['page'] is num ? (map['page']! as num).toInt() : null,
+      );
+
+  /// Which action.
+  final String actionId;
+
+  /// The selected text.
+  final String text;
+
+  /// Where it is (the same anchor model as reader highlights).
+  final Map<String, Object?> anchor;
+
+  /// Number of the page block before it, or null.
+  final int? page;
+}
+
+/// A reader highlight in reading order, for a "My notes" screen.
+@immutable
+class AxiomNotebookEntry {
+  /// Creates an entry.
+  const AxiomNotebookEntry({
+    required this.highlight,
+    required this.text,
+    required this.orphaned,
+    this.page,
+  });
+
+  /// Reads an entry sent by the engine.
+  factory AxiomNotebookEntry.fromMap(Map<String, Object?> map) {
+    final raw = map['highlight'];
+    final highlight = AxiomReaderHighlight.fromMap(
+        raw is Map<String, Object?> ? raw : const <String, Object?>{});
+    return AxiomNotebookEntry(
+      highlight: highlight,
+      text: _string(map['text']) ?? highlight.text,
+      orphaned: map['orphaned'] == true,
+      page: map['page'] is num ? (map['page']! as num).toInt() : null,
+    );
+  }
+
+  /// The highlight.
+  final AxiomReaderHighlight highlight;
+
+  /// The highlighted text as it is now.
+  final String text;
+
+  /// True when its text is no longer in the document.
+  final bool orphaned;
+
+  /// Number of the page block before it, or null.
+  final int? page;
+}
+
+double _double(Object? value) => value is num ? value.toDouble() : 0;
+
+// ── PDF annotation ───────────────────────────────────────────────
+
+/// A mark or highlight on a PDF ([AxiomPdfView]). Store [toMap] and pass it back later.
+@immutable
+class AxiomPdfAnnotation {
+  const AxiomPdfAnnotation._(this._map);
+
+  /// Reads an annotation saved with [toMap] or sent by the view.
+  factory AxiomPdfAnnotation.fromMap(Map<String, Object?> map) =>
+      AxiomPdfAnnotation._(Map.unmodifiable(map));
+
+  final Map<String, Object?> _map;
+
+  /// Unique id.
+  String get id => _string(_map['id']) ?? '';
+
+  /// A teacher's mark (one of your mark types) or a reader's highlight.
+  bool get isMark => _map['kind'] == 'mark';
+
+  /// Mark type id (marks).
+  String? get type => _string(_map['type']);
+
+  /// Highlight colour (highlights).
+  AxiomHighlightColor get color => AxiomHighlightColor.parse(_map['color']);
+
+  /// 1-based page number.
+  int get page => _int(_map['page']);
+
+  /// The marked text.
+  String get text {
+    final anchor = _map['anchor'];
+    return anchor is Map<String, Object?> ? _string(anchor['exact']) ?? '' : '';
+  }
+
+  /// A reader's note (highlights).
+  String? get note => _string(_map['note']);
+
+  /// Your app's data (marks).
+  Map<String, Object?>? get data =>
+      _map['data'] is Map<String, Object?> ? _map['data']! as Map<String, Object?> : null;
+
+  /// A JSON-ready map to store (keeps the position on the page).
+  Map<String, Object?> toMap() => _map;
 }

@@ -104,6 +104,18 @@ class HomePage extends StatelessWidget {
         const ReadingPage(),
       ),
       (
+        Icons.bookmark_border,
+        'Marked book',
+        'Teachers mark a chapter; students filter, tap and practise',
+        const MarkedBookPage(),
+      ),
+      (
+        Icons.quiz_outlined,
+        'Quiz list',
+        'Questions with equations, drawn natively (no WebView)',
+        const QuizPage(),
+      ),
+      (
         Icons.chat_bubble_outline,
         'Comment box',
         'Grows with its content inside a scrolling list',
@@ -474,6 +486,231 @@ class _ReadingPageState extends State<ReadingPage> {
           savedHighlights = [for (final h in items) h.toMap()];
           setState(() => _highlights = items);
         },
+      ),
+    );
+  }
+}
+
+
+// ── Marked book ─────────────────────────────────────────────────
+
+const _markTypes = [
+  AxiomMarkType(
+      id: 'important', label: 'Important', color: Color(0xFF16A34A)),
+  AxiomMarkType(
+      id: 'marked',
+      label: 'Marked',
+      color: Color(0xFF2563EB),
+      style: AxiomMarkStyle.underline),
+  AxiomMarkType(
+      id: 'pyq',
+      label: 'Past exam question',
+      color: Color(0xFFB45309),
+      style: AxiomMarkStyle.box),
+];
+
+Map<String, Object?> _text(String text, [String? type, String? id, int? questions]) => {
+      'type': 'text',
+      'text': text,
+      if (type != null)
+        'marks': [
+          {
+            'type': 'marker',
+            'attrs': {
+              'type': type,
+              'id': id,
+              'data': {
+                'questionIds': [for (var i = 0; i < (questions ?? 0); i++) 'q$id$i'],
+              },
+              'badge': '${questions ?? 0}',
+            },
+          },
+        ],
+    };
+
+final Map<String, Object?> _chapter = {
+  'version': 1,
+  'doc': {
+    'type': 'doc',
+    'content': [
+      {
+        'type': 'page',
+        'attrs': {'number': 23},
+      },
+      {
+        'type': 'heading',
+        'attrs': {'level': 2},
+        'content': [_text('Photosynthesis')],
+      },
+      {
+        'type': 'paragraph',
+        'content': [
+          _text('Green plants make their own food by '),
+          _text('photosynthesis', 'important', 'm1', 3),
+          _text(', using light captured by chlorophyll.'),
+        ],
+      },
+      {
+        'type': 'paragraph',
+        'content': [
+          _text('Water enters the roots by '),
+          _text('osmosis', 'pyq', 'm2', 2),
+          _text(' and travels up the xylem.'),
+        ],
+      },
+      {
+        'type': 'paragraph',
+        'content': [_text('Leaves are thin and flat, so light reaches most cells.')],
+      },
+      {
+        'type': 'page',
+        'attrs': {'number': 24},
+      },
+      {
+        'type': 'paragraph',
+        'content': [
+          _text('The rate depends on '),
+          _text('light, carbon dioxide and temperature', 'marked', 'm3', 1),
+          _text('.'),
+        ],
+      },
+    ],
+  },
+};
+
+/// A chapter that teachers mark and students read.
+class MarkedBookPage extends StatefulWidget {
+  const MarkedBookPage({super.key});
+
+  @override
+  State<MarkedBookPage> createState() => _MarkedBookPageState();
+}
+
+class _MarkedBookPageState extends State<MarkedBookPage> {
+  bool _teacher = false;
+  Map<String, Object?> _content = _chapter;
+  final _controller = AxiomTextController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _switch(bool teacher) async {
+    if (_controller.isReady) _content = await _controller.getJson();
+    setState(() => _teacher = teacher);
+  }
+
+  void _showQuestions(AxiomMark mark) {
+    AxiomMarkType? type;
+    for (final t in _markTypes) {
+      if (t.id == mark.type) type = t;
+    }
+    final count = (mark.data?['questionIds'] as List<Object?>?)?.length ?? 0;
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${type?.label ?? 'Mark'}${mark.page != null ? ' · page ${mark.page}' : ''}',
+                style: TextStyle(color: type?.color, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 6),
+              Text('“${mark.text}”', style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: count == 0 ? null : () => Navigator.pop(context),
+                icon: const Icon(Icons.play_arrow_rounded),
+                label: Text('Practise $count question${count == 1 ? '' : 's'}'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Marked book'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: SegmentedButton<bool>(
+              segments: const [
+                ButtonSegment(value: false, label: Text('Student')),
+                ButtonSegment(value: true, label: Text('Teacher')),
+              ],
+              selected: {_teacher},
+              onSelectionChanged: (s) => unawaited(_switch(s.first)),
+            ),
+          ),
+        ],
+      ),
+      body: AxiomTextEditor(
+        key: ValueKey(_teacher),
+        controller: _controller,
+        initialContent: AxiomContent.json(_content),
+        readOnly: !_teacher,
+        markTypes: _markTypes,
+        onMarkTap: _showQuestions,
+        highlights: _teacher ? null : const [],
+        selectionActions: const [AxiomSelectionAction(id: 'ask', label: 'Ask AI')],
+        onSelectionAction: (e) => ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Asking about “${e.text}”'))),
+      ),
+    );
+  }
+}
+
+// ── Quiz list (native view) ─────────────────────────────────────
+
+/// Many short questions with equations, drawn with Flutter widgets (no WebView).
+class QuizPage extends StatelessWidget {
+  const QuizPage({super.key});
+
+  static const _questions = [
+    'Solve for \$x\$: \$x^2 - 5x + 6 = 0\$',
+    'What is \$\\frac{d}{dx} \\sin x\$?',
+    'The area of a circle of radius \$r\$ is **\$\\pi r^2\$**. Find it for \$r = 3\$.',
+    'Which gas do plants take in during *photosynthesis*?\n\n- Oxygen\n- Carbon dioxide\n- Nitrogen',
+    '\$\$\\int_0^1 x^2\\,dx = ?\$\$',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Quiz list')),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: _questions.length * 8,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, i) => Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Question ${i + 1}',
+                    style: Theme.of(context).textTheme.labelLarge),
+                const SizedBox(height: 8),
+                AxiomTextView(
+                  content: AxiomContent.markdown(
+                      _questions[i % _questions.length]),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

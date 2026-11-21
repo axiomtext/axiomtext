@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
@@ -188,6 +189,12 @@ class AxiomTextController extends ChangeNotifier {
       StreamController<List<AxiomCommentThread>>.broadcast();
   final StreamController<List<AxiomReaderHighlight>> _highlights =
       StreamController<List<AxiomReaderHighlight>>.broadcast();
+  final StreamController<AxiomMark> _markTaps =
+      StreamController<AxiomMark>.broadcast();
+  final StreamController<AxiomSelectionActionEvent> _selectionActions =
+      StreamController<AxiomSelectionActionEvent>.broadcast();
+  final StreamController<List<AxiomPdfAnnotation>> _pdfChanges =
+      StreamController<List<AxiomPdfAnnotation>>.broadcast();
 
   /// How long a call may take before it fails with a [TimeoutException].
   static const Duration callTimeout = Duration(seconds: 20);
@@ -238,6 +245,16 @@ class AxiomTextController extends ChangeNotifier {
   /// All of the reader's highlights, after every change. Save them for this reader.
   Stream<List<AxiomReaderHighlight>> get onHighlightsChange =>
       _highlights.stream;
+
+  /// A reader tapped a mark (read-only editors with mark types).
+  Stream<AxiomMark> get onMarkTap => _markTaps.stream;
+
+  /// A reader picked one of your selection actions.
+  Stream<AxiomSelectionActionEvent> get onSelectionAction =>
+      _selectionActions.stream;
+
+  /// All annotations of the open PDF, after every change ([AxiomPdfView]).
+  Stream<List<AxiomPdfAnnotation>> get onPdfChange => _pdfChanges.stream;
 
   /// The document as JSON, at most once per [debounce] while the user types.
   ///
@@ -417,6 +434,139 @@ class AxiomTextController extends ChangeNotifier {
         'items': [for (final h in highlights) h.toMap()]
       });
 
+  /// The reader's highlights in reading order with their current text and page, for a
+  /// "My notes" screen.
+  Future<List<AxiomNotebookEntry>> notebook() async {
+    final value = await _call('getNotebook');
+    return [
+      if (value is List<Object?>)
+        for (final e in value)
+          if (e is Map<String, Object?>) AxiomNotebookEntry.fromMap(e),
+    ];
+  }
+
+  /// Scrolls to a reader highlight and opens its note.
+  Future<void> revealHighlight(String id) =>
+      _call('revealHighlight', {'id': id});
+
+  // ── Marks (marked books) ───────────────────────────────────────
+
+  /// Marks the selected text with a mark type. Returns the new mark's id, or null without a
+  /// selection or for an unknown type. [data] is any JSON object kept with the mark.
+  Future<String?> setMark(
+    String typeId, {
+    String? id,
+    Map<String, Object?>? data,
+    String? badge,
+  }) async {
+    final value = await _call('setMark', {
+      'type': typeId,
+      if (id != null) 'id': id,
+      if (data != null) 'data': data,
+      if (badge != null) 'badge': badge,
+    });
+    return value is String ? value : null;
+  }
+
+  /// Removes a mark: [id] everywhere, or without an id the marks in the selection.
+  Future<bool> removeMark([String? id]) async =>
+      await _call('removeMark', {if (id != null) 'id': id}) == true;
+
+  /// Replaces a mark's data (null clears it).
+  Future<bool> setMarkData(String id, Map<String, Object?>? data) async =>
+      await _call('setMarkData', {'id': id, 'data': data}) == true;
+
+  /// A mark's data, or null.
+  Future<Map<String, Object?>?> getMarkData(String id) async {
+    for (final mark in await getMarks()) {
+      if (mark.id == id) return mark.data;
+    }
+    return null;
+  }
+
+  /// Shows a small badge on a mark, e.g. a question count (null removes it).
+  Future<bool> setMarkBadge(String id, String? badge) async =>
+      await _call('setMarkBadge', {'id': id, 'badge': badge}) == true;
+
+  /// Every mark in the document, in reading order.
+  Future<List<AxiomMark>> getMarks() async {
+    final value = await _call('getMarks');
+    return [
+      if (value is List<Object?>)
+        for (final m in value)
+          if (m is Map<String, Object?>) AxiomMark.fromMap(m),
+    ];
+  }
+
+  /// Every page-number block, in order.
+  Future<List<AxiomPage>> getPages() async {
+    final value = await _call('getPages');
+    return [
+      if (value is List<Object?>)
+        for (final p in value)
+          if (p is Map<String, Object?>) AxiomPage.fromMap(p),
+    ];
+  }
+
+  /// Inserts a page-number block before the current paragraph (continuing the numbering
+  /// when [number] is omitted).
+  Future<bool> insertPage([int? number]) async =>
+      await _call('insertPage', {if (number != null) 'number': number}) ==
+      true;
+
+  /// Scrolls to a page.
+  Future<bool> scrollToPage(int number) async =>
+      await _call('scrollToPage', {'number': number}) == true;
+
+  /// Which marks to show while reading; other paragraphs fold away.
+  Future<void> setMarkFilter(AxiomMarkFilter filter) =>
+      _call('setMarkFilter', {'filter': filter.toJson()});
+
+  // ── PDF annotation ─────────────────────────────────────────────
+
+  /// Shows a PDF (its bytes) instead of the document, with marks and highlights. Returns the
+  /// number of pages. Usually done for you by [AxiomPdfView].
+  Future<int> openPdf(
+    Uint8List bytes, {
+    List<AxiomMarkType> markTypes = const [],
+    bool markMode = false,
+    bool highlights = true,
+    List<AxiomPdfAnnotation> annotations = const [],
+    List<AxiomSelectionAction> selectionActions = const [],
+  }) async {
+    final value = await _call('openPdf', {
+      'data': base64Encode(bytes),
+      'markTypes': [for (final t in markTypes) t.toMap()],
+      'mode': markMode ? 'mark' : 'read',
+      'highlights': highlights,
+      'annotations': [for (final a in annotations) a.toMap()],
+      'selectionActions': [for (final a in selectionActions) a.toMap()],
+    });
+    return value is Map<String, Object?> && value['pageCount'] is num
+        ? (value['pageCount']! as num).toInt()
+        : 0;
+  }
+
+  /// The open PDF's annotations.
+  Future<List<AxiomPdfAnnotation>> getPdfAnnotations() async =>
+      _pdfAnnotations(await _call('getPdfAnnotations'));
+
+  /// Replaces the open PDF's annotations.
+  Future<void> setPdfAnnotations(List<AxiomPdfAnnotation> annotations) =>
+      _call('setPdfAnnotations', {
+        'items': [for (final a in annotations) a.toMap()],
+      });
+
+  /// Shows a page of the open PDF (1-based).
+  Future<void> scrollToPdfPage(int page) =>
+      _call('pdfScrollToPage', {'page': page});
+
+  static List<AxiomPdfAnnotation> _pdfAnnotations(Object? value) => [
+        if (value is List<Object?>)
+          for (final a in value)
+            if (a is Map<String, Object?>) AxiomPdfAnnotation.fromMap(a),
+      ];
+
   static List<AxiomCommentThread> _threads(Object? value) => [
         if (value is List<Object?>)
           for (final t in value)
@@ -534,7 +684,8 @@ class AxiomTextController extends ChangeNotifier {
     'Insert',
     'Upload from computer', 'Take a photo', 'Edit as LaTeX', 'Rows', 'Columns',
     'Save',
-    'Link address', 'Choose a photo', 'Comment', 'Comments',
+    'Link address', 'Choose a photo', 'Comment', 'Comments', 'Mark',
+    'Remove mark', 'Page number',
   ];
 
   Future<void> _loadLabels() async {
@@ -610,6 +761,12 @@ class AxiomTextController extends ChangeNotifier {
         _comments.add(_threads(data['threads']));
       case 'highlightsChange':
         _highlights.add(_readerHighlights(data['items']));
+      case 'markTap':
+        _markTaps.add(AxiomMark.fromMap(data));
+      case 'selectionAction':
+        _selectionActions.add(AxiomSelectionActionEvent.fromMap(data));
+      case 'pdfChange':
+        _pdfChanges.add(_pdfAnnotations(data['annotations']));
       default:
         break;
     }
@@ -652,6 +809,9 @@ class AxiomTextController extends ChangeNotifier {
     unawaited(_events.close());
     unawaited(_comments.close());
     unawaited(_highlights.close());
+    unawaited(_markTaps.close());
+    unawaited(_selectionActions.close());
+    unawaited(_pdfChanges.close());
     super.dispose();
   }
 }

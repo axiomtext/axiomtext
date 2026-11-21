@@ -36,10 +36,16 @@ export function loadReaderView(
   editor: Editor,
   highlights: ViewerOptions['highlights'] | null,
   handleComments: boolean,
+  extra: Pick<ViewerOptions, 'marks' | 'selectionActions' | 'onSelectionAction'> = {},
 ): Promise<Viewer> | null {
   if (editor.dom.isContentEditable) return null;
-  if (!highlights && !handleComments) return null;
+  const actions = (extra.selectionActions?.length ?? 0) > 0;
+  if (!highlights && !handleComments && !extra.marks && !actions) return null;
   return import('@axiomtext/viewer').then((m) =>
-    m.createViewer(editor.dom, { comments: handleComments, ...(highlights ? { highlights } : {}) }),
+    m.createViewer(editor.dom, {
+      comments: handleComments,
+      ...(highlights ? { highlights } : {}),
+      ...extra,
+    }),
   );
 }

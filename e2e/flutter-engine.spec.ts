@@ -6,10 +6,12 @@ import { readFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
+import { makePdf } from './helpers/pdf';
 
 const ASSETS = join(process.cwd(), 'packages/flutter/assets/editor');
 const ORIGIN = 'https://engine.test';
 const TYPES: Record<string, string> = {
+  '.pdf': 'application/pdf',
   '.html': 'text/html',
   '.js': 'text/javascript',
   '.css': 'text/css',
@@ -319,5 +321,128 @@ test.describe('Flutter engine', () => {
     ).toBe(true);
     await call(page, 'setHighlights', { items: [] });
     expect((await call(page, 'getHighlights')).value).toEqual([]);
+  });
+
+  test('marked books: marks, data, pages and taps through the bridge', async ({ page }) => {
+    await openEngine(page);
+    const types = [
+      { id: 'important', label: 'Important', color: '#16a34a', style: 'fill' },
+      { id: 'pyq', label: 'Past exam', color: '#b45309', style: 'box' },
+    ];
+    const ready = await call(page, 'init', {
+      markdown: 'Plants make food by photosynthesis.',
+      toolbar: 'none',
+      marks: { types },
+    });
+    expect((ready.value as { marks: boolean }).marks).toBe(true);
+
+    // Select "photosynthesis" and mark it.
+    await call(page, 'focus');
+    await page.evaluate(() => {
+      const text = document.querySelector('.ProseMirror p')?.firstChild as Text;
+      const i = text.data.indexOf('photosynthesis');
+      const range = document.createRange();
+      range.setStart(text, i);
+      range.setEnd(text, i + 'photosynthesis'.length);
+      getSelection()?.removeAllRanges();
+      getSelection()?.addRange(range);
+    });
+    await page.waitForTimeout(50);
+    const set = await call(page, 'setMark', { type: 'important', data: { questionIds: ['q1'] } });
+    expect(typeof set.value).toBe('string');
+    const id = set.value as string;
+    await call(page, 'setMarkBadge', { id, badge: '1' });
+    await call(page, 'insertPage', { number: 23 });
+    const marks = (await call(page, 'getMarks')).value as Record<string, unknown>[];
+    expect(marks[0]).toMatchObject({
+      id,
+      type: 'important',
+      text: 'photosynthesis',
+      data: { questionIds: ['q1'] },
+      badge: '1',
+      page: 23,
+    });
+    expect((await call(page, 'getPages')).value).toEqual([{ number: 23, index: 0 }]);
+
+    // Read-only: a tap sends markTap.
+    await call(page, 'setEditable', { editable: false });
+    await page.locator('mark.ax-mark').click();
+    await expect.poll(async () => (await events(page, 'markTap')).length).toBe(1);
+    expect((await events(page, 'markTap'))[0]?.data).toMatchObject({
+      id,
+      type: 'important',
+      page: 23,
+    });
+  });
+
+  test('long chapters: equations render near the screen; reported height also shrinks', async ({
+    page,
+  }) => {
+    await openEngine(page);
+    const blocks = Array.from({ length: 300 }, (_, i) =>
+      i % 3 === 0 ? `Equation ${i}: $x^${i % 9} + y_${i}$` : `Paragraph ${i} of a long chapter.`,
+    ).join('\n\n');
+    await call(page, 'init', { markdown: blocks, toolbar: 'none', editable: false });
+    await expect(page.locator('.axiomtext-content.ax-large')).toHaveCount(1);
+    // Only equations near the screen are rendered; the rest wait.
+    await expect.poll(() => page.locator('.ax-math .katex').count()).toBeGreaterThan(0);
+    const pending = await page.locator('.ax-math.is-pending').count();
+    expect(pending).toBeGreaterThan(20);
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await expect.poll(() => page.locator('.ax-math.is-pending').count()).toBeLessThan(pending);
+  });
+
+  test('shrinkWrap: the reported height follows the content both ways', async ({ page }) => {
+    await openEngine(page);
+    await call(page, 'init', { markdown: 'Short.', toolbar: 'none', reportHeight: true });
+    const heights = async (): Promise<number[]> =>
+      (await events(page, 'height')).map((e) => Number(e.data?.['height']));
+    await expect.poll(async () => (await heights()).length).toBeGreaterThan(0);
+    const first = (await heights()).at(-1) ?? 0;
+    await call(page, 'setMarkdown', {
+      markdown: Array.from({ length: 40 }, (_, i) => `Line ${i}`).join('\n\n'),
+    });
+    await expect.poll(async () => (await heights()).at(-1) ?? 0).toBeGreaterThan(first + 300);
+    await call(page, 'setMarkdown', { markdown: 'Short again.' });
+    await expect.poll(async () => (await heights()).at(-1) ?? 0).toBeLessThan(first + 60);
+  });
+
+  test('PDF mode: teachers mark a PDF from Flutter, offline', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+    await openEngine(page);
+    await call(page, 'init', { toolbar: 'none', editable: false });
+    const bytes = makePdf([['Plants make food by photosynthesis.'], ['Second page.']]);
+    const opened = await call(page, 'openPdf', {
+      data: bytes.toString('base64'),
+      mode: 'mark',
+      markTypes: [{ id: 'important', label: 'Important', color: '#16a34a', style: 'fill' }],
+    });
+    expect(opened.ok).toBe(true);
+    expect(opened.value).toEqual({ pageCount: 2 });
+    await expect(page.locator('.ax-pdf__page.is-rendered').first()).toBeVisible();
+    await page.evaluate(() => {
+      const span = [
+        ...document.querySelectorAll('.ax-pdf__page[data-page="1"] .textLayer span'),
+      ].find((s) => s.textContent?.includes('photosynthesis'));
+      const node = span?.firstChild as Text;
+      const i = node.data.indexOf('photosynthesis');
+      const range = document.createRange();
+      range.setStart(node, i);
+      range.setEnd(node, i + 'photosynthesis'.length);
+      getSelection()?.removeAllRanges();
+      getSelection()?.addRange(range);
+    });
+    await page.locator('.ax-pdf').dispatchEvent('pointerup');
+    await page.getByRole('button', { name: 'Important' }).click();
+    await expect.poll(async () => (await events(page, 'pdfChange')).length).toBe(1);
+    const saved = ((await events(page, 'pdfChange'))[0]?.data?.['annotations'] ?? []) as Record<
+      string,
+      unknown
+    >[];
+    expect(saved[0]).toMatchObject({ kind: 'mark', type: 'important', page: 1 });
+    expect(((await call(page, 'getPdfAnnotations')).value as unknown[]).length).toBe(1);
+    // Nothing tried to use the network or eval (the engine's policy forbids both).
+    expect(errors).toEqual([]);
   });
 });

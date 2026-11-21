@@ -1,0 +1,48 @@
+{
+  "name": "@axiomtext/pdf",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mark up existing PDFs with AxiomText marks, highlights and notes (pdf.js). Internal: published as axiomtext/pdf.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "homepage": "https://axiomtext.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/axiomtext/axiomtext.git",
+    "directory": "packages/pdf"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@axiomtext/i18n": "workspace:*",
+    "@axiomtext/plugin-comments": "workspace:*",
+    "@axiomtext/plugin-marks": "workspace:*",
+    "@axiomtext/viewer": "workspace:*"
+  },
+  "peerDependencies": {
+    "pdfjs-dist": ">=5"
+  },
+  "peerDependenciesMeta": {
+    "pdfjs-dist": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "pdfjs-dist": "^6.5.438"
+  }
+}

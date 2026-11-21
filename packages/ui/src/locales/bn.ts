@@ -219,6 +219,18 @@ const messages: Messages = {
   'Highlight background': 'পটভূমি হাইলাইট',
   'Choose a photo': 'ছবি বাছাই করুন',
   'Take a photo': 'ছবি তুলুন',
+  Mark: 'দাগ',
+  Marks: 'দাগসমূহ',
+  'Remove mark': 'দাগ মুছুন',
+  'Page number': 'পৃষ্ঠা নম্বর',
+  'Page {number}': 'পৃষ্ঠা {number}',
+  '… {count} paragraph': '… {count}টি অনুচ্ছেদ',
+  '… {count} paragraphs': '… {count}টি অনুচ্ছেদ',
+  'Only marked': 'শুধু দাগানো',
+  'Show everything': 'সব দেখান',
+  'Bijoy text converted to Unicode': 'বিজয় লেখা ইউনিকোডে রূপান্তরিত হয়েছে',
+  'Keep original': 'আগের মতো রাখুন',
+  'PDF document': 'পিডিএফ ডকুমেন্ট',
 };
 
 export default messages;

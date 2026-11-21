@@ -219,6 +219,18 @@ const messages: Messages = {
   'Highlight background': '高亮背景',
   'Choose a photo': '选择照片',
   'Take a photo': '拍照',
+  Mark: '标记',
+  Marks: '标记',
+  'Remove mark': '移除标记',
+  'Page number': '页码',
+  'Page {number}': '第 {number} 页',
+  '… {count} paragraph': '… {count} 段',
+  '… {count} paragraphs': '… {count} 段',
+  'Only marked': '仅显示标记',
+  'Show everything': '显示全部',
+  'Bijoy text converted to Unicode': '已将 Bijoy 文本转换为 Unicode',
+  'Keep original': '保留原文',
+  'PDF document': 'PDF 文档',
 };
 
 export default messages;

@@ -219,6 +219,18 @@ const messages: Messages = {
   'Highlight background': 'Destacar o fundo',
   'Choose a photo': 'Escolher uma foto',
   'Take a photo': 'Tirar uma foto',
+  Mark: 'Marca',
+  Marks: 'Marcas',
+  'Remove mark': 'Remover marca',
+  'Page number': 'Número da página',
+  'Page {number}': 'Página {number}',
+  '… {count} paragraph': '… {count} parágrafo',
+  '… {count} paragraphs': '… {count} parágrafos',
+  'Only marked': 'Só marcados',
+  'Show everything': 'Mostrar tudo',
+  'Bijoy text converted to Unicode': 'Texto Bijoy convertido para Unicode',
+  'Keep original': 'Manter original',
+  'PDF document': 'Documento PDF',
 };
 
 export default messages;
