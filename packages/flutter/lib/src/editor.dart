@@ -182,7 +182,8 @@ class AxiomTextEditor extends StatefulWidget {
   final List<AxiomReaderHighlight>? highlights;
 
   /// Called with all of the reader's highlights after every change: save them for this reader.
-  final void Function(List<AxiomReaderHighlight> highlights)? onHighlightsChanged;
+  final void Function(List<AxiomReaderHighlight> highlights)?
+      onHighlightsChanged;
 
   /// Called once the editor has started.
   final void Function(AxiomTextController controller)? onReady;
@@ -217,7 +218,8 @@ class _AxiomTextEditorState extends State<AxiomTextEditor> {
   AxiomEditorTheme? _sentTheme;
   String? _sentLanguage;
 
-  AxiomTextController get _controller => widget.controller ?? (_ownController ??= AxiomTextController());
+  AxiomTextController get _controller =>
+      widget.controller ?? (_ownController ??= AxiomTextController());
 
   bool get _useMathKeyboard => switch (widget.mathKeyboard) {
         AxiomMathKeyboardMode.always => true,
@@ -240,14 +242,16 @@ class _AxiomTextEditorState extends State<AxiomTextEditor> {
     view.onExternalNavigation = _openLink;
     _events = _controller.engineEvents.listen(_onEvent);
     _changes = _controller.onChange.listen((_) => widget.onChanged?.call());
-    _commentChanges =
-        _controller.onCommentsChange.listen((threads) => widget.onCommentsChanged?.call(threads));
+    _commentChanges = _controller.onCommentsChange
+        .listen((threads) => widget.onCommentsChanged?.call(threads));
     _highlightChanges = _controller.onHighlightsChange
         .listen((items) => widget.onHighlightsChanged?.call(items));
     view.onLoaded = _start;
     // A prewarmed engine is loaded already: start after the first frame, when the theme and
     // locale can be read.
-    if (view.isLoaded) WidgetsBinding.instance.addPostFrameCallback((_) => _start());
+    if (view.isLoaded) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _start());
+    }
   }
 
   void _detach() {
@@ -434,7 +438,8 @@ class _AxiomTextEditorState extends State<AxiomTextEditor> {
       final file = AxiomImageFile(
         bytes: base64Decode(base64Data),
         name: data['name'] is String ? data['name']! as String : 'image',
-        mimeType: data['mime'] is String ? data['mime']! as String : 'image/png',
+        mimeType:
+            data['mime'] is String ? data['mime']! as String : 'image/png',
       );
       await _controller.resolveUpload(id, url: await upload(file));
     } on Object catch (error) {
@@ -462,7 +467,8 @@ class _AxiomTextEditorState extends State<AxiomTextEditor> {
   @override
   Widget build(BuildContext context) {
     final theme = _theme(context);
-    final background = theme.background ?? Theme.of(context).colorScheme.surface;
+    final background =
+        theme.background ?? Theme.of(context).colorScheme.surface;
     final view = _view;
 
     Widget editor;
@@ -485,7 +491,8 @@ class _AxiomTextEditorState extends State<AxiomTextEditor> {
           if (!_ready)
             Positioned.fill(
               child: IgnorePointer(
-                child: widget.loadingBuilder?.call(context) ?? ColoredBox(color: background),
+                child: widget.loadingBuilder?.call(context) ??
+                    ColoredBox(color: background),
               ),
             ),
         ],
@@ -506,7 +513,10 @@ class _AxiomTextEditorState extends State<AxiomTextEditor> {
         ? AxiomToolbar(
             controller: _controller,
             items: widget.commentsOnly
-                ? const [AxiomToolbarItem.comment, AxiomToolbarItem.commentsPanel]
+                ? const [
+                    AxiomToolbarItem.comment,
+                    AxiomToolbarItem.commentsPanel
+                  ]
                 : widget.readOnly
                     ? const []
                     : widget.toolbarItems,
@@ -514,7 +524,8 @@ class _AxiomTextEditorState extends State<AxiomTextEditor> {
             onImage: widget.imagePicker == null ? null : _pickImage,
           )
         : null;
-    final showToolbar = toolbar != null && (!widget.readOnly || widget.commentsOnly);
+    final showToolbar =
+        toolbar != null && (!widget.readOnly || widget.commentsOnly);
 
     return Semantics(
       container: true,
@@ -524,14 +535,18 @@ class _AxiomTextEditorState extends State<AxiomTextEditor> {
         builder: (context, _) {
           final math = _useMathKeyboard && _controller.mathSession != null;
           return Column(
-            mainAxisSize: widget.shrinkWrap ? MainAxisSize.min : MainAxisSize.max,
+            mainAxisSize:
+                widget.shrinkWrap ? MainAxisSize.min : MainAxisSize.max,
             children: [
-              if (showToolbar && widget.toolbarPosition == AxiomToolbarPosition.top) toolbar!,
+              if (showToolbar &&
+                  widget.toolbarPosition == AxiomToolbarPosition.top)
+                toolbar,
               editor,
               if (math)
                 AxiomMathKeyboard(controller: _controller, cupertino: cupertino)
-              else if (showToolbar && widget.toolbarPosition == AxiomToolbarPosition.bottom)
-                toolbar!,
+              else if (showToolbar &&
+                  widget.toolbarPosition == AxiomToolbarPosition.bottom)
+                toolbar,
             ],
           );
         },

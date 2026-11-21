@@ -20,10 +20,20 @@ export 'src/controller.dart'
         AxiomMathCommand,
         AxiomTextController;
 export 'src/editor.dart'
-    show AxiomMathKeyboardMode, AxiomTextEditor, AxiomToolbarMode, AxiomToolbarPosition;
+    show
+        AxiomMathKeyboardMode,
+        AxiomTextEditor,
+        AxiomToolbarMode,
+        AxiomToolbarPosition;
 export 'src/math/math_keyboard.dart' show AxiomMathKeyboard;
 export 'src/media.dart'
-    show AxiomImagePickerOptions, AxiomImageUploader, imageSource, mimeTypeFor, pickAndInsertImage;
+    show
+        AxiomImagePickerOptions,
+        AxiomImageUploader,
+        imageSource,
+        mimeTypeFor,
+        pickAndInsertImage;
 export 'src/models.dart';
 export 'src/theme.dart' show AxiomEditorTheme;
-export 'src/toolbar/toolbar.dart' show AxiomToolbar, AxiomToolbarItem, AxiomToolbarStyle;
+export 'src/toolbar/toolbar.dart'
+    show AxiomToolbar, AxiomToolbarItem, AxiomToolbarStyle;

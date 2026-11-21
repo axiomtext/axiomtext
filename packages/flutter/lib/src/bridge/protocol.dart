@@ -104,7 +104,8 @@ sealed class EngineMessage {
           id: id,
           ok: ok,
           value: decoded['value'],
-          error: decoded['error'] is String ? decoded['error']! as String : null,
+          error:
+              decoded['error'] is String ? decoded['error']! as String : null,
         );
       case 'event':
         final name = decoded['name'];
@@ -122,18 +123,31 @@ sealed class EngineMessage {
 
 /// The engine's answer to a call.
 final class EngineResult extends EngineMessage {
-  const EngineResult({required this.id, required this.ok, this.value, this.error});
+  /// Creates a result.
+  const EngineResult(
+      {required this.id, required this.ok, this.value, this.error});
 
+  /// The id of the call this answers.
   final int id;
+
+  /// Whether the call succeeded.
   final bool ok;
+
+  /// The returned value, when [ok].
   final Object? value;
+
+  /// The error message, when not [ok].
   final String? error;
 }
 
 /// Something that happened in the editor.
 final class EngineEvent extends EngineMessage {
+  /// Creates an event.
   const EngineEvent({required this.name, required this.data});
 
+  /// The event's name (one of the allowed events).
   final String name;
+
+  /// The event's data.
   final Map<String, Object?> data;
 }

@@ -4,12 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('CSS colours keep alpha', () {
-    expect(AxiomEditorTheme.cssColor(const Color(0xff6750a4)), 'rgb(103 80 164 / 1.000)');
-    expect(AxiomEditorTheme.cssColor(const Color(0x80000000)), 'rgb(0 0 0 / 0.502)');
+    expect(AxiomEditorTheme.cssColor(const Color(0xff6750a4)),
+        'rgb(103 80 164 / 1.000)');
+    expect(AxiomEditorTheme.cssColor(const Color(0x80000000)),
+        'rgb(0 0 0 / 0.502)');
   });
 
   test('maps a Material 3 theme to editor variables', () {
-    final light = AxiomEditorTheme.fromTheme(ThemeData(colorSchemeSeed: Colors.indigo));
+    final light =
+        AxiomEditorTheme.fromTheme(ThemeData(colorSchemeSeed: Colors.indigo));
     final dark = AxiomEditorTheme.fromTheme(
       ThemeData(colorSchemeSeed: Colors.indigo, brightness: Brightness.dark),
       fontFamily: 'Inter, sans-serif',

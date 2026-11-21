@@ -130,7 +130,9 @@ class HomePage extends StatelessWidget {
                   : Icons.dark_mode_outlined,
             ),
             onPressed: () => onMode(
-              Theme.of(context).brightness == Brightness.dark ? ThemeMode.light : ThemeMode.dark,
+              Theme.of(context).brightness == Brightness.dark
+                  ? ThemeMode.light
+                  : ThemeMode.dark,
             ),
           ),
         ],
@@ -142,7 +144,8 @@ class HomePage extends StatelessWidget {
             const Card(
               child: Padding(
                 padding: EdgeInsets.all(16),
-                child: Text('AxiomText runs on Android, iOS, macOS and the web.'),
+                child:
+                    Text('AxiomText runs on Android, iOS, macOS and the web.'),
               ),
             ),
           for (final (icon, title, subtitle, page) in demos)
@@ -245,8 +248,10 @@ class MathPage extends StatelessWidget {
       body: const AxiomTextEditor(
         initialContent: AxiomContent.markdown(
           '## Exercise 1\n\n'
-          r'Solve $x^2 - 5x + 6 = 0$.' '\n\n'
-          r'$$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$' '\n\n'
+          r'Solve $x^2 - 5x + 6 = 0$.'
+          '\n\n'
+          r'$$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$$'
+          '\n\n'
           'Tap any equation to edit it, or use the ∑ buttons to add one. '
           'Paste maths from ChatGPT or Wikipedia and it stays an equation.',
         ),
@@ -285,7 +290,9 @@ class _DocumentPageState extends State<DocumentPage> {
   }
 
   Future<void> _export(String format) async {
-    final text = format == 'HTML' ? await _controller.getHtml() : await _controller.getMarkdown();
+    final text = format == 'HTML'
+        ? await _controller.getHtml()
+        : await _controller.getMarkdown();
     if (!mounted) return;
     await showModalBottomSheet<void>(
       context: context,
@@ -296,7 +303,8 @@ class _DocumentPageState extends State<DocumentPage> {
           height: MediaQuery.sizeOf(context).height * 0.6,
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
-            child: SelectableText(text, style: const TextStyle(fontFamily: 'monospace')),
+            child: SelectableText(text,
+                style: const TextStyle(fontFamily: 'monospace')),
           ),
         ),
       ),
@@ -351,7 +359,8 @@ class CommentPage extends StatelessWidget {
             Card(
               child: ListTile(
                 title: Text('Comment $i'),
-                subtitle: const Text('Earlier comments are plain Flutter widgets.'),
+                subtitle:
+                    const Text('Earlier comments are plain Flutter widgets.'),
               ),
             ),
           const SizedBox(height: 12),
@@ -453,7 +462,8 @@ class _ReadingPageState extends State<ReadingPage> {
         readOnly: true,
         initialContent: const AxiomContent.markdown(
           '# Chapter 1: Water\n\n'
-          r'Water boils at 100 °C at sea level. Its formula is $H_2O$.' '\n\n'
+          r'Water boils at 100 °C at sea level. Its formula is $H_2O$.'
+          '\n\n'
           'Ice is less dense than liquid water, which is why it floats. '
           'Select any words to highlight them, then tap a highlight to add a note.',
         ),

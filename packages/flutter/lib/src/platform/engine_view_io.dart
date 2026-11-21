@@ -10,7 +10,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'engine_view_base.dart';
 
 /// Whether this platform can show the editor (webview_flutter: Android, iOS, macOS).
-bool get engineSupported => Platform.isAndroid || Platform.isIOS || Platform.isMacOS;
+bool get engineSupported =>
+    Platform.isAndroid || Platform.isIOS || Platform.isMacOS;
 
 _WebViewEngine? _warm;
 
@@ -44,7 +45,8 @@ class _WebViewEngine extends EngineView {
     await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
     await controller.addJavaScriptChannel(
       'AxiomBridge',
-      onMessageReceived: (JavaScriptMessage message) => onMessage?.call(message.message),
+      onMessageReceived: (JavaScriptMessage message) =>
+          onMessage?.call(message.message),
     );
     await controller.setNavigationDelegate(
       NavigationDelegate(
@@ -80,7 +82,8 @@ class _WebViewEngine extends EngineView {
         controller: controller,
         // The editor handles its own taps, drags and scrolling.
         gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
-          Factory<OneSequenceGestureRecognizer>(EagerGestureRecognizer.new),
+          const Factory<OneSequenceGestureRecognizer>(
+              EagerGestureRecognizer.new),
         },
       );
 
@@ -95,8 +98,8 @@ class _WebViewEngine extends EngineView {
 
   // The message is passed as a JSON string literal to one fixed function; nothing from Dart is
   // ever evaluated as code (FLT-017).
-  Future<void> _run(String message) =>
-      controller.runJavaScript('window.axiomReceive && window.axiomReceive(${jsonEncode(message)})');
+  Future<void> _run(String message) => controller.runJavaScript(
+      'window.axiomReceive && window.axiomReceive(${jsonEncode(message)})');
 
   @override
   Future<void> setBackground(Color color) async {
@@ -114,6 +117,8 @@ class _WebViewEngine extends EngineView {
     onMessage = null;
     onLoaded = null;
     onExternalNavigation = null;
-    unawaited(controller.loadRequest(Uri.parse('about:blank')).catchError((Object _) {}));
+    unawaited(controller
+        .loadRequest(Uri.parse('about:blank'))
+        .catchError((Object _) {}));
   }
 }

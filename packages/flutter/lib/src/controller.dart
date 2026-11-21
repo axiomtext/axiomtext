@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
 
 import 'bridge/protocol.dart';
 import 'models.dart';
@@ -183,7 +182,8 @@ class AxiomTextController extends ChangeNotifier {
       StreamController<AxiomEditorState>.broadcast();
   final StreamController<void> _focus = StreamController<void>.broadcast();
   final StreamController<void> _blur = StreamController<void>.broadcast();
-  final StreamController<EngineEvent> _events = StreamController<EngineEvent>.broadcast();
+  final StreamController<EngineEvent> _events =
+      StreamController<EngineEvent>.broadcast();
   final StreamController<List<AxiomCommentThread>> _comments =
       StreamController<List<AxiomCommentThread>>.broadcast();
   final StreamController<List<AxiomReaderHighlight>> _highlights =
@@ -236,7 +236,8 @@ class AxiomTextController extends ChangeNotifier {
   Stream<List<AxiomCommentThread>> get onCommentsChange => _comments.stream;
 
   /// All of the reader's highlights, after every change. Save them for this reader.
-  Stream<List<AxiomReaderHighlight>> get onHighlightsChange => _highlights.stream;
+  Stream<List<AxiomReaderHighlight>> get onHighlightsChange =>
+      _highlights.stream;
 
   /// The document as JSON, at most once per [debounce] while the user types.
   ///
@@ -290,17 +291,21 @@ class AxiomTextController extends ChangeNotifier {
   /// Word and character counts.
   Future<AxiomStats> getStats() async {
     final value = await _call('getStats');
-    return value is Map<String, Object?> ? AxiomStats.fromMap(value) : AxiomStats.zero;
+    return value is Map<String, Object?>
+        ? AxiomStats.fromMap(value)
+        : AxiomStats.zero;
   }
 
   /// Replaces the document with stored JSON (older formats are upgraded).
-  Future<void> setJson(Map<String, Object?> json) => _call('setJson', {'json': json});
+  Future<void> setJson(Map<String, Object?> json) =>
+      _call('setJson', {'json': json});
 
   /// Replaces the document with HTML.
   Future<void> setHtml(String html) => _call('setHtml', {'html': html});
 
   /// Replaces the document with Markdown.
-  Future<void> setMarkdown(String markdown) => _call('setMarkdown', {'markdown': markdown});
+  Future<void> setMarkdown(String markdown) =>
+      _call('setMarkdown', {'markdown': markdown});
 
   /// Replaces the document with any supported content.
   Future<void> setContent(AxiomContent content) => switch (content) {
@@ -330,7 +335,8 @@ class AxiomTextController extends ChangeNotifier {
       await _call('execute', {'command': command, 'args': args}) == true;
 
   /// Whether a command can run at the cursor.
-  Future<bool> canExecute(String command, [List<Object?> args = const []]) async =>
+  Future<bool> canExecute(String command,
+          [List<Object?> args = const []]) async =>
       await _call('canExecute', {'command': command, 'args': args}) == true;
 
   /// Undo.
@@ -347,12 +353,14 @@ class AxiomTextController extends ChangeNotifier {
   Future<void> unfocus() => _call('blur');
 
   /// Switches between editing and read-only.
-  Future<void> setEditable(bool editable) => _call('setEditable', {'editable': editable});
+  Future<void> setEditable(bool editable) =>
+      _call('setEditable', {'editable': editable});
 
   // ── Comments ───────────────────────────────────────────────────
 
   /// Every comment thread in the document, in reading order.
-  Future<List<AxiomCommentThread>> getComments() async => _threads(await _call('getComments'));
+  Future<List<AxiomCommentThread>> getComments() async =>
+      _threads(await _call('getComments'));
 
   /// Comments on the selected text, as the editor's comment author. Returns false without a
   /// selection.
@@ -363,10 +371,13 @@ class AxiomTextController extends ChangeNotifier {
     AxiomHighlightColor color = AxiomHighlightColor.yellow,
     bool fill = true,
   }) async =>
-      await _call('addComment', {'text': text, 'color': color.value, 'fill': fill}) == true;
+      await _call(
+          'addComment', {'text': text, 'color': color.value, 'fill': fill}) ==
+      true;
 
   /// Changes a thread's colour and/or whether its background is coloured.
-  Future<bool> setCommentStyle(String threadId, {AxiomHighlightColor? color, bool? fill}) async =>
+  Future<bool> setCommentStyle(String threadId,
+          {AxiomHighlightColor? color, bool? fill}) async =>
       await _call('setCommentStyle', {
         'id': threadId,
         if (color != null) 'color': color.value,
@@ -380,7 +391,8 @@ class AxiomTextController extends ChangeNotifier {
 
   /// Resolves a thread (or with `resolved: false`, reopens it).
   Future<bool> resolveComment(String threadId, {bool resolved = true}) async =>
-      await _call('resolveComment', {'id': threadId, 'resolved': resolved}) == true;
+      await _call('resolveComment', {'id': threadId, 'resolved': resolved}) ==
+      true;
 
   /// Deletes a thread and its highlight (the text stays).
   Future<bool> deleteCommentThread(String threadId) async =>
@@ -401,7 +413,9 @@ class AxiomTextController extends ChangeNotifier {
 
   /// Replaces the reader's highlights (e.g. after loading them for another reader).
   Future<void> setHighlights(List<AxiomReaderHighlight> highlights) =>
-      _call('setHighlights', {'items': [for (final h in highlights) h.toMap()]});
+      _call('setHighlights', {
+        'items': [for (final h in highlights) h.toMap()]
+      });
 
   static List<AxiomCommentThread> _threads(Object? value) => [
         if (value is List<Object?>)
@@ -418,7 +432,8 @@ class AxiomTextController extends ChangeNotifier {
   // ── Math keyboard ──────────────────────────────────────────────
 
   /// Inserts LaTeX into the equation being edited (`#0` keeps the selection, `#?` is a box).
-  Future<void> mathInsert(String latex) => _call('mathInsert', {'latex': latex});
+  Future<void> mathInsert(String latex) =>
+      _call('mathInsert', {'latex': latex});
 
   /// Moves the caret or deletes in the equation being edited.
   Future<void> mathCommand(AxiomMathCommand command) =>
@@ -468,8 +483,8 @@ class AxiomTextController extends ChangeNotifier {
   @internal
   Future<AxiomEngineInfo> start(Map<String, Object?> params) async {
     final value = await _call('init', params, false);
-    final info =
-        AxiomEngineInfo.fromMap(value is Map<String, Object?> ? value : const <String, Object?>{});
+    final info = AxiomEngineInfo.fromMap(
+        value is Map<String, Object?> ? value : const <String, Object?>{});
     await _setReady(info);
     return info;
   }
@@ -480,7 +495,8 @@ class AxiomTextController extends ChangeNotifier {
 
   /// Changes the interface language while the editor runs.
   @internal
-  Future<void> setLanguage(String language, Map<String, String>? translations) async {
+  Future<void> setLanguage(
+      String language, Map<String, String>? translations) async {
     await _call('setLanguage', {
       'language': language,
       if (translations != null) 'translations': translations,
@@ -491,27 +507,39 @@ class AxiomTextController extends ChangeNotifier {
 
   /// Answers an `uploadImage` request with the uploaded image's address or an error.
   @internal
-  Future<void> resolveUpload(int requestId, {String? url, String? error}) => _call(
+  Future<void> resolveUpload(int requestId, {String? url, String? error}) =>
+      _call(
         'resolveUpload',
-        {'requestId': requestId, if (url != null) 'url': url, if (error != null) 'error': error},
+        {
+          'requestId': requestId,
+          if (url != null) 'url': url,
+          if (error != null) 'error': error
+        },
       );
 
   /// English texts of the native toolbar and keyboard, translated by the engine.
   static const List<String> uiTexts = [
-    'Undo', 'Redo', 'Text style', 'Paragraph', 'Heading 1', 'Heading 2', 'Heading 3', //
-    'Heading 4', 'Quote', 'Bold', 'Italic', 'Underline', 'Strikethrough', 'Code',
-    'Subscript', 'Superscript', 'Text color', 'Highlight', 'Font', 'Size', 'Default font',
+    'Undo', 'Redo', 'Text style', 'Paragraph', 'Heading 1', 'Heading 2',
+    'Heading 3', //
+    'Heading 4', 'Quote', 'Bold', 'Italic', 'Underline', 'Strikethrough',
+    'Code',
+    'Subscript', 'Superscript', 'Text color', 'Highlight', 'Font', 'Size',
+    'Default font',
     'Default size', 'Clear formatting', 'Link', 'Remove link', 'Bulleted list',
-    'Numbered list', 'To-do list', 'Align', 'Align left', 'Align center', 'Align right',
-    'Justify', 'Increase indent', 'Decrease indent', 'Image', 'Insert table', 'Equation',
-    'Block equation', 'Horizontal line', 'Done', 'Cancel', 'Remove color', 'Insert',
-    'Upload from computer', 'Take a photo', 'Edit as LaTeX', 'Rows', 'Columns', 'Save',
+    'Numbered list', 'To-do list', 'Align', 'Align left', 'Align center',
+    'Align right',
+    'Justify', 'Increase indent', 'Decrease indent', 'Image', 'Insert table',
+    'Equation',
+    'Block equation', 'Horizontal line', 'Done', 'Cancel', 'Remove color',
+    'Insert',
+    'Upload from computer', 'Take a photo', 'Edit as LaTeX', 'Rows', 'Columns',
+    'Save',
     'Link address', 'Choose a photo', 'Comment', 'Comments',
   ];
 
   Future<void> _loadLabels() async {
     try {
-      final value = await _call('translate', {'texts': uiTexts});
+      final value = await _call('translate', {'texts': uiTexts}, false);
       if (value is Map<String, Object?>) {
         _labels = {
           for (final entry in value.entries)
@@ -541,7 +569,8 @@ class AxiomTextController extends ChangeNotifier {
         if (ok) {
           pending.complete(value);
         } else {
-          pending.completeError(AxiomEditorException(error ?? 'The editor refused the call.'));
+          pending.completeError(
+              AxiomEditorException(error ?? 'The editor refused the call.'));
         }
       case final EngineEvent event:
         _handleEvent(event, event.name, event.data);
@@ -565,7 +594,8 @@ class AxiomTextController extends ChangeNotifier {
       case 'blur':
         _blur.add(null);
       case 'mathEditStart':
-        _math = AxiomMathSession(latex: _asString(data['latex']), display: data['display'] == true);
+        _math = AxiomMathSession(
+            latex: _asString(data['latex']), display: data['display'] == true);
         notifyListeners();
       case 'mathEditChange':
         final math = _math;
@@ -594,7 +624,9 @@ class AxiomTextController extends ChangeNotifier {
     if (_disposed) throw StateError('This AxiomTextController was disposed.');
     if (waitForReady && !isReady) await ready.timeout(callTimeout);
     final view = _view;
-    if (view == null) throw StateError('No editor is attached to this controller.');
+    if (view == null) {
+      throw StateError('No editor is attached to this controller.');
+    }
     final id = _nextId++;
     final completer = Completer<Object?>();
     _pending[id] = completer;
@@ -603,7 +635,8 @@ class AxiomTextController extends ChangeNotifier {
       callTimeout,
       onTimeout: () {
         _pending.remove(id);
-        throw TimeoutException('The editor did not answer "$method".', callTimeout);
+        throw TimeoutException(
+            'The editor did not answer "$method".', callTimeout);
       },
     );
   }

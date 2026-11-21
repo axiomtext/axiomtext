@@ -6,11 +6,17 @@ import 'package:flutter/widgets.dart';
 
 /// Stands in for the WebView: records calls and answers like the real engine.
 class FakeEngine extends EngineView {
-  FakeEngine({Map<String, Object? Function(Map<String, Object?> params)>? handlers})
+  FakeEngine(
+      {Map<String, Object? Function(Map<String, Object?> params)>? handlers})
       : handlers = {
           'init': (_) => {
                 'version': 1,
-                'commands': ['toggleBold', 'toggleItalic', 'setHeading', 'insertTable'],
+                'commands': [
+                  'toggleBold',
+                  'toggleItalic',
+                  'setHeading',
+                  'insertTable'
+                ],
                 'language': 'en',
                 'dir': 'ltr',
                 'fontFamilies': [
@@ -26,7 +32,9 @@ class FakeEngine extends EngineView {
                 ],
               },
           'translate': (params) => {
-                for (final text in (params['texts']! as List<Object?>).cast<String>()) text: text,
+                for (final text
+                    in (params['texts']! as List<Object?>).cast<String>())
+                  text: text,
               },
           ...?handlers,
         };
@@ -51,7 +59,8 @@ class FakeEngine extends EngineView {
     calls.add(call);
     final method = call['method']! as String;
     final id = call['id']! as int;
-    final params = (call['params'] as Map<String, Object?>?) ?? const <String, Object?>{};
+    final params =
+        (call['params'] as Map<String, Object?>?) ?? const <String, Object?>{};
     final handler = handlers[method];
     // Answer asynchronously, like a real WebView.
     scheduleMicrotask(() {
@@ -60,19 +69,32 @@ class FakeEngine extends EngineView {
         return;
       }
       try {
-        reply({'v': 1, 'kind': 'result', 'id': id, 'ok': true, 'value': handler(params)});
+        reply({
+          'v': 1,
+          'kind': 'result',
+          'id': id,
+          'ok': true,
+          'value': handler(params)
+        });
       } on Exception catch (error) {
-        reply({'v': 1, 'kind': 'result', 'id': id, 'ok': false, 'error': '$error'});
+        reply({
+          'v': 1,
+          'kind': 'result',
+          'id': id,
+          'ok': false,
+          'error': '$error'
+        });
       }
     });
   }
 
   /// Sends a raw message as if it came from the engine.
-  void reply(Map<String, Object?> message) => onMessage?.call(jsonEncode(message));
+  void reply(Map<String, Object?> message) =>
+      onMessage?.call(jsonEncode(message));
 
   /// Sends an event as if it came from the engine.
-  void emit(String name, [Map<String, Object?>? data]) =>
-      reply({'v': 1, 'kind': 'event', 'name': name, if (data != null) 'data': data});
+  void emit(String name, [Map<String, Object?>? data]) => reply(
+      {'v': 1, 'kind': 'event', 'name': name, if (data != null) 'data': data});
 
   @override
   Future<void> setBackground(Color color) async {}

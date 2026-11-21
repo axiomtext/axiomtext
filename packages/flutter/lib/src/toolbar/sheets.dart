@@ -55,20 +55,23 @@ Future<_Picked<T>?> _choose<T>(
     isScrollControlled: true,
     builder: (context) => SafeArea(
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.7),
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.7),
         child: ListView(
           shrinkWrap: true,
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
-              child: Text(title, style: Theme.of(context).textTheme.titleMedium),
+              child:
+                  Text(title, style: Theme.of(context).textTheme.titleMedium),
             ),
             for (final choice in choices)
               ListTile(
                 leading: choice.icon == null ? null : Icon(choice.icon),
                 title: Text(choice.label, style: choice.style),
                 selected: choice.value == current,
-                trailing: choice.value == current ? const Icon(Icons.check) : null,
+                trailing:
+                    choice.value == current ? const Icon(Icons.check) : null,
                 onTap: () => Navigator.pop(context, _Picked<T>(choice.value)),
               ),
           ],
@@ -108,10 +111,13 @@ Future<void> showBlockStyleSheet(
   if (value == 'quote') {
     await controller.execute(AxiomCommands.toggleBlockquote);
   } else if (value == 'paragraph') {
-    if (state.blockquote) await controller.execute(AxiomCommands.toggleBlockquote);
+    if (state.blockquote) {
+      await controller.execute(AxiomCommands.toggleBlockquote);
+    }
     await controller.execute(AxiomCommands.setParagraph);
   } else {
-    await controller.execute(AxiomCommands.setHeading, [int.parse(value.substring(7))]);
+    await controller
+        .execute(AxiomCommands.setHeading, [int.parse(value.substring(7))]);
   }
   await controller.focus();
 }
@@ -159,9 +165,13 @@ Future<void> showFontSheet(
     choices: [
       for (final option in options)
         _Choice(
-          option.value == null ? l(size ? 'Default size' : 'Default font') : option.label,
+          option.value == null
+              ? l(size ? 'Default size' : 'Default font')
+              : option.label,
           option.value,
-          style: size || option.value == null ? null : TextStyle(fontFamily: _firstFont(option.value!)),
+          style: size || option.value == null
+              ? null
+              : TextStyle(fontFamily: _firstFont(option.value!)),
         ),
     ],
   );
@@ -173,7 +183,8 @@ Future<void> showFontSheet(
   await controller.focus();
 }
 
-String _firstFont(String css) => css.split(',').first.replaceAll('"', '').trim();
+String _firstFont(String css) =>
+    css.split(',').first.replaceAll('"', '').trim();
 
 /// Text colour or highlight swatches.
 Future<void> showColorSheet(
@@ -184,9 +195,10 @@ Future<void> showColorSheet(
 }) async {
   final l = controller.label;
   final options = optionsFor(controller, highlight ? 'highlight' : 'textColor');
-  final current = highlight ? controller.state.highlight : controller.state.textColor;
+  final current =
+      highlight ? controller.state.highlight : controller.state.textColor;
 
-  Widget body(BuildContext context) => Padding(
+  Widget body(BuildContext context) => SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -206,13 +218,15 @@ Future<void> showColorSheet(
                     color: parseCssColor(option.value) ?? Colors.transparent,
                     label: option.label,
                     selected: option.value == current,
-                    onTap: () => Navigator.pop(context, _Picked<String?>(option.value)),
+                    onTap: () =>
+                        Navigator.pop(context, _Picked<String?>(option.value)),
                   ),
               ],
             ),
             const SizedBox(height: 16),
             TextButton.icon(
-              onPressed: () => Navigator.pop(context, const _Picked<String?>(null)),
+              onPressed: () =>
+                  Navigator.pop(context, const _Picked<String?>(null)),
               icon: const Icon(Icons.format_color_reset),
               label: Text(l('Remove color')),
             ),
@@ -228,7 +242,8 @@ Future<void> showColorSheet(
         child: Material(
           type: MaterialType.transparency,
           child: SafeArea(
-            child: Padding(padding: const EdgeInsets.only(top: 20), child: body(context)),
+            child: Padding(
+                padding: const EdgeInsets.only(top: 20), child: body(context)),
           ),
         ),
       ),
@@ -308,13 +323,16 @@ Future<void> showTableSheet(
     size = await showCupertinoModalPopup<(int, int)>(
       context: context,
       builder: (context) => CupertinoPopupSurface(
-        child: Material(type: MaterialType.transparency, child: SafeArea(child: body(context))),
+        child: Material(
+            type: MaterialType.transparency,
+            child: SafeArea(child: body(context))),
       ),
     );
   } else {
     size = await showModalBottomSheet<(int, int)>(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (context) => SafeArea(child: body(context)),
     );
   }
@@ -342,12 +360,14 @@ class _TableGridState extends State<_TableGrid> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Padding(
+    // Scrolls on short screens (e.g. a phone held sideways) instead of being cut off.
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('${widget.title}: $_c × $_r', style: Theme.of(context).textTheme.titleMedium),
+          Text('${widget.title}: $_c × $_r',
+              style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 16),
           for (var r = 1; r <= _rows; r++)
             Row(
@@ -368,9 +388,13 @@ class _TableGridState extends State<_TableGrid> {
                         height: 28,
                         margin: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
-                          color: r <= _r && c <= _c ? scheme.primaryContainer : scheme.surface,
+                          color: r <= _r && c <= _c
+                              ? scheme.primaryContainer
+                              : scheme.surface,
                           border: Border.all(
-                            color: r <= _r && c <= _c ? scheme.primary : scheme.outlineVariant,
+                            color: r <= _r && c <= _c
+                                ? scheme.primary
+                                : scheme.outlineVariant,
                           ),
                           borderRadius: BorderRadius.circular(4),
                         ),
@@ -444,7 +468,9 @@ Future<void> showLinkDialog(
           onSubmitted: (value) => Navigator.pop(context, value.trim()),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l('Cancel'))),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(l('Cancel'))),
           if (existing != null)
             TextButton(
               onPressed: () => Navigator.pop(context, ''),

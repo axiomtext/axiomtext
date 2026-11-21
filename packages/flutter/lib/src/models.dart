@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'dart:ui' show Color;
 
 import 'package:flutter/foundation.dart';
@@ -81,7 +79,9 @@ class AxiomStats {
 
   @override
   bool operator ==(Object other) =>
-      other is AxiomStats && other.words == words && other.characters == characters;
+      other is AxiomStats &&
+      other.words == words &&
+      other.characters == characters;
 
   @override
   int get hashCode => Object.hash(words, characters);
@@ -198,8 +198,9 @@ class AxiomEditorState {
   bool isActive(String mark) => marks[mark] ?? false;
 
   /// Heading level at the cursor (1–6), or null in a paragraph.
-  int? get headingLevel =>
-      block.startsWith('heading') ? int.tryParse(block.substring('heading'.length)) : null;
+  int? get headingLevel => block.startsWith('heading')
+      ? int.tryParse(block.substring('heading'.length))
+      : null;
 
   @override
   bool operator ==(Object other) =>
@@ -223,7 +224,8 @@ class AxiomEditorState {
 
   @override
   int get hashCode => Object.hash(
-        Object.hashAllUnordered(marks.entries.where((e) => e.value).map((e) => e.key)),
+        Object.hashAllUnordered(
+            marks.entries.where((e) => e.value).map((e) => e.key)),
         block,
         list,
         blockquote,
@@ -276,7 +278,9 @@ class AxiomEngineInfo {
           if (raw is List<Object?>)
             for (final item in raw)
               if (item is Map<String, Object?>)
-                AxiomOption(label: _string(item[labelKey]) ?? '', value: _string(item['value'])),
+                AxiomOption(
+                    label: _string(item[labelKey]) ?? '',
+                    value: _string(item['value'])),
         ];
     final sizes = map['fontSizes'];
     return AxiomEngineInfo(
@@ -291,7 +295,8 @@ class AxiomEngineInfo {
       fontFamilies: options(map['fontFamilies'], 'label'),
       fontSizes: [
         if (sizes is List<Object?>)
-          for (final s in sizes) AxiomOption(label: _string(s) ?? '', value: _string(s)),
+          for (final s in sizes)
+            AxiomOption(label: _string(s) ?? '', value: _string(s)),
       ],
       textColors: options(map['textColors'], 'name'),
       highlightColors: options(map['highlightColors'], 'name'),
@@ -336,14 +341,16 @@ class AxiomMathSession {
   final bool display;
 
   /// A copy with new LaTeX.
-  AxiomMathSession withLatex(String latex) => AxiomMathSession(latex: latex, display: display);
+  AxiomMathSession withLatex(String latex) =>
+      AxiomMathSession(latex: latex, display: display);
 }
 
 /// An image picked on the device or pasted into the editor, ready to upload.
 @immutable
 class AxiomImageFile {
   /// Creates an image file.
-  const AxiomImageFile({required this.bytes, required this.name, required this.mimeType});
+  const AxiomImageFile(
+      {required this.bytes, required this.name, required this.mimeType});
 
   /// The file's bytes.
   final Uint8List bytes;
@@ -389,7 +396,14 @@ class AxiomHighlightColor {
   static const orange = AxiomHighlightColor._('orange');
 
   /// The six presets.
-  static const List<AxiomHighlightColor> values = [yellow, green, blue, pink, purple, orange];
+  static const List<AxiomHighlightColor> values = [
+    yellow,
+    green,
+    blue,
+    pink,
+    purple,
+    orange
+  ];
 
   static const Map<String, int> _presetRgb = {
     'yellow': 0xFACC15,
@@ -410,8 +424,8 @@ class AxiomHighlightColor {
   bool get isPreset => _presetRgb.containsKey(value);
 
   /// The colour, for drawing swatches in your app.
-  Color toColor() =>
-      Color(0xFF000000 | (_presetRgb[value] ?? int.parse(value.substring(1), radix: 16)));
+  Color toColor() => Color(0xFF000000 |
+      (_presetRgb[value] ?? int.parse(value.substring(1), radix: 16)));
 
   /// Reads a preset name or a `#rrggbb` / `#rgb` colour; anything else becomes yellow.
   static AxiomHighlightColor parse(Object? value) {
@@ -421,13 +435,15 @@ class AxiomHighlightColor {
     if (_presetRgb.containsKey(v)) return AxiomHighlightColor._(v);
     if (RegExp(r'^#[0-9a-f]{6}$').hasMatch(v)) return AxiomHighlightColor._(v);
     if (RegExp(r'^#[0-9a-f]{3}$').hasMatch(v)) {
-      return AxiomHighlightColor._('#${v.substring(1).split('').map((c) => '$c$c').join()}');
+      return AxiomHighlightColor._(
+          '#${v.substring(1).split('').map((c) => '$c$c').join()}');
     }
     return yellow;
   }
 
   @override
-  bool operator ==(Object other) => other is AxiomHighlightColor && other.value == value;
+  bool operator ==(Object other) =>
+      other is AxiomHighlightColor && other.value == value;
 
   @override
   int get hashCode => value.hashCode;
@@ -473,7 +489,8 @@ class AxiomComment {
         text: _string(map['text']) ?? '',
         time: DateTime.fromMillisecondsSinceEpoch(_int(map['time'])),
         edited: map['edited'] is num
-            ? DateTime.fromMillisecondsSinceEpoch((map['edited']! as num).toInt())
+            ? DateTime.fromMillisecondsSinceEpoch(
+                (map['edited']! as num).toInt())
             : null,
       );
 
@@ -510,7 +527,8 @@ class AxiomCommentThread {
   });
 
   /// Reads a thread sent by the engine.
-  factory AxiomCommentThread.fromMap(Map<String, Object?> map) => AxiomCommentThread(
+  factory AxiomCommentThread.fromMap(Map<String, Object?> map) =>
+      AxiomCommentThread(
         id: _string(map['id']) ?? '',
         quote: _string(map['quote']) ?? '',
         color: AxiomHighlightColor.parse(map['color']),
@@ -575,7 +593,8 @@ class AxiomReaderHighlight {
       note: _string(map['note']),
       created: DateTime.fromMillisecondsSinceEpoch(_int(map['created'])),
       updated: map['updated'] is num
-          ? DateTime.fromMillisecondsSinceEpoch((map['updated']! as num).toInt())
+          ? DateTime.fromMillisecondsSinceEpoch(
+              (map['updated']! as num).toInt())
           : null,
     );
   }

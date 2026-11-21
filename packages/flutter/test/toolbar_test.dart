@@ -27,20 +27,23 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          bottomNavigationBar: AxiomToolbar(controller: controller, style: style, onImage: () {}),
+          bottomNavigationBar: AxiomToolbar(
+              controller: controller, style: style, onImage: () {}),
         ),
       ),
     );
     return (controller, engine);
   }
 
-  testWidgets('buttons run commands and show the state at the cursor', (tester) async {
+  testWidgets('buttons run commands and show the state at the cursor',
+      (tester) async {
     final (controller, engine) = await pumpToolbar(tester);
     final semantics = tester.ensureSemantics();
 
     await tester.tap(find.byTooltip('Bold'));
     await settle(tester);
-    expect(engine.calls.last['params'], {'command': 'toggleBold', 'args': <Object?>[]});
+    expect(engine.calls.last['params'],
+        {'command': 'toggleBold', 'args': <Object?>[]});
 
     engine.emit('state', {
       'marks': {'bold': true},
@@ -49,11 +52,13 @@ void main() {
     await tester.pump();
     expect(
       tester.getSemantics(find.byTooltip('Bold')),
-      containsSemantics(isButton: true, isToggled: true, hasTapAction: true),
+      isSemantics(isButton: true, isToggled: true, hasTapAction: true),
     );
     // Undo is enabled now; redo isn't.
-    expect(tester.getSemantics(find.byTooltip('Undo')), containsSemantics(isEnabled: true));
-    expect(tester.getSemantics(find.byTooltip('Redo')), containsSemantics(isEnabled: false));
+    expect(tester.getSemantics(find.byTooltip('Undo')),
+        isSemantics(isEnabled: true));
+    expect(tester.getSemantics(find.byTooltip('Redo')),
+        isSemantics(isEnabled: false));
     semantics.dispose();
     controller.dispose();
   });
@@ -67,7 +72,10 @@ void main() {
     await settle(tester);
     expect(
       engine.calls.where((c) => c['method'] == 'execute').last['params'],
-      {'command': 'setHeading', 'args': [2]},
+      {
+        'command': 'setHeading',
+        'args': [2]
+      },
     );
     controller.dispose();
   });
@@ -87,7 +95,10 @@ void main() {
     await settle(tester);
     expect(
       engine.calls.where((c) => c['method'] == 'execute').last['params'],
-      {'command': 'insertTable', 'args': [2, 4]},
+      {
+        'command': 'insertTable',
+        'args': [2, 4]
+      },
     );
     semantics.dispose();
     controller.dispose();
@@ -95,10 +106,12 @@ void main() {
 
   testWidgets('Cupertino style builds and runs commands', (tester) async {
     final semantics = tester.ensureSemantics();
-    final (controller, engine) = await pumpToolbar(tester, style: AxiomToolbarStyle.cupertino);
+    final (controller, engine) =
+        await pumpToolbar(tester, style: AxiomToolbarStyle.cupertino);
     await tester.tap(find.bySemanticsLabel('Italic'));
     await settle(tester);
-    expect(engine.calls.last['params'], {'command': 'toggleItalic', 'args': <Object?>[]});
+    expect(engine.calls.last['params'],
+        {'command': 'toggleItalic', 'args': <Object?>[]});
     semantics.dispose();
     controller.dispose();
   });

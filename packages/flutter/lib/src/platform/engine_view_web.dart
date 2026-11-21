@@ -29,13 +29,17 @@ class _IframeEngine extends EngineView {
       ..height = '100%'
       ..display = 'block';
     _iframe.setAttribute('allow', 'clipboard-read; clipboard-write');
-    ui_web.platformViewRegistry.registerViewFactory(_viewType, (int viewId) => _iframe);
+    ui_web.platformViewRegistry
+        .registerViewFactory(_viewType, (int viewId) => _iframe);
 
     _onMessage = ((web.Event event) {
       final message = event as web.MessageEvent;
       // Only the editor's own frame, on this site's origin, may talk to us (FLT-017).
       final source = message.source;
-      if (source == null || !source.strictEquals(_iframe.contentWindow).toDart) return;
+      if (source == null ||
+          !source.strictEquals(_iframe.contentWindow).toDart) {
+        return;
+      }
       if (message.origin != web.window.location.origin) return;
       final data = message.data;
       if (data == null || !data.typeofEquals('string')) return;
@@ -77,7 +81,8 @@ class _IframeEngine extends EngineView {
   }
 
   void _post(String message) {
-    _iframe.contentWindow?.postMessage(message.toJS, web.window.location.origin.toJS);
+    _iframe.contentWindow
+        ?.postMessage(message.toJS, web.window.location.origin.toJS);
   }
 
   @override

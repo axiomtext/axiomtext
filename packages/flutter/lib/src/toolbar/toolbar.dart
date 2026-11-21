@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -183,7 +185,8 @@ class AxiomToolbar extends StatelessWidget {
   final double height;
 
   /// Whether [style] resolves to Cupertino on this platform.
-  static bool isCupertino(BuildContext context, AxiomToolbarStyle style) => switch (style) {
+  static bool isCupertino(BuildContext context, AxiomToolbarStyle style) =>
+      switch (style) {
         AxiomToolbarStyle.cupertino => true,
         AxiomToolbarStyle.material => false,
         AxiomToolbarStyle.adaptive => switch (Theme.of(context).platform) {
@@ -240,7 +243,8 @@ class AxiomToolbar extends StatelessWidget {
         _ => true,
       };
 
-  Widget _buildItem(BuildContext context, AxiomToolbarItem item, bool cupertino, bool ready) {
+  Widget _buildItem(
+      BuildContext context, AxiomToolbarItem item, bool cupertino, bool ready) {
     final state = controller.state;
     final l = controller.label;
 
@@ -272,17 +276,22 @@ class AxiomToolbar extends StatelessWidget {
       case AxiomToolbarItem.divider:
         return const _Divider();
       case AxiomToolbarItem.undo:
-        return button(Icons.undo, l('Undo'), controller.undo, enabled: state.canUndo);
+        return button(Icons.undo, l('Undo'), controller.undo,
+            enabled: state.canUndo);
       case AxiomToolbarItem.redo:
-        return button(Icons.redo, l('Redo'), controller.redo, enabled: state.canRedo);
+        return button(Icons.redo, l('Redo'), controller.redo,
+            enabled: state.canRedo);
       case AxiomToolbarItem.blockStyle:
-        return button(Icons.title, l('Text style'), () => showBlockStyleSheet(context, controller, cupertino),
+        return button(Icons.title, l('Text style'),
+            () => showBlockStyleSheet(context, controller, cupertino),
             toggled: state.headingLevel != null);
       case AxiomToolbarItem.bold:
-        return button(Icons.format_bold, l('Bold'), () => toggle(AxiomCommands.toggleBold),
+        return button(Icons.format_bold, l('Bold'),
+            () => toggle(AxiomCommands.toggleBold),
             toggled: state.isActive('bold'));
       case AxiomToolbarItem.italic:
-        return button(Icons.format_italic, l('Italic'), () => toggle(AxiomCommands.toggleItalic),
+        return button(Icons.format_italic, l('Italic'),
+            () => toggle(AxiomCommands.toggleItalic),
             toggled: state.isActive('italic'));
       case AxiomToolbarItem.underline:
         return button(Icons.format_underlined, l('Underline'),
@@ -293,10 +302,12 @@ class AxiomToolbar extends StatelessWidget {
             () => toggle(AxiomCommands.toggleStrikethrough),
             toggled: state.isActive('strikethrough'));
       case AxiomToolbarItem.code:
-        return button(Icons.code, l('Code'), () => toggle(AxiomCommands.toggleCode),
+        return button(
+            Icons.code, l('Code'), () => toggle(AxiomCommands.toggleCode),
             toggled: state.isActive('code'));
       case AxiomToolbarItem.subscript:
-        return button(Icons.subscript, l('Subscript'), () => toggle(AxiomCommands.toggleSubscript),
+        return button(Icons.subscript, l('Subscript'),
+            () => toggle(AxiomCommands.toggleSubscript),
             toggled: state.isActive('subscript'));
       case AxiomToolbarItem.superscript:
         return button(Icons.superscript, l('Superscript'),
@@ -306,7 +317,8 @@ class AxiomToolbar extends StatelessWidget {
         return button(
           Icons.format_color_text,
           l('Text color'),
-          () => showColorSheet(context, controller, cupertino, highlight: false),
+          () =>
+              showColorSheet(context, controller, cupertino, highlight: false),
           indicator: parseCssColor(state.textColor),
         );
       case AxiomToolbarItem.highlight:
@@ -328,7 +340,8 @@ class AxiomToolbar extends StatelessWidget {
         return button(Icons.format_clear, l('Clear formatting'),
             () => run(AxiomCommands.clearFormatting));
       case AxiomToolbarItem.link:
-        return button(Icons.link, l('Link'), () => showLinkDialog(context, controller, cupertino),
+        return button(Icons.link, l('Link'),
+            () => showLinkDialog(context, controller, cupertino),
             toggled: state.link != null);
       case AxiomToolbarItem.bulletedList:
         return button(Icons.format_list_bulleted, l('Bulleted list'),
@@ -339,10 +352,12 @@ class AxiomToolbar extends StatelessWidget {
             () => toggle(AxiomCommands.toggleOrderedList),
             toggled: state.list == 'ordered');
       case AxiomToolbarItem.todoList:
-        return button(Icons.checklist, l('To-do list'), () => toggle(AxiomCommands.toggleTaskList),
+        return button(Icons.checklist, l('To-do list'),
+            () => toggle(AxiomCommands.toggleTaskList),
             toggled: state.list == 'task');
       case AxiomToolbarItem.blockquote:
-        return button(Icons.format_quote, l('Quote'), () => toggle(AxiomCommands.toggleBlockquote),
+        return button(Icons.format_quote, l('Quote'),
+            () => toggle(AxiomCommands.toggleBlockquote),
             toggled: state.blockquote);
       case AxiomToolbarItem.align:
         return button(alignIcon(state.align), l('Align'),
@@ -351,13 +366,17 @@ class AxiomToolbar extends StatelessWidget {
         return button(
           Icons.format_indent_decrease,
           l('Decrease indent'),
-          () => run(state.list != null ? AxiomCommands.outdentListItem : AxiomCommands.outdentBlock),
+          () => run(state.list != null
+              ? AxiomCommands.outdentListItem
+              : AxiomCommands.outdentBlock),
         );
       case AxiomToolbarItem.indent:
         return button(
           Icons.format_indent_increase,
           l('Increase indent'),
-          () => run(state.list != null ? AxiomCommands.indentListItem : AxiomCommands.indentBlock),
+          () => run(state.list != null
+              ? AxiomCommands.indentListItem
+              : AxiomCommands.indentBlock),
         );
       case AxiomToolbarItem.image:
         return button(Icons.image_outlined, l('Image'), () async {
@@ -368,7 +387,8 @@ class AxiomToolbar extends StatelessWidget {
             () => showTableSheet(context, controller, cupertino),
             enabled: !state.inTable);
       case AxiomToolbarItem.math:
-        return button(Icons.functions, l('Equation'), () => run(AxiomCommands.insertMath));
+        return button(Icons.functions, l('Equation'),
+            () => run(AxiomCommands.insertMath));
       case AxiomToolbarItem.mathBlock:
         return button(Icons.calculate_outlined, l('Block equation'),
             () => run(AxiomCommands.insertMathBlock));
@@ -376,10 +396,12 @@ class AxiomToolbar extends StatelessWidget {
         return button(Icons.horizontal_rule, l('Horizontal line'),
             () => run(AxiomCommands.insertHorizontalRule));
       case AxiomToolbarItem.comment:
-        return button(Icons.add_comment_outlined, l('Comment'), controller.openCommentComposer,
+        return button(Icons.add_comment_outlined, l('Comment'),
+            controller.openCommentComposer,
             enabled: !state.selectionEmpty);
       case AxiomToolbarItem.commentsPanel:
-        return button(Icons.forum_outlined, l('Comments'), () => controller.toggleCommentsPanel());
+        return button(Icons.forum_outlined, l('Comments'),
+            () => controller.toggleCommentsPanel());
     }
   }
 }
@@ -412,7 +434,8 @@ class _ToolbarButton extends StatelessWidget {
   final Future<void> Function() onPressed;
 
   Future<void> _press() async {
-    await HapticFeedback.selectionClick();
+    // Don't wait for the vibration: the action runs at once.
+    unawaited(HapticFeedback.selectionClick());
     await onPressed();
   }
 
@@ -431,7 +454,9 @@ class _ToolbarButton extends StatelessWidget {
             : scheme.secondaryContainer)
         : Colors.transparent;
 
-    Widget glyph = Icon(icon, size: 22, color: enabled ? foreground : foreground.withValues(alpha: 0.38));
+    Widget glyph = Icon(icon,
+        size: 22,
+        color: enabled ? foreground : foreground.withValues(alpha: 0.38));
     final color = indicator;
     if (color != null) {
       glyph = Column(
@@ -442,7 +467,8 @@ class _ToolbarButton extends StatelessWidget {
             width: 16,
             height: 3,
             margin: const EdgeInsets.only(top: 1),
-            decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(2)),
+            decoration: BoxDecoration(
+                color: color, borderRadius: BorderRadius.circular(2)),
           ),
         ],
       );
@@ -460,7 +486,8 @@ class _ToolbarButton extends StatelessWidget {
             icon: glyph,
             style: IconButton.styleFrom(
               backgroundColor: background,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
             ),
           );
 

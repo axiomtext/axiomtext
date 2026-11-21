@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:axiomtext/axiomtext.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -29,6 +27,20 @@ void main() {
     expect(controller.label('Bold'), 'Bold');
   });
 
+  test('starts at once and loads the translated labels', () async {
+    final engine = FakeEngine(handlers: {
+      'translate': (_) => {'Bold': 'Gras'},
+    });
+    final controller = AxiomTextController();
+    // ignore: invalid_use_of_internal_member
+    controller.attachEngine(engine);
+    // ignore: invalid_use_of_internal_member
+    await controller.start(const {}).timeout(const Duration(seconds: 2));
+    expect(controller.isReady, isTrue);
+    expect(engine.methods, ['init', 'translate']);
+    expect(controller.label('Bold'), 'Gras');
+  });
+
   test('calls made before start wait for the editor', () async {
     final engine = FakeEngine(handlers: {'getText': (_) => 'hello'});
     final controller = AxiomTextController();
@@ -42,7 +54,8 @@ void main() {
   });
 
   test('sends commands with their arguments', () async {
-    final (controller, engine) = await started(handlers: {'execute': (_) => true});
+    final (controller, engine) =
+        await started(handlers: {'execute': (_) => true});
     expect(await controller.execute(AxiomCommands.setHeading, [2]), isTrue);
     expect(engine.calls.last['params'], {
       'command': 'setHeading',
@@ -56,7 +69,10 @@ void main() {
 
   test('content in and out in every format', () async {
     final (controller, engine) = await started(handlers: {
-      'getJson': (_) => {'version': 1, 'doc': {'type': 'doc'}},
+      'getJson': (_) => {
+            'version': 1,
+            'doc': {'type': 'doc'}
+          },
       'getHtml': (_) => '<p>x</p>',
       'getMarkdown': (_) => 'x',
       'getStats': (_) => {'words': 1, 'characters': 1},
@@ -64,7 +80,8 @@ void main() {
     expect((await controller.getJson())['version'], 1);
     expect(await controller.getHtml(), '<p>x</p>');
     expect(await controller.getMarkdown(), 'x');
-    expect(await controller.getStats(), const AxiomStats(words: 1, characters: 1));
+    expect(
+        await controller.getStats(), const AxiomStats(words: 1, characters: 1));
     await controller.setContent(const AxiomContent.html('<p>y</p>'));
     expect(engine.calls.last, containsPair('method', 'setHtml'));
   });
@@ -132,7 +149,10 @@ void main() {
 
   test('contentStream debounces changes into JSON', () async {
     final (controller, engine) = await started(handlers: {
-      'getJson': (_) => {'version': 1, 'doc': {'type': 'doc'}},
+      'getJson': (_) => {
+            'version': 1,
+            'doc': {'type': 'doc'}
+          },
     });
     final docs = <Map<String, Object?>>[];
     final sub = controller

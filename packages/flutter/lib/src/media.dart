@@ -90,7 +90,8 @@ Future<bool> pickAndInsertImage(
 }
 
 /// The address to insert for [image]: the uploaded URL, or an embedded `data:` URL.
-Future<String> imageSource(AxiomImageFile image, AxiomImageUploader? upload) async {
+Future<String> imageSource(
+    AxiomImageFile image, AxiomImageUploader? upload) async {
   if (upload != null) return upload(image);
   return 'data:${image.mimeType};base64,${base64Encode(image.bytes)}';
 }

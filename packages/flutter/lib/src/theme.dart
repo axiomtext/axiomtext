@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 @immutable
 class AxiomEditorTheme {
   /// Creates a theme from CSS variables, e.g. `{'accent': '#6750a4'}` for `--ax-accent`.
-  const AxiomEditorTheme({required this.dark, this.variables = const {}, this.background});
+  const AxiomEditorTheme(
+      {required this.dark, this.variables = const {}, this.background});
 
   /// Builds the editor theme from a Flutter theme.
   ///
@@ -71,7 +72,11 @@ class AxiomEditorTheme {
       _mapEquals(other.variables, variables);
 
   @override
-  int get hashCode => Object.hash(dark, background, Object.hashAllUnordered(variables.entries.map((e) => '${e.key}=${e.value}')));
+  int get hashCode => Object.hash(
+      dark,
+      background,
+      Object.hashAllUnordered(
+          variables.entries.map((e) => '${e.key}=${e.value}')));
 }
 
 bool _mapEquals(Map<String, String> a, Map<String, String> b) {

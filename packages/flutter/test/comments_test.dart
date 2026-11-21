@@ -14,7 +14,13 @@ void main() {
               'color': 'blue',
               'resolved': false,
               'comments': [
-                {'id': 'm1', 'author': 'Ana', 'authorId': 'a1', 'text': 'At sea level', 'time': 1000},
+                {
+                  'id': 'm1',
+                  'author': 'Ana',
+                  'authorId': 'a1',
+                  'text': 'At sea level',
+                  'time': 1000
+                },
               ],
             },
           ],
@@ -24,7 +30,13 @@ void main() {
               'id': 'h1',
               'color': 'pink',
               'note': 'Remember',
-              'anchor': {'exact': 'boils', 'prefix': 'Water ', 'suffix': ' at', 'start': 6, 'end': 11},
+              'anchor': {
+                'exact': 'boils',
+                'prefix': 'Water ',
+                'suffix': ' at',
+                'start': 6,
+                'end': 11
+              },
               'created': 5,
             },
           ],
@@ -43,19 +55,24 @@ void main() {
     expect(threads.single.quote, 'boils');
     expect(threads.single.color, AxiomHighlightColor.blue);
     expect(threads.single.comments.single.author, 'Ana');
-    expect(threads.single.comments.single.time, DateTime.fromMillisecondsSinceEpoch(1000));
+    expect(threads.single.comments.single.time,
+        DateTime.fromMillisecondsSinceEpoch(1000));
   });
 
   test('sends comment actions', () async {
     final (controller, engine) = await started();
-    expect(await controller.addComment('Nice', color: AxiomHighlightColor.green), isTrue);
-    expect(engine.calls.last['params'], {'text': 'Nice', 'color': 'green', 'fill': true});
+    expect(
+        await controller.addComment('Nice', color: AxiomHighlightColor.green),
+        isTrue);
+    expect(engine.calls.last['params'],
+        {'text': 'Nice', 'color': 'green', 'fill': true});
     await controller.addComment(
       'Any colour',
       color: AxiomHighlightColor.custom(const Color(0xFF1E88E5)),
       fill: false,
     );
-    expect(engine.calls.last['params'], {'text': 'Any colour', 'color': '#1e88e5', 'fill': false});
+    expect(engine.calls.last['params'],
+        {'text': 'Any colour', 'color': '#1e88e5', 'fill': false});
     await controller.setCommentStyle('t1', fill: false);
     expect(engine.calls.last['params'], {'id': 't1', 'fill': false});
     await controller.replyToComment('t1', 'Thanks');
@@ -72,7 +89,13 @@ void main() {
     final highlights = controller.onHighlightsChange.first;
     engine.emit('commentsChange', {
       'threads': [
-        {'id': 't9', 'quote': 'x', 'color': 'nope', 'resolved': true, 'comments': <Object?>[]},
+        {
+          'id': 't9',
+          'quote': 'x',
+          'color': 'nope',
+          'resolved': true,
+          'comments': <Object?>[]
+        },
       ],
     });
     engine.emit('highlightsChange', {
@@ -86,15 +109,18 @@ void main() {
       ],
     });
     final threads = await comments;
-    expect(threads.single.color, AxiomHighlightColor.yellow); // unknown colours fall back
+    expect(threads.single.color,
+        AxiomHighlightColor.yellow); // unknown colours fall back
     expect(threads.single.resolved, isTrue);
     expect((await highlights).single.text, 'water');
   });
 
   test('highlight colours: presets, any colour, and parsing', () {
-    expect(AxiomHighlightColor.parse('#ABC'), AxiomHighlightColor.parse('#aabbcc'));
+    expect(AxiomHighlightColor.parse('#ABC'),
+        AxiomHighlightColor.parse('#aabbcc'));
     expect(AxiomHighlightColor.parse('#aabbcc').name, 'custom');
-    expect(AxiomHighlightColor.parse('#aabbcc').toColor(), const Color(0xFFAABBCC));
+    expect(AxiomHighlightColor.parse('#aabbcc').toColor(),
+        const Color(0xFFAABBCC));
     expect(AxiomHighlightColor.parse('blue').isPreset, isTrue);
     expect(AxiomHighlightColor.parse('red'), AxiomHighlightColor.yellow);
     final h = AxiomReaderHighlight.fromMap({

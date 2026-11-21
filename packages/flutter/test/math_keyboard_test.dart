@@ -17,7 +17,9 @@ void main() {
     });
     engine.emit('mathEditStart', {'latex': '', 'display': false});
     await tester.pumpWidget(
-      MaterialApp(home: Scaffold(bottomNavigationBar: AxiomMathKeyboard(controller: controller))),
+      MaterialApp(
+          home: Scaffold(
+              bottomNavigationBar: AxiomMathKeyboard(controller: controller))),
     );
 
     Future<Map<String, Object?>> lastCall() async {
