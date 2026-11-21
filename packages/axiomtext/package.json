@@ -8,6 +8,10 @@
     "*.css"
   ],
   "homepage": "https://axiomtext.dev",
+  "funding": {
+    "type": "patreon",
+    "url": "https://www.patreon.com/axiomtext"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/axiomtext/axiomtext.git",

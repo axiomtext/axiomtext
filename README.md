@@ -14,7 +14,7 @@ MIT licensed · runs entirely in the browser · no server, no license key, no li
 [![CI](https://github.com/axiomtext/axiomtext/actions/workflows/ci.yml/badge.svg)](https://github.com/axiomtext/axiomtext/actions/workflows/ci.yml)
 [![Bundle](https://img.shields.io/badge/core%20%2B%20view-69%20KB%20gzip-0ea5e9)](docs/adr/0008-bundle-budgets.md)
 
-[**Website**](https://axiomtext.dev) · [**Live demo**](https://axiomtext.dev/demo/) · [**Playground**](https://axiomtext.dev/playground/) · [**Docs**](https://axiomtext.dev/start/introduction/)
+[**Website**](https://axiomtext.dev) · [**Live demo**](https://axiomtext.dev/demo/) · [**Playground**](https://axiomtext.dev/playground/) · [**Docs**](https://axiomtext.dev/start/introduction/) · [**Support on Patreon**](https://www.patreon.com/axiomtext)
 
 <img src=".github/assets/screenshot.png" width="820" alt="The AxiomText editor: toolbar, headings, text and rendered equations" />
 
@@ -36,6 +36,7 @@ MIT licensed · runs entirely in the browser · no server, no license key, no li
 - [Deployment](#deployment)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
+- [Support and contact](#support-and-contact)
 - [License & credits](#license--credits)
 
 ## Why AxiomText
@@ -478,6 +479,18 @@ native speakers**. Read [CONTRIBUTING.md](CONTRIBUTING.md), run `pnpm check` bef
 request, and add a changeset (`pnpm changeset`) for user-facing changes.
 
 Found a security issue? Please report it privately as described in [SECURITY.md](SECURITY.md).
+
+## Support and contact
+
+AxiomText is free under the MIT license, and every feature stays free. If it saves you time or
+money, you can [support it on Patreon](https://www.patreon.com/axiomtext). Starring the repository and telling other
+developers about it helps too.
+
+- **Bugs and feature requests:** [GitHub issues](https://github.com/axiomtext/axiomtext/issues)
+- **Questions:** [GitHub Discussions](https://github.com/axiomtext/axiomtext/discussions)
+- **Security problems:** report them privately, see [SECURITY.md](SECURITY.md)
+- **Everything else:** [support@axiomtext.dev](mailto:support@axiomtext.dev) or the
+  [contact page](https://axiomtext.dev/contact/)
 
 ## License & credits
 

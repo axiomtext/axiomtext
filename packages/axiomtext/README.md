@@ -112,6 +112,13 @@ the same marks on existing PDFs (`axiomtext/pdf`) are included. See
 
 An ES-module build is at `dist/cdn/axiomtext.js`; integrity hashes are in `dist/cdn/sri.json`.
 
+## Support and contact
+
+AxiomText is free for everyone. If it helps your product, you can
+[support it on Patreon](https://www.patreon.com/axiomtext). Bugs and ideas go to
+[GitHub issues](https://github.com/axiomtext/axiomtext/issues); anything else to
+[support@axiomtext.dev](mailto:support@axiomtext.dev).
+
 ## License
 
 MIT. Built on [ProseMirror](https://prosemirror.net), [KaTeX](https://katex.org) and

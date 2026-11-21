@@ -224,6 +224,13 @@ never open inside the editor.
 [`example/`](example) has demos for notes, math homework, a document, a reading view, a marked
 book, a native quiz list and a comment box.
 
+## Support and contact
+
+AxiomText is free for everyone. If it helps your app, you can
+[support it on Patreon](https://www.patreon.com/axiomtext). Bugs and ideas go to
+[GitHub issues](https://github.com/axiomtext/axiomtext/issues); anything else to
+[support@axiomtext.dev](mailto:support@axiomtext.dev).
+
 ## License
 
 MIT. Built on [ProseMirror](https://prosemirror.net), [KaTeX](https://katex.org) and

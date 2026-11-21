@@ -7,6 +7,8 @@ homepage: https://axiomtext.dev
 repository: https://github.com/axiomtext/axiomtext/tree/main/packages/flutter
 issue_tracker: https://github.com/axiomtext/axiomtext/issues
 documentation: https://axiomtext.dev/frameworks/flutter/
+funding:
+  - https://www.patreon.com/axiomtext
 topics:
   - editor
   - rich-text

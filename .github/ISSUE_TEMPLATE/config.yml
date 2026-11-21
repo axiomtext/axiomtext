@@ -6,3 +6,6 @@ contact_links:
   - name: Questions & ideas
     url: https://github.com/axiomtext/axiomtext/discussions
     about: Ask and discuss in GitHub Discussions.
+  - name: Email us
+    url: https://axiomtext.dev/contact/
+    about: support@axiomtext.dev, for anything that shouldn't be public.

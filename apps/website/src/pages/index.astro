@@ -56,8 +56,8 @@ const doc = ref(saved);
 <template>
   <AxiomEditor v-model="doc" />
 </template>`,
-  cdn: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/axiomtext@0.1/dist/cdn/axiomtext.css">
-<script src="https://cdn.jsdelivr.net/npm/axiomtext@0.1/dist/cdn/axiomtext.iife.js"></script>
+  cdn: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/axiomtext@0.4/dist/cdn/axiomtext.css">
+<script src="https://cdn.jsdelivr.net/npm/axiomtext@0.4/dist/cdn/axiomtext.iife.js"></script>
 
 <div id="editor"></div>
 <script>
@@ -320,6 +320,11 @@ const specs = [
             <a class="button button--primary" href="/playground/">Open the playground</a>
             <a class="button button--ghost" href="/start/introduction/">Read the docs</a>
           </div>
+          <p class="closing__support">
+            AxiomText is free for everyone. If it helps your product, you can{' '}
+            <a href="https://www.patreon.com/axiomtext">support it on Patreon</a> or{' '}
+            <a href="/contact/">get in touch</a>.
+          </p>
         </div>
       </section>
     </main>
@@ -332,6 +337,8 @@ const specs = [
           <a href="/guides/security/">Security</a>
           <a href="https://github.com/axiomtext/axiomtext">GitHub</a>
           <a href="https://www.npmjs.com/org/axiomtext">npm</a>
+          <a href="/contact/">Contact</a>
+          <a href="https://www.patreon.com/axiomtext">Support on Patreon</a>
         </nav>
       </div>
     </footer>

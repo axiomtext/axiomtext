@@ -8,7 +8,11 @@ export default defineConfig({
       title: 'AxiomText',
       description: 'Free, open-source (MIT) rich text editor with a built-in visual math editor.',
       logo: { src: './src/assets/logo.svg' },
-      social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/axiomtext/axiomtext' }],
+      social: [
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/axiomtext/axiomtext' },
+        { icon: 'patreon', label: 'Support on Patreon', href: 'https://www.patreon.com/axiomtext' },
+        { icon: 'email', label: 'Contact', href: '/contact/' },
+      ],
       editLink: { baseUrl: 'https://github.com/axiomtext/axiomtext/edit/main/apps/website/' },
       customCss: [
         '@fontsource-variable/bricolage-grotesque',
@@ -52,6 +56,7 @@ export default defineConfig({
             'reference/shortcuts',
           ],
         },
+        { label: 'Project', items: ['contact'] },
       ],
     }),
   ],
