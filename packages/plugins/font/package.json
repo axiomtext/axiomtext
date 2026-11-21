@@ -1,6 +1,6 @@
 {
   "name": "@axiomtext/plugin-font",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Font family, font size, text color and highlight.",
   "license": "MIT",
   "type": "module",

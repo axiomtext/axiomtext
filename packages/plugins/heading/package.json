@@ -1,6 +1,6 @@
 {
   "name": "@axiomtext/plugin-heading",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Headings H1\u2013H6.",
   "license": "MIT",
   "type": "module",

@@ -1,6 +1,6 @@
 {
   "name": "@axiomtext/presets",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Ready-made AxiomText editors (classic, inline, balloon) with every free feature, plus CDN builds.",
   "license": "MIT",
   "type": "module",

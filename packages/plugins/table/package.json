@@ -1,6 +1,6 @@
 {
   "name": "@axiomtext/plugin-table",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Tables: insert, rows and columns, merge and split cells, headers, column resizing.",
   "license": "MIT",
   "type": "module",

@@ -1,6 +1,6 @@
 {
   "name": "@axiomtext/plugin-link",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Links with safe URLs and automatic linking.",
   "license": "MIT",
   "type": "module",

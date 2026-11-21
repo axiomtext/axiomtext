@@ -1,6 +1,6 @@
 {
   "name": "@axiomtext/plugin-columns",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Column layouts, including text on both sides of a centered image.",
   "license": "MIT",
   "type": "module",

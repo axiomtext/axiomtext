@@ -1,6 +1,6 @@
 {
   "name": "@axiomtext/i18n",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Translation runtime and locale files.",
   "license": "MIT",
   "type": "module",

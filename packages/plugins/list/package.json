@@ -1,6 +1,6 @@
 {
   "name": "@axiomtext/plugin-list",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Bulleted, numbered and to-do lists.",
   "license": "MIT",
   "type": "module",
