@@ -1,24 +1,27 @@
 name: Website
 
-# Builds axiomtext.dev (docs + demo + playground) and publishes it with GitHub Pages.
-# One-time setup: repository Settings → Pages → Source: "GitHub Actions".
+# Runs only when started by hand (Actions → Website → Run workflow), so it uses no GitHub minutes otherwise.
+# Everyday deploys run from your own computer: pushing main runs deploy/scripts/deploy-from-laptop.sh
+# through the git pre-push hook (one-time setup: deploy/README.md).
+#
+# Builds axiomtext.dev (docs + demo + playground) and uploads it to the server over SSH.
+# Repository secrets needed (Settings → Secrets and variables → Actions):
+#   DEPLOY_HOST         161.97.179.220
+#   DEPLOY_USER         deploy
+#   DEPLOY_SSH_KEY      private key whose public key is in ~deploy/.ssh/authorized_keys
+#   DEPLOY_KNOWN_HOSTS  output of: ssh-keyscan 161.97.179.220
 on:
-  push:
-    branches: [main]
-    paths: ['apps/**', 'packages/**', 'pnpm-lock.yaml', '.github/workflows/website.yml']
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: website
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,17 +31,16 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: apps/website/dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - run: pnpm --filter @axiomtext/website... build
+      - name: Upload to the server
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          RELEASE="$(date -u +%Y%m%d-%H%M%S)-${GITHUB_SHA::10}"
+          rsync -az --delete apps/website/dist/ "$TARGET:/var/www/axiomtext.dev/releases/$RELEASE/"
+          ssh "$TARGET" "cd /var/www/axiomtext.dev && ln -sfn releases/$RELEASE current.new && mv -T current.new current"

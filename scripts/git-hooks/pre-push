@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Pushing main deploys axiomtext.dev: checks, build, upload to the server, switch
+# (see deploy/scripts/deploy-from-laptop.sh). The push only goes to GitHub if the deploy worked,
+# so GitHub's main is always what is live.
+#   git push                         check + deploy + push
+#   AXIOM_DEPLOY=quick git push      deploy without the checks
+#   AXIOM_DEPLOY=0 git push          push without deploying
+#   git push --no-verify             the same (git skips hooks)
+# Turned on once per clone by deploy/scripts/laptop-setup.sh (git config core.hooksPath scripts/git-hooks).
+set -euo pipefail
+
+[ "${AXIOM_DEPLOY:-1}" = "0" ] && exit 0
+zero=0000000000000000000000000000000000000000
+deploy=""
+while read -r _local_ref local_sha remote_ref _remote_sha; do
+  if [ "$remote_ref" = "refs/heads/main" ] && [ "$local_sha" != "$zero" ]; then
+    deploy="$local_sha"
+  fi
+done
+[ -z "$deploy" ] && exit 0
+
+if [ "$deploy" != "$(git rev-parse HEAD)" ]; then
+  echo "pre-push: you are pushing main but have another commit checked out." >&2
+  echo "          Check out main (git checkout main) and push again, or AXIOM_DEPLOY=0 git push to skip the deploy." >&2
+  exit 1
+fi
+
+mode=""
+[ "${AXIOM_DEPLOY:-1}" = "quick" ] && mode="--quick"
+# The hook's stdin is the ref list; give the deploy the terminal (or nothing) instead.
+exec "$(git rev-parse --show-toplevel)/deploy/scripts/deploy-from-laptop.sh" $mode < /dev/null
