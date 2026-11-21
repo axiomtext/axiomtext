@@ -1,17 +1,279 @@
+/* Docs theme: the same paper, ink and indigo as the landing page. */
+
+/* Dark is Starlight's base theme. */
 :root {
-  --sl-color-accent-low: #1e1b4b;
-  --sl-color-accent: #6366f1;
-  --sl-color-accent-high: #c7d2fe;
+  --sl-font: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sl-font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --ax-font-display: 'Bricolage Grotesque Variable', 'IBM Plex Sans', system-ui, sans-serif;
+
+  --sl-color-accent-low: #1f2150;
+  --sl-color-accent: #8b8cff;
+  --sl-color-accent-high: #d4d5ff;
+
+  --sl-color-white: #f2f3fb;
+  --sl-color-gray-1: #e8eaf6;
+  --sl-color-gray-2: #c3c7dc;
+  --sl-color-gray-3: #9aa0be;
+  --sl-color-gray-4: #5f6588;
+  --sl-color-gray-5: #262b45;
+  --sl-color-gray-6: #141728;
+  --sl-color-black: #0d0f1a;
+  --sl-color-bg-nav: color-mix(in srgb, #0d0f1a 80%, transparent);
+  --sl-color-bg-sidebar: #0d0f1a;
+  --sl-color-hairline-light: #1e2238;
+  --sl-color-hairline: #1e2238;
+  --sl-color-hairline-shade: #0a0c15;
+
+  --sl-text-h1: clamp(2.1rem, 4vw, 2.75rem);
+  --sl-text-h2: 1.7rem;
+  --sl-text-h3: 1.3rem;
+  --sl-line-height: 1.7;
+  --sl-nav-height: 4rem;
+  --sl-content-width: 46rem;
+
+  --ax-code-bg: #121527;
+  --ax-grid: #1b1f35;
 }
+
 :root[data-theme='light'] {
-  --sl-color-accent-low: #e0e7ff;
+  --sl-color-accent-low: #e6e5ff;
   --sl-color-accent: #4f46e5;
-  --sl-color-accent-high: #312e81;
+  --sl-color-accent-high: #2e2a8f;
+
+  --sl-color-white: #171a2e;
+  --sl-color-gray-1: #23263d;
+  --sl-color-gray-2: #3b3f5a;
+  --sl-color-gray-3: #5b607a;
+  --sl-color-gray-4: #8a8fa8;
+  --sl-color-gray-5: #dfe2ee;
+  --sl-color-gray-6: #f2f3f9;
+  --sl-color-gray-7: #f7f8fc;
+  --sl-color-black: #fafafc;
+  --sl-color-bg-nav: color-mix(in srgb, #fafafc 80%, transparent);
+  --sl-color-bg-sidebar: #fafafc;
+  --sl-color-hairline-light: #eceef6;
+  --sl-color-hairline: #e3e6f0;
+  --sl-color-hairline-shade: #d5d9e7;
+
+  --ax-code-bg: #f2f3f9;
+  --ax-grid: #eceef6;
 }
-/* The live editor keeps its own look inside docs pages. */
+
+/* ── Page transitions between docs pages ─────────────────── */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation: 0.16s ease both ax-fade-out;
+}
+::view-transition-new(root) {
+  animation: 0.28s cubic-bezier(0.22, 1, 0.36, 1) both ax-fade-in;
+}
+/* Keep the header and sidebar still while the content changes. */
+header.header {
+  view-transition-name: ax-header;
+}
+#starlight__sidebar {
+  view-transition-name: ax-sidebar;
+}
+@keyframes ax-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes ax-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+header.header {
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  border-bottom-color: var(--sl-color-hairline);
+}
+.site-title {
+  font-family: var(--ax-font-display);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  gap: 0.6rem;
+}
+.site-title img {
+  height: 1.75rem;
+  width: auto;
+}
+
+/* ── Sidebar: a thin bar marks the current page ──────────── */
+.sidebar-content {
+  --sl-sidebar-item-padding-inline: 0.75rem;
+}
+.sidebar-content .large {
+  font-family: var(--ax-font-display);
+  font-size: 0.98rem;
+  font-weight: 620;
+  color: var(--sl-color-white);
+}
+.sidebar-content a {
+  border-radius: 6px;
+  color: var(--sl-color-gray-3);
+  transition:
+    color 0.15s,
+    background-color 0.15s;
+}
+.sidebar-content a:hover {
+  color: var(--sl-color-white);
+  background: var(--sl-color-gray-6);
+}
+.sidebar-content a[aria-current='page'],
+.sidebar-content a[aria-current='page']:hover,
+.sidebar-content a[aria-current='page']:focus {
+  position: relative;
+  background: var(--sl-color-accent-low);
+  color: var(--sl-color-accent-high);
+  font-weight: 600;
+}
+.sidebar-content a[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.35rem;
+  bottom: 0.35rem;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--sl-color-accent);
+}
+.sidebar-content summary {
+  border-radius: 6px;
+}
+
+/* ── Content typography ───────────────────────────────────── */
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.sl-markdown-content h4,
+h1#_top {
+  font-family: var(--ax-font-display);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+h1#_top {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.sl-markdown-content h2 {
+  font-weight: 660;
+  margin-top: 2.75rem;
+}
+.sl-markdown-content h3 {
+  font-weight: 620;
+}
+.sl-markdown-content p,
+.sl-markdown-content li {
+  color: var(--sl-color-gray-2);
+}
+.sl-markdown-content strong {
+  color: var(--sl-color-white);
+}
+.sl-markdown-content a:not(.card, .sl-link-button, .sl-link-card *) {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-thickness 0.15s;
+}
+.sl-markdown-content a:not(.card, .sl-link-button):hover {
+  text-decoration-thickness: 2px;
+}
+.sl-markdown-content :not(pre) > code {
+  padding: 0.1em 0.35em;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 5px;
+  background: var(--ax-code-bg);
+  font-size: 0.88em;
+}
+.sl-markdown-content kbd {
+  padding: 0 0.4em;
+  border: 1px solid var(--sl-color-hairline-shade);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--sl-color-black);
+  font-family: var(--sl-font-mono);
+  font-size: 0.8em;
+}
+.sl-markdown-content table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.94rem;
+}
+.sl-markdown-content th {
+  background: var(--sl-color-gray-6);
+  color: var(--sl-color-white);
+  font-weight: 600;
+}
+.sl-markdown-content th,
+.sl-markdown-content td {
+  border: 0;
+  border-bottom: 1px solid var(--sl-color-hairline);
+}
+.sl-markdown-content tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Asides: a left rule instead of a filled box. */
+.starlight-aside {
+  border: 0;
+  border-left: 3px solid var(--sl-color-asides-border);
+  border-radius: 0 10px 10px 0;
+  background: color-mix(in srgb, var(--sl-color-asides-border) 8%, transparent);
+}
+
+/* Previous / next links. */
+.pagination-links a {
+  border-radius: 12px;
+  border-color: var(--sl-color-hairline);
+  box-shadow: none;
+  transition:
+    border-color 0.2s,
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pagination-links a:hover {
+  border-color: var(--sl-color-accent);
+  transform: translateY(-1px);
+}
+.pagination-links .link-title {
+  font-family: var(--ax-font-display);
+  font-weight: 620;
+  color: var(--sl-color-white);
+}
+
+/* "On this page". */
+starlight-toc a[aria-current='true'] {
+  color: var(--sl-color-accent);
+  font-weight: 500;
+}
+
+/* Search button. */
+site-search button[data-open-modal] {
+  border-radius: 8px;
+}
+
+/* ── The live editor inside docs pages ───────────────────── */
 .live-editor {
-  margin-block: 1.5rem;
+  margin-block: 1.75rem;
+  border-radius: 14px;
+  box-shadow:
+    0 1px 2px rgb(23 26 46 / 6%),
+    0 12px 40px -16px rgb(23 26 46 / 22%);
 }
 .live-editor .ax-editor {
   min-height: 320px;
+  border-radius: 14px;
 }

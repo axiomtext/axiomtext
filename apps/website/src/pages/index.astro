@@ -1,0 +1,482 @@
+---
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource/ibm-plex-sans/400.css';
+import '@fontsource/ibm-plex-sans/500.css';
+import '@fontsource/ibm-plex-sans/600.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '../styles/landing.css';
+import SiteHeader from '../components/landing/SiteHeader.astro';
+
+const tex = (latex: string, displayMode = false) =>
+  katex.renderToString(latex, {
+    displayMode,
+    throwOnError: false,
+    output: 'html',
+    // Only for marking the "cursor is here" slot in the illustration below.
+    trust: (context) => context.command === '\\htmlClass',
+  });
+
+const headlineEq = tex('e^{i\\pi}+1=0');
+const stepTyped = tex('x^2');
+const stepFraction = tex('x = \\frac{-b \\pm \\sqrt{\\htmlClass{slot}{b^2-4ac}}}{2a}');
+const stepPasted = tex('\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}');
+
+const code = {
+  javascript: `import { createClassicEditor } from '@axiomtext/presets';
+import '@axiomtext/ui/styles.css';
+import 'katex/dist/katex.min.css';
+
+const { editor } = createClassicEditor({
+  element: document.querySelector('#editor'),
+  placeholder: 'Start writing…',
+});
+
+editor.on('change', () => save(editor.getJSON()));`,
+  react: `import { AxiomEditor } from '@axiomtext/react';
+import '@axiomtext/ui/styles.css';
+import 'katex/dist/katex.min.css';
+
+export function PostEditor({ post, onSave }) {
+  return (
+    <AxiomEditor
+      defaultValue={post.content}
+      onChange={(doc) => onSave(doc)}
+    />
+  );
+}`,
+  vue: `<script setup>
+import { ref } from 'vue';
+import { AxiomEditor } from '@axiomtext/vue';
+import '@axiomtext/ui/styles.css';
+import 'katex/dist/katex.min.css';
+
+const doc = ref(saved);
+</script>
+
+<template>
+  <AxiomEditor v-model="doc" />
+</template>`,
+  cdn: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1/dist/cdn/katex/katex.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1/dist/cdn/axiomtext.css">
+<script src="https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1/dist/cdn/axiomtext.iife.js"></script>
+
+<div id="editor"></div>
+<script>
+  AxiomText.createClassicEditor({ element: document.querySelector('#editor') });
+</script>`,
+};
+const tabs = [
+  ['javascript', 'JavaScript'],
+  ['react', 'React'],
+  ['vue', 'Vue'],
+  ['cdn', 'CDN'],
+] as const;
+
+const groups = [
+  {
+    title: 'Writing',
+    items: [
+      'Headings, quotes, bulleted, numbered and to-do lists',
+      'Fonts, sizes, colours, highlight, alignment, indentation',
+      'Markdown shortcuts as you type, undo and redo',
+      'Word count, placeholder, read-only mode, shortcut help',
+    ],
+  },
+  {
+    title: 'Tables, images, layout',
+    items: [
+      'Tables with merged cells, header rows, colours and resizing',
+      'Images by upload, paste or drag, with captions and alt text',
+      'Text wrapping, including text on both sides of an image',
+      'Columns and page breaks',
+    ],
+  },
+  {
+    title: 'Your data',
+    items: [
+      'Versioned JSON, clean HTML, Markdown in and out',
+      'Autosave to the browser or your own server',
+      'Paste from Word, Google Docs and web pages, cleaned up',
+      'Saved HTML looks the same on your site with one stylesheet',
+    ],
+  },
+  {
+    title: 'Anywhere',
+    items: [
+      'Classic, inline and balloon editors, or headless',
+      'React, Vue, plain JavaScript or a CDN script tag',
+      'Interface in 10 languages, right-to-left included',
+      'Light and dark themes, keyboard accessible, WCAG 2.2 AA',
+    ],
+  },
+];
+
+const specs = [
+  ['License', 'MIT, commercial use included'],
+  ['Engine size', '69 KB gzip (core + view)'],
+  ['Typing', '≈ 8 ms per keystroke in a 50 000-word document'],
+  ['Equations tested', '500, from algebra to matrices'],
+  ['Interface languages', '10, with right-to-left'],
+  ['Server needed', 'None. It all runs in the browser'],
+];
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AxiomText: a free rich text editor with a visual math editor</title>
+    <meta
+      name="description"
+      content="Free, MIT-licensed rich text editor for the web with a visual equation editor built in. React, Vue, plain JavaScript or CDN."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content="AxiomText" />
+    <meta
+      property="og:description"
+      content="Write equations like you write words. A free, MIT-licensed rich text editor."
+    />
+    <script is:inline>
+      // Apply the saved theme (shared with the docs) before the first paint.
+      try {
+        const t = localStorage.getItem('starlight-theme');
+        document.documentElement.dataset.theme =
+          t === 'dark' || t === 'light'
+            ? t
+            : matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <SiteHeader />
+
+    <main id="main">
+      <section class="hero">
+        <div class="wrap">
+          <h1 class="hero__title">
+            Write <span class="hero__eq" aria-label="e to the i pi plus one equals zero"
+              ><span class="hero__eq-ink" set:html={headlineEq} /><span
+                class="hero__caret"
+                aria-hidden="true"></span></span
+            ><br />like you write words.
+          </h1>
+          <p class="hero__lede">
+            AxiomText is a rich text editor with a visual math editor built in. Click any part of an
+            equation and type. It's free and MIT-licensed, and it runs entirely in the browser.
+          </p>
+          <div class="hero__actions">
+            <a class="button button--primary" href="/start/quick-start/">Get started</a>
+            <button class="install" type="button" data-copy="npm install @axiomtext/presets katex">
+              <span class="install__prompt" aria-hidden="true">$</span>
+              <code>npm install @axiomtext/presets katex</code>
+              <span class="install__state" data-copy-state>Copy</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="wrap wrap--wide">
+          <div class="hero__stage">
+            <div class="hero__editor" data-demo-editor></div>
+            <p class="hero__hint">
+              This is the real editor, not a recording. Click in and try it: type
+              <code>$x^2$</code>, select text, or press <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>/</kbd>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="math" aria-labelledby="math-title">
+        <div class="wrap">
+          <h2 id="math-title">Maths without fighting LaTeX</h2>
+          <p class="section-lede">
+            Equations sit inside your sentences and behave like text. LaTeX and AsciiMath are still
+            there for people who prefer them.
+          </p>
+          <ol class="steps">
+            <li class="step">
+              <div class="step__visual">
+                <span class="typed"><span class="typed__keys">$x^2$</span></span>
+                <span class="step__arrow" aria-hidden="true"></span>
+                <span class="step__result" set:html={stepTyped} />
+              </div>
+              <h3>Type it</h3>
+              <p>
+                <code>$…$</code> or the toolbar's Σ button makes an equation right where you're
+                writing.
+              </p>
+            </li>
+            <li class="step">
+              <div class="step__visual step__visual--edit">
+                <span class="editing" set:html={stepFraction} />
+              </div>
+              <h3>Click any part</h3>
+              <p>
+                The cursor lands in the numerator, the exponent or the root you clicked. Palettes and
+                a math keyboard cover the rest.
+              </p>
+            </li>
+            <li class="step">
+              <div class="step__visual">
+                <span class="step__result" set:html={stepPasted} />
+              </div>
+              <h3>Paste from anywhere</h3>
+              <p>
+                Maths copied from Wikipedia, ChatGPT or a MathJax page arrives as an equation, not as
+                an image or garbled text.
+              </p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="features" aria-labelledby="features-title">
+        <div class="wrap">
+          <h2 id="features-title">And everything else you'd expect</h2>
+          <div class="features__grid">
+            {
+              groups.map((g) => (
+                <div class="feature-group">
+                  <h3>{g.title}</h3>
+                  <ul>
+                    {g.items.map((i) => (
+                      <li>{i}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="code" aria-labelledby="code-title">
+        <div class="wrap">
+          <h2 id="code-title">A working editor in ten lines</h2>
+          <div class="code-tabs" data-tabs>
+            <div class="code-tabs__bar" role="tablist" aria-label="Framework">
+              {
+                tabs.map(([id, label], i) => (
+                  <button
+                    type="button"
+                    role="tab"
+                    id={`tab-${id}`}
+                    aria-controls={`panel-${id}`}
+                    aria-selected={i === 0 ? 'true' : 'false'}
+                    tabindex={i === 0 ? 0 : -1}
+                  >
+                    {label}
+                  </button>
+                ))
+              }
+              <button class="code-tabs__copy" type="button" data-copy-panel>Copy</button>
+            </div>
+            {
+              tabs.map(([id], i) => (
+                <pre
+                  id={`panel-${id}`}
+                  role="tabpanel"
+                  aria-labelledby={`tab-${id}`}
+                  hidden={i !== 0}
+                  tabindex="0"
+                ><code>{code[id]}</code></pre>
+              ))
+            }
+          </div>
+          <p class="code__more">
+            Then read <a href="/guides/saving/">saving and loading</a>,{' '}
+            <a href="/guides/website-rendering/">showing content on your site</a> or the{' '}
+            <a href="/reference/editor-api/">editor API</a>.
+          </p>
+        </div>
+      </section>
+
+      <section class="specs" aria-labelledby="specs-title">
+        <div class="wrap">
+          <h2 id="specs-title">The numbers</h2>
+          <dl class="spec-list">
+            {
+              specs.map(([k, v]) => (
+                <div>
+                  <dt>{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+      </section>
+
+      <section class="closing">
+        <div class="wrap">
+          <h2>Try it on your own content</h2>
+          <p>
+            The playground has every feature, all ten languages, the three editor types and live
+            JSON, HTML and Markdown output.
+          </p>
+          <div class="hero__actions">
+            <a class="button button--primary" href="/playground/">Open the playground</a>
+            <a class="button button--ghost" href="/start/introduction/">Read the docs</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap site-footer__inner">
+        <p>AxiomText is MIT licensed. Built on ProseMirror, KaTeX and MathLive.</p>
+        <nav aria-label="Footer">
+          <a href="/start/introduction/">Docs</a>
+          <a href="/guides/security/">Security</a>
+          <a href="https://github.com/axiomtext/axiomtext">GitHub</a>
+          <a href="https://www.npmjs.com/org/axiomtext">npm</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script>
+      import '@axiomtext/ui/styles.css';
+      import { createClassicEditor } from '@axiomtext/presets';
+      import type { DocumentJSON } from '@axiomtext/presets';
+
+      // ── Copy buttons ────────────────────────────────────────────
+      const copy = async (text: string, state: HTMLElement) => {
+        try {
+          await navigator.clipboard.writeText(text);
+          state.textContent = 'Copied';
+        } catch {
+          state.textContent = 'Press Ctrl+C';
+        }
+        setTimeout(() => (state.textContent = 'Copy'), 1600);
+      };
+      document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) =>
+        b.addEventListener('click', () => {
+          const state = b.querySelector<HTMLElement>('[data-copy-state]') ?? b;
+          void copy(b.dataset.copy ?? '', state);
+        }),
+      );
+
+      // ── Code tabs ───────────────────────────────────────────────
+      document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
+        const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+        const select = (tab: HTMLButtonElement) => {
+          for (const t of tabs) {
+            const on = t === tab;
+            t.setAttribute('aria-selected', String(on));
+            t.tabIndex = on ? 0 : -1;
+            const panel = document.getElementById(t.getAttribute('aria-controls') ?? '');
+            if (panel) panel.hidden = !on;
+          }
+        };
+        tabs.forEach((t, i) => {
+          t.addEventListener('click', () => select(t));
+          t.addEventListener('keydown', (e) => {
+            if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+            const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+            if (next) {
+              select(next);
+              next.focus();
+            }
+          });
+        });
+        const copyButton = root.querySelector<HTMLButtonElement>('[data-copy-panel]');
+        copyButton?.addEventListener('click', () => {
+          const panel = root.querySelector<HTMLElement>('[role="tabpanel"]:not([hidden])');
+          void copy(panel?.textContent?.trim() ?? '', copyButton);
+        });
+      });
+
+      // ── The live editor writes its own first lines ──────────────
+      const element = document.querySelector<HTMLElement>('[data-demo-editor]');
+      if (element) {
+        type Inline = { type: string; text?: string; attrs?: Record<string, unknown> };
+        const heading = { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Circles' }] };
+        const doc = (inline: Inline[], block = false): DocumentJSON => ({
+          version: 1,
+          doc: {
+            type: 'doc',
+            content: [
+              heading,
+              { type: 'paragraph', content: inline.filter((n) => n.type !== 'text' || n.text) },
+              ...(block
+                ? [{ type: 'math_block', attrs: { latex: '\\int_0^{2\\pi}\\!\\!\\int_0^{r} \\rho \\, d\\rho \\, d\\theta = \\pi r^2' } }]
+                : []),
+            ],
+          },
+        });
+        // The script: text typed letter by letter, equations appearing whole (as if typed as $…$).
+        const script: Inline[] = [
+          { type: 'text', text: 'The area of a circle is ' },
+          { type: 'math_inline', attrs: { latex: 'A = \\pi r^2' } },
+          { type: 'text', text: ' and its circumference is ' },
+          { type: 'math_inline', attrs: { latex: 'C = 2\\pi r' } },
+          { type: 'text', text: '. Click either equation to change it.' },
+        ];
+        const finalDoc = doc(script, true);
+        const { editor } = createClassicEditor({
+          element,
+          content: doc([]),
+          placeholder: 'Start writing…',
+          ariaLabel: 'Demo editor',
+        });
+
+        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let stopped = false;
+        const stop = () => {
+          if (stopped) return;
+          stopped = true;
+          editor.setJSON(finalDoc);
+        };
+        // Any interaction ends the demo and leaves the finished text to play with.
+        element.addEventListener('pointerdown', stop, { capture: true, once: true });
+        element.addEventListener('focusin', stop, { once: true });
+
+        if (reduce) stop();
+        else {
+          const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+          const run = async () => {
+            await wait(1100); // after the headline equation has been written
+            const done: Inline[] = [];
+            for (const part of script) {
+              if (stopped) return;
+              if (part.type !== 'text') {
+                await wait(180);
+                done.push(part);
+                editor.setJSON(doc(done));
+                await wait(420);
+                continue;
+              }
+              const current: Inline = { type: 'text', text: '' };
+              done.push(current);
+              for (const ch of part.text ?? '') {
+                if (stopped) return;
+                current.text += ch;
+                editor.setJSON(doc(done));
+                await wait(ch === ' ' ? 45 : 28);
+              }
+            }
+            await wait(500);
+            if (!stopped) {
+              stopped = true;
+              editor.setJSON(finalDoc);
+            }
+          };
+          // Start when the editor is on screen.
+          const io = new IntersectionObserver((entries) => {
+            if (entries.some((e) => e.isIntersecting)) {
+              io.disconnect();
+              void run();
+            }
+          });
+          io.observe(element);
+        }
+      }
+    </script>
+  </body>
+</html>

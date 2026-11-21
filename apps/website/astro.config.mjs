@@ -10,7 +10,14 @@ export default defineConfig({
       logo: { src: './src/assets/logo.svg' },
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/axiomtext/axiomtext' }],
       editLink: { baseUrl: 'https://github.com/axiomtext/axiomtext/edit/main/apps/website/' },
-      customCss: ['./src/styles/site.css'],
+      customCss: [
+        '@fontsource-variable/bricolage-grotesque',
+        '@fontsource/ibm-plex-sans/400.css',
+        '@fontsource/ibm-plex-sans/500.css',
+        '@fontsource/ibm-plex-sans/600.css',
+        '@fontsource/ibm-plex-mono/400.css',
+        './src/styles/site.css',
+      ],
       sidebar: [
         {
           label: 'Start here',
