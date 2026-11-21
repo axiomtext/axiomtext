@@ -9,10 +9,9 @@ const { type = 'classic', sample = 'full' } = Astro.props;
 <div class="live-editor not-content" data-type={type} data-sample={sample}></div>
 
 <script>
-  import '@axiomtext/ui/styles.css';
-  import 'katex/dist/katex.min.css';
-  import { createBalloonEditor, createClassicEditor, createInlineEditor } from '@axiomtext/presets';
-  import type { DocumentJSON } from '@axiomtext/presets';
+  import 'axiomtext/styles.css';
+  import { createBalloonEditor, createClassicEditor, createInlineEditor } from 'axiomtext';
+  import type { DocumentJSON } from 'axiomtext';
   import { samples } from './samples';
 
   // The docs' light/dark switch sets data-theme on <html>, which the editor follows too.

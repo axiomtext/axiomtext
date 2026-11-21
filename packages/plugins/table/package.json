@@ -1,7 +1,8 @@
 {
   "name": "@axiomtext/plugin-table",
   "version": "0.1.0",
-  "description": "Tables: insert, rows and columns, merge and split cells, headers, column resizing.",
+  "private": true,
+  "description": "Tables: insert, rows and columns, merge and split cells, headers, column resizing. Internal: published as part of the axiomtext package.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -26,9 +27,6 @@
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "dependencies": {
     "@axiomtext/core": "workspace:*",

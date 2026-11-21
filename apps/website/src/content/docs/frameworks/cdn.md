@@ -8,13 +8,12 @@ description: Use AxiomText without a build step.
 Math, Markdown and languages load only when needed.
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1/dist/cdn/katex/katex.min.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1/dist/cdn/axiomtext.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/axiomtext@0.1/dist/cdn/axiomtext.css" />
 
 <div id="editor"></div>
 
 <script type="module">
-  import { createClassicEditor } from 'https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1/dist/cdn/axiomtext.js';
+  import { createClassicEditor } from 'https://cdn.jsdelivr.net/npm/axiomtext@0.1/dist/cdn/axiomtext.js';
   const { editor } = createClassicEditor({ element: document.querySelector('#editor') });
 </script>
 ```
@@ -24,7 +23,7 @@ Math, Markdown and languages load only when needed.
 One file with everything, available as the global `AxiomText`:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1/dist/cdn/axiomtext.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axiomtext@0.1/dist/cdn/axiomtext.iife.js"></script>
 <script>
   AxiomText.createClassicEditor({ element: document.querySelector('#editor') });
 </script>

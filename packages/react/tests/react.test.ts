@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { act, createElement, createRef, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
-import type { DocumentJSON } from '@axiomtext/core';
+import type { DocumentJSON } from 'axiomtext';
 import { AxiomEditor } from '../src';
 import type { AxiomEditorHandle } from '../src';
 

@@ -1,7 +1,8 @@
 {
   "name": "@axiomtext/plugin-list",
   "version": "0.1.0",
-  "description": "Bulleted, numbered and to-do lists.",
+  "private": true,
+  "description": "Bulleted, numbered and to-do lists. Internal: published as part of the axiomtext package.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -26,9 +27,6 @@
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "dependencies": {
     "@axiomtext/core": "workspace:*",

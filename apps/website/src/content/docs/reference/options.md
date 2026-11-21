@@ -8,7 +8,7 @@ description: Options for createClassicEditor, createInlineEditor and createBallo
 | Option | Type | Default | |
 |---|---|---|---|
 | `element` | `HTMLElement` | required | Where the editor goes. |
-| `plugins` | `AxiomPlugin[]` | all (presets) | Features. |
+| `plugins` | `AxiomPlugin[]` | all features | Features. |
 | `content` | `DocumentJSON` | empty | Starting content. |
 | `placeholder` | `string` | | Shown when empty. |
 | `editable` | `boolean` | `true` | `false` for read-only. |

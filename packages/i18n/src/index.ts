@@ -45,7 +45,7 @@ let current: I18n = createI18n('en', {});
 
 /**
  * Sets the language of the editor UI on this page, e.g.
- * `setLanguage('bn', bn)` with `import bn from '@axiomtext/ui/locales/bn'`.
+ * `setLanguage('bn', bn)` with `import bn from 'axiomtext/locales/bn'`.
  * Applies to editors created afterwards.
  */
 export function setLanguage(locale: string, messages: Messages = {}): void {

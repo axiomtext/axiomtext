@@ -28,15 +28,15 @@ export const loadMarkdown = (): Promise<MarkdownModule> => import('@axiomtext/co
 export { MathPlugin } from '@axiomtext/math';
 
 const LOCALES: Record<string, () => Promise<{ default: Messages }>> = {
-  ar: () => import('@axiomtext/ui/locales/ar'),
-  bn: () => import('@axiomtext/ui/locales/bn'),
-  de: () => import('@axiomtext/ui/locales/de'),
-  es: () => import('@axiomtext/ui/locales/es'),
-  fr: () => import('@axiomtext/ui/locales/fr'),
-  hi: () => import('@axiomtext/ui/locales/hi'),
-  ja: () => import('@axiomtext/ui/locales/ja'),
-  pt: () => import('@axiomtext/ui/locales/pt'),
-  zh: () => import('@axiomtext/ui/locales/zh'),
+  ar: () => import('./locales/ar'),
+  bn: () => import('./locales/bn'),
+  de: () => import('./locales/de'),
+  es: () => import('./locales/es'),
+  fr: () => import('./locales/fr'),
+  hi: () => import('./locales/hi'),
+  ja: () => import('./locales/ja'),
+  pt: () => import('./locales/pt'),
+  zh: () => import('./locales/zh'),
 };
 
 /** UI languages available besides English. */

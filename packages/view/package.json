@@ -1,7 +1,8 @@
 {
   "name": "@axiomtext/view",
   "version": "0.1.0",
-  "description": "Editable view: DOM rendering, input, selection, history.",
+  "private": true,
+  "description": "Editable view: DOM rendering, input, selection, history. Internal: published as part of the axiomtext package.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -26,9 +27,6 @@
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "dependencies": {
     "@axiomtext/core": "workspace:*",

@@ -5,31 +5,30 @@ description: Install AxiomText from npm or load it from a CDN.
 
 ## npm
 
-The easiest way to start is the presets package, which includes every feature:
+AxiomText is one package with every feature:
 
 ```bash
-npm install @axiomtext/presets katex
+npm install axiomtext
 ```
 
-Then load the styles once in your app:
+Then load the styles once in your app. This one file covers the toolbar, the content and the
+equations:
 
 ```js
-import '@axiomtext/ui/styles.css';
-import 'katex/dist/katex.min.css';
+import 'axiomtext/styles.css';
 ```
 
-Using a framework? Install [`@axiomtext/react`](/frameworks/react/) or
-[`@axiomtext/vue`](/frameworks/vue/) instead; they include the presets.
-
-### Choosing features
-
-To keep your bundle small, build the editor from individual packages instead:
+Using React or Vue? Add the component package too:
 
 ```bash
-npm install @axiomtext/ui @axiomtext/plugin-basic-styles @axiomtext/plugin-heading @axiomtext/plugin-list
+npm install axiomtext @axiomtext/react   # or @axiomtext/vue
 ```
 
-See [Plugins](/reference/plugins/) for the full list.
+### Bundle size
+
+Your bundler drops the features you don't use, and the heaviest parts (the visual math editor,
+Markdown and interface languages) are only downloaded when they're first needed. To leave out
+features on purpose, pass just the ones you want to `plugins`; see [Plugins](/reference/plugins/).
 
 ## CDN
 

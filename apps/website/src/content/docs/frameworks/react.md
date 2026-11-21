@@ -4,13 +4,12 @@ description: Use AxiomText in React.
 ---
 
 ```bash
-npm install @axiomtext/react katex
+npm install axiomtext @axiomtext/react
 ```
 
 ```jsx
 import { AxiomEditor } from '@axiomtext/react';
-import '@axiomtext/ui/styles.css';
-import 'katex/dist/katex.min.css';
+import 'axiomtext/styles.css';
 
 export function PostEditor({ post, onSave }) {
   return (

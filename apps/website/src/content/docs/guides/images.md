@@ -17,7 +17,7 @@ By default images are embedded in the document (base64), which needs no server. 
 upload them to your server and store the URL:
 
 ```js
-import { createImagePlugin, createXhrUploadAdapter } from '@axiomtext/plugin-image';
+import { createImagePlugin, createXhrUploadAdapter } from 'axiomtext';
 
 const Image = createImagePlugin({
   upload: createXhrUploadAdapter('/api/uploads', { 'X-CSRF-Token': token }),

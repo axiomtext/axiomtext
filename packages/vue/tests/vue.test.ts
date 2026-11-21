@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { createApp, defineComponent, h, nextTick, ref } from 'vue';
 import type { App } from 'vue';
-import type { DocumentJSON } from '@axiomtext/core';
-import type { Editor } from '@axiomtext/view';
+import type { DocumentJSON } from 'axiomtext';
+import type { Editor } from 'axiomtext';
 import { AxiomEditor } from '../src';
 
 const doc = (text: string): DocumentJSON => ({

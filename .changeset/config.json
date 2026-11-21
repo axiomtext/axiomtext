@@ -2,10 +2,11 @@
   "$schema": "https://unpkg.com/@changesets/config/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
-  "fixed": [["@axiomtext/*"]],
+  "fixed": [["axiomtext", "@axiomtext/react", "@axiomtext/vue"]],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@axiomtext/playground", "@axiomtext/website", "@axiomtext/integration-tests"]
+  "privatePackages": { "version": false, "tag": false },
+  "ignore": []
 }

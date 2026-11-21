@@ -40,7 +40,7 @@ corpus of 500 equations.
 
 Equations are stored as LaTeX in the JSON (`{"type":"math_inline","attrs":{"latex":"x^2"}}`).
 `getHTML()` includes the rendered equation with MathML for screen readers, so your website needs no
-JavaScript to show it, only `katex.min.css`.
+JavaScript to show it, only the `axiomtext/content.css` stylesheet (see [Showing content on your website](/guides/website-rendering/)).
 
 ## Performance
 

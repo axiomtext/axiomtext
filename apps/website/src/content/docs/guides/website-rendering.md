@@ -4,18 +4,18 @@ description: Make saved HTML look exactly like it does in the editor.
 ---
 
 `editor.getHTML()` returns clean HTML. To display it with the same look as in the editor (lists,
-tables, image wrapping, text on both sides, maths), load two stylesheets and wrap the HTML:
+tables, image wrapping, text on both sides, maths), load one stylesheet and wrap the HTML:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.css" />
-<link rel="stylesheet" href="/path/to/@axiomtext/ui/content.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/axiomtext@0.1/dist/cdn/content.css" />
 
 <div class="axiomtext-content">
   <!-- the saved HTML -->
 </div>
 ```
 
-- `content.css` contains only content styles (no toolbar), about 4 KB gzip.
+- With a bundler, use `import 'axiomtext/content.css'` instead of the `<link>`.
+- `content.css` has only the content styles (no toolbar) plus the equation styles.
 - Equations are already rendered in the saved HTML, so no JavaScript is needed.
 - Dark mode: add `data-theme="dark"` to the wrapper or `<html>`, or let it follow the OS.
 - On screens narrower than 640 px, columns (and "text on both sides") stack vertically.

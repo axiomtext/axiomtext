@@ -1,4 +1,8 @@
-# @axiomtext/presets
+# axiomtext
+
+## 0.1.1
+
+- First release as one package. Everything that used to be split across `@axiomtext/presets`, `@axiomtext/ui`, `@axiomtext/core`, the plugin packages and others is now in `axiomtext`. One stylesheet, `axiomtext/styles.css`, now includes the equation (KaTeX) styles.
 
 ## 0.1.0
 

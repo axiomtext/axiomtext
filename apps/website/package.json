@@ -13,12 +13,11 @@
   "devDependencies": {
     "@astrojs/starlight": "^0.43.1",
     "@axiomtext/playground": "workspace:*",
-    "@axiomtext/presets": "workspace:*",
-    "@axiomtext/ui": "workspace:*",
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "@fontsource/ibm-plex-sans": "^5.3.0",
     "astro": "^7.4.13",
+    "axiomtext": "workspace:*",
     "katex": "^0.19.1"
   }
 }

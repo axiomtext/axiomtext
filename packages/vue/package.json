@@ -1,7 +1,7 @@
 {
   "name": "@axiomtext/vue",
-  "version": "0.1.0",
-  "description": "Vue 3 integration.",
+  "version": "0.1.1",
+  "description": "The AxiomText rich text and math editor as a Vue 3 component with v-model.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -28,14 +28,11 @@
     "test": "vitest run --passWithNoTests"
   },
   "devDependencies": {
+    "axiomtext": "workspace:*",
     "vue": "^3.5.46"
   },
-  "dependencies": {
-    "@axiomtext/core": "workspace:*",
-    "@axiomtext/presets": "workspace:*",
-    "@axiomtext/view": "workspace:*"
-  },
   "peerDependencies": {
+    "axiomtext": "workspace:^",
     "vue": "^3.3"
   },
   "publishConfig": {

@@ -8,7 +8,7 @@
 
 MIT licensed · runs entirely in the browser · no server, no license key, no limits
 
-[![npm](https://img.shields.io/npm/v/@axiomtext/presets?label=npm&color=4f46e5)](https://www.npmjs.com/package/@axiomtext/presets)
+[![npm](https://img.shields.io/npm/v/axiomtext?label=npm&color=4f46e5)](https://www.npmjs.com/package/axiomtext)
 [![License: MIT](https://img.shields.io/badge/license-MIT-16a34a)](LICENSE)
 [![CI](https://github.com/axiomtext/axiomtext/actions/workflows/ci.yml/badge.svg)](https://github.com/axiomtext/axiomtext/actions/workflows/ci.yml)
 [![Bundle](https://img.shields.io/badge/core%20%2B%20view-69%20KB%20gzip-0ea5e9)](docs/adr/0008-bundle-budgets.md)
@@ -73,7 +73,7 @@ when you want them.
 ### npm
 
 ```bash
-npm install @axiomtext/presets katex
+npm install axiomtext
 ```
 
 ```html
@@ -81,9 +81,8 @@ npm install @axiomtext/presets katex
 ```
 
 ```js
-import { createClassicEditor } from '@axiomtext/presets';
-import '@axiomtext/ui/styles.css';
-import 'katex/dist/katex.min.css';
+import { createClassicEditor } from 'axiomtext';
+import 'axiomtext/styles.css';
 
 const { editor } = createClassicEditor({
   element: document.querySelector('#editor'),
@@ -98,15 +97,8 @@ editor.on('change', () => {
 ### CDN (no build step)
 
 ```html
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1/dist/cdn/katex/katex.min.css"
-/>
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1/dist/cdn/axiomtext.css"
-/>
-<script src="https://cdn.jsdelivr.net/npm/@axiomtext/presets@0.1/dist/cdn/axiomtext.iife.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/axiomtext@0.1/dist/cdn/axiomtext.css" />
+<script src="https://cdn.jsdelivr.net/npm/axiomtext@0.1/dist/cdn/axiomtext.iife.js"></script>
 
 <div id="editor"></div>
 <script>
@@ -122,13 +114,12 @@ An ES-module build (maths and languages load on demand) and a form example are i
 ### React
 
 ```bash
-npm install @axiomtext/react katex
+npm install axiomtext @axiomtext/react
 ```
 
 ```jsx
 import { AxiomEditor } from '@axiomtext/react';
-import '@axiomtext/ui/styles.css';
-import 'katex/dist/katex.min.css';
+import 'axiomtext/styles.css';
 
 export function PostEditor({ post, onSave }) {
   return <AxiomEditor defaultValue={post.content} onChange={(doc) => onSave(doc)} />;
@@ -141,15 +132,14 @@ works with React 18/19, StrictMode and Next.js client components.
 ### Vue 3
 
 ```bash
-npm install @axiomtext/vue katex
+npm install axiomtext @axiomtext/vue
 ```
 
 ```vue
 <script setup>
 import { ref } from 'vue';
 import { AxiomEditor } from '@axiomtext/vue';
-import '@axiomtext/ui/styles.css';
-import 'katex/dist/katex.min.css';
+import 'axiomtext/styles.css';
 
 const doc = ref(savedJson);
 </script>
@@ -162,7 +152,7 @@ const doc = ref(savedJson);
 ### Editor types
 
 ```js
-import { createClassicEditor, createInlineEditor, createBalloonEditor } from '@axiomtext/presets';
+import { createClassicEditor, createInlineEditor, createBalloonEditor } from 'axiomtext';
 
 createClassicEditor({ element, document: true }); // toolbar + paper-like page + status bar
 createInlineEditor({ element: document.querySelector('article') }); // toolbar floats while editing
@@ -183,7 +173,7 @@ editor.insertHTML('<p>Pasted <b>content</b></p>'); // cleaned like a paste
 **Markdown**
 
 ```js
-import { toMarkdown, fromMarkdown } from '@axiomtext/convert';
+import { toMarkdown, fromMarkdown } from 'axiomtext';
 
 const md = toMarkdown(editor.getJSON()); // GFM: tables, task lists, $maths$
 editor.setJSON(fromMarkdown('# Hello\n\n$x^2$'));
@@ -209,9 +199,7 @@ createClassicEditor({
 The saved HTML already contains the rendered equations, so no JavaScript is needed:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.css" />
-<link rel="stylesheet" href="/css/axiomtext-content.css" />
-<!-- copy of @axiomtext/ui/content.css -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/axiomtext@0.1/dist/cdn/content.css" />
 
 <div class="axiomtext-content">
   <!-- HTML from editor.getHTML() -->
@@ -224,8 +212,7 @@ Lists, tables, image wrapping, "text on both sides" and maths then look exactly 
 ### Image uploads to your server
 
 ```js
-import { createImagePlugin, createXhrUploadAdapter } from '@axiomtext/plugin-image';
-import { ALL_PLUGINS } from '@axiomtext/presets';
+import { createImagePlugin, createXhrUploadAdapter, ALL_PLUGINS } from 'axiomtext';
 
 const Image = createImagePlugin({
   upload: createXhrUploadAdapter('/api/uploads', { 'X-CSRF-Token': token }), // responds { "url": "…" }
@@ -243,7 +230,7 @@ Without an adapter, images are embedded in the document (base64) — handy for d
 ### Languages and right-to-left
 
 ```js
-import bn from '@axiomtext/ui/locales/bn'; // ar, hi, es, fr, de, pt, zh, ja
+import bn from 'axiomtext/locales/bn'; // ar, hi, es, fr, de, pt, zh, ja
 
 createClassicEditor({ element, language: 'bn', translations: bn });
 ```
@@ -254,11 +241,7 @@ translations are a plain object keyed by the English text: `{ Bold: 'Grassetto' 
 ### Choosing features (smaller bundles)
 
 ```js
-import { createClassicEditor } from '@axiomtext/ui';
-import { BasicStyles } from '@axiomtext/plugin-basic-styles';
-import { Heading } from '@axiomtext/plugin-heading';
-import { List } from '@axiomtext/plugin-list';
-import { MathPlugin } from '@axiomtext/math';
+import { createClassicEditor, BasicStyles, Heading, List, MathPlugin } from 'axiomtext';
 
 createClassicEditor({
   element,
@@ -270,8 +253,7 @@ createClassicEditor({
 ### Headless (your own UI)
 
 ```js
-import { createEditor } from '@axiomtext/view';
-import { BasicStyles } from '@axiomtext/plugin-basic-styles';
+import { createEditor, BasicStyles } from 'axiomtext';
 
 const editor = createEditor({ element, plugins: [BasicStyles] });
 boldButton.onclick = () => editor.execute('toggleBold');
@@ -283,7 +265,7 @@ editor.on('update', () => boldButton.classList.toggle('active', editor.isActive(
 | Option                     | Type                          | Default              | Description                            |
 | -------------------------- | ----------------------------- | -------------------- | -------------------------------------- |
 | `element`                  | `HTMLElement`                 | —                    | Where the editor is created (required) |
-| `plugins`                  | `AxiomPlugin[]`               | all (presets)        | Features to include                    |
+| `plugins`                  | `AxiomPlugin[]`               | all features         | Features to include                    |
 | `content`                  | `DocumentJSON`                | empty                | Starting content                       |
 | `placeholder`              | `string`                      | —                    | Text shown when empty                  |
 | `editable`                 | `boolean`                     | `true`               | `false` for read-only                  |
@@ -316,18 +298,16 @@ Every command, per plugin: [axiomtext.dev/reference/plugins](https://axiomtext.d
 
 ## Packages
 
-| Package                                  | Description                                                                                                  |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| [`@axiomtext/presets`](packages/presets) | Ready-made classic, inline and balloon editors with every feature; CDN builds                                |
-| [`@axiomtext/react`](packages/react)     | React component                                                                                              |
-| [`@axiomtext/vue`](packages/vue)         | Vue 3 component with `v-model`                                                                               |
-| [`@axiomtext/ui`](packages/ui)           | Toolbars, menus, dialogs, styles (`styles.css`, `content.css`), translations                                 |
-| [`@axiomtext/view`](packages/view)       | Headless editor: rendering, input, history, autosave                                                         |
-| [`@axiomtext/core`](packages/core)       | Document format, schema, plugin system, sanitizers                                                           |
-| [`@axiomtext/math`](packages/math)       | Equations: KaTeX rendering, MathLive visual editing, LaTeX/AsciiMath, MathML paste                           |
-| [`@axiomtext/convert`](packages/convert) | Markdown import/export                                                                                       |
-| [`@axiomtext/i18n`](packages/i18n)       | Translation runtime and RTL detection                                                                        |
-| `@axiomtext/plugin-*`                    | `basic-styles`, `heading`, `list`, `blockquote`, `link`, `font`, `block-format`, `table`, `image`, `columns` |
+| Package                              | What it is                                                                       |
+| ------------------------------------ | -------------------------------------------------------------------------------- |
+| [`axiomtext`](packages/axiomtext)    | The editor: every feature, styles, 10 languages, TypeScript types and CDN builds |
+| [`@axiomtext/react`](packages/react) | React component (install with `axiomtext`)                                       |
+| [`@axiomtext/vue`](packages/vue)     | Vue 3 component with `v-model` (install with `axiomtext`)                        |
+
+Features you don't use are left out of your bundle, and the visual math editor, Markdown and
+languages load only when needed. Inside this repository the editor is split into smaller
+workspace packages (`packages/core`, `view`, `ui`, `math`, `convert`, `i18n`, `plugins/*`); they
+are bundled into `axiomtext` and are not published on their own.
 
 <a id="quality"></a>
 

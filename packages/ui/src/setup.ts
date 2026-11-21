@@ -19,7 +19,7 @@ import type { ShortcutDialog } from './shortcut-dialog';
 /** Options shared by the classic, inline and balloon editors. */
 export interface CommonEditorOptions extends Omit<EditorOptions, 'element'> {
   /**
-   * UI language, e.g. `'bn'` with `translations` from `@axiomtext/ui/locales/bn`.
+   * UI language, e.g. `'bn'` with `translations` from `axiomtext/locales/bn`.
    * Right-to-left languages (Arabic, Urdu, Hebrew, Persian) switch the whole editor to RTL.
    */
   language?: string;

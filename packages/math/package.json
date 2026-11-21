@@ -1,7 +1,8 @@
 {
   "name": "@axiomtext/math",
   "version": "0.1.0",
-  "description": "Math equation editor for AxiomText: inline and block equations with LaTeX, live preview and KaTeX rendering.",
+  "private": true,
+  "description": "Math equation editor for AxiomText: inline and block equations with LaTeX, live preview and KaTeX rendering. Internal: published as part of the axiomtext package.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -39,8 +40,5 @@
   },
   "devDependencies": {
     "@axiomtext/test-utils": "workspace:*"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

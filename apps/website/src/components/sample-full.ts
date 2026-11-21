@@ -1,4 +1,4 @@
-import type { DocumentJSON, NodeJSON } from '@axiomtext/core';
+import type { DocumentJSON, NodeJSON } from 'axiomtext';
 
 const t = (text: string, ...marks: string[]): NodeJSON =>
   marks.length

@@ -1,4 +1,4 @@
-import type { DocumentJSON } from '@axiomtext/presets';
+import type { DocumentJSON } from 'axiomtext';
 import { sampleDocument } from './sample-full';
 
 const math: DocumentJSON = {

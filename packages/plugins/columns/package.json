@@ -1,7 +1,8 @@
 {
   "name": "@axiomtext/plugin-columns",
   "version": "0.1.0",
-  "description": "Column layouts, including text on both sides of a centered image.",
+  "private": true,
+  "description": "Column layouts, including text on both sides of a centered image. Internal: published as part of the axiomtext package.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -26,9 +27,6 @@
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "dependencies": {
     "@axiomtext/core": "workspace:*",

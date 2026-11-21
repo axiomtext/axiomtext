@@ -1,7 +1,8 @@
 {
   "name": "@axiomtext/core",
   "version": "0.1.0",
-  "description": "Document model, schema, plugin system and commands (no DOM).",
+  "private": true,
+  "description": "Document model, schema, plugin system and commands (no DOM). Internal: published as part of the axiomtext package.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -26,9 +27,6 @@
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "dependencies": {
     "prosemirror-model": "^1.25.13",

@@ -4,15 +4,14 @@ description: Use AxiomText in Vue 3.
 ---
 
 ```bash
-npm install @axiomtext/vue katex
+npm install axiomtext @axiomtext/vue
 ```
 
 ```vue
 <script setup>
 import { ref } from 'vue';
 import { AxiomEditor } from '@axiomtext/vue';
-import '@axiomtext/ui/styles.css';
-import 'katex/dist/katex.min.css';
+import 'axiomtext/styles.css';
 
 const doc = ref(savedDocument);
 </script>

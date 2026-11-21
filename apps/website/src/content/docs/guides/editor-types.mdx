@@ -14,7 +14,7 @@ A fixed toolbar on top, the content below and a status bar with word count. Best
 fields and documents.
 
 ```js
-import { createClassicEditor } from '@axiomtext/presets';
+import { createClassicEditor } from 'axiomtext';
 createClassicEditor({ element, document: true }); // document: paper-like page
 ```
 </TabItem>
@@ -23,7 +23,7 @@ The element itself becomes editable; the toolbar floats above it while it has fo
 the top of the window while you scroll. Best for editing a page in place.
 
 ```js
-import { createInlineEditor } from '@axiomtext/presets';
+import { createInlineEditor } from 'axiomtext';
 createInlineEditor({ element: document.querySelector('article') });
 ```
 </TabItem>
@@ -32,7 +32,7 @@ No toolbar until you select text; formatting then appears next to the selection.
 empty lines inserts images, tables, equations and lists. Best for distraction-free writing.
 
 ```js
-import { createBalloonEditor } from '@axiomtext/presets';
+import { createBalloonEditor } from 'axiomtext';
 createBalloonEditor({ element });
 ```
 </TabItem>

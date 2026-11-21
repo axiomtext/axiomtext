@@ -3,23 +3,23 @@
  *
  *   <script setup>
  *   import { AxiomEditor } from '@axiomtext/vue';
- *   import '@axiomtext/ui/styles.css';
- *   import 'katex/dist/katex.min.css';
+ *   import 'axiomtext/styles.css';
  *   const doc = ref(saved);
  *   </script>
  *   <template><AxiomEditor v-model="doc" language="bn" /></template>
  */
 import { defineComponent, h, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
 import type { PropType } from 'vue';
-import type { AxiomPlugin, DocumentJSON } from '@axiomtext/core';
 import {
   createBalloonEditor,
   createClassicEditor,
   createInlineEditor,
   type ClassicEditorOptions,
   type FloatingEditorOptions,
-} from '@axiomtext/presets';
-import type { Editor } from '@axiomtext/view';
+  type Editor,
+  type AxiomPlugin,
+  type DocumentJSON,
+} from 'axiomtext';
 
 type Options = Omit<ClassicEditorOptions, 'element' | 'content'> &
   Omit<FloatingEditorOptions, 'element' | 'content'>;
@@ -107,5 +107,4 @@ export const AxiomEditor = defineComponent({
 });
 
 export default AxiomEditor;
-export type { DocumentJSON } from '@axiomtext/core';
-export type { Editor } from '@axiomtext/view';
+export type { DocumentJSON, Editor } from 'axiomtext';

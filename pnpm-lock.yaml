@@ -126,12 +126,6 @@ importers:
       '@axiomtext/playground':
         specifier: workspace:*
         version: link:../playground
-      '@axiomtext/presets':
-        specifier: workspace:*
-        version: link:../../packages/presets
-      '@axiomtext/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       '@fontsource-variable/bricolage-grotesque':
         specifier: ^5.3.0
         version: 5.3.0
@@ -144,11 +138,114 @@ importers:
       astro:
         specifier: ^7.4.13
         version: 7.4.13(@types/node@26.6.6)(esbuild@0.28.2)(yaml@2.9.1)
+      axiomtext:
+        specifier: workspace:*
+        version: link:../../packages/axiomtext
       katex:
         specifier: ^0.19.1
         version: 0.19.1
 
   packages/angular: {}
+
+  packages/axiomtext:
+    dependencies:
+      katex:
+        specifier: ^0.19.1
+        version: 0.19.1
+      lucide:
+        specifier: ^1.77.0
+        version: 1.77.0
+      markdown-it:
+        specifier: ^14.3.3
+        version: 14.3.3
+      mathlive:
+        specifier: ^0.111.4
+        version: 0.111.4
+      prosemirror-commands:
+        specifier: ^1.7.2
+        version: 1.7.2
+      prosemirror-dropcursor:
+        specifier: ^1.8.2
+        version: 1.8.4
+      prosemirror-gapcursor:
+        specifier: ^1.4.0
+        version: 1.4.1
+      prosemirror-history:
+        specifier: ^1.5.2
+        version: 1.5.2
+      prosemirror-inputrules:
+        specifier: ^1.7.0
+        version: 1.7.0
+      prosemirror-keymap:
+        specifier: ^1.2.3
+        version: 1.2.3
+      prosemirror-model:
+        specifier: ^1.25.13
+        version: 1.25.13
+      prosemirror-schema-list:
+        specifier: ^1.6.1
+        version: 1.6.1
+      prosemirror-state:
+        specifier: ^1.4.4
+        version: 1.4.4
+      prosemirror-tables:
+        specifier: ^1.8.5
+        version: 1.8.5
+      prosemirror-transform:
+        specifier: ^1.10.0
+        version: 1.12.7
+      prosemirror-view:
+        specifier: ^1.43.0
+        version: 1.43.0
+    devDependencies:
+      '@axiomtext/convert':
+        specifier: workspace:*
+        version: link:../convert
+      '@axiomtext/core':
+        specifier: workspace:*
+        version: link:../core
+      '@axiomtext/i18n':
+        specifier: workspace:*
+        version: link:../i18n
+      '@axiomtext/math':
+        specifier: workspace:*
+        version: link:../math
+      '@axiomtext/plugin-basic-styles':
+        specifier: workspace:*
+        version: link:../plugins/basic-styles
+      '@axiomtext/plugin-block-format':
+        specifier: workspace:*
+        version: link:../plugins/block-format
+      '@axiomtext/plugin-blockquote':
+        specifier: workspace:*
+        version: link:../plugins/blockquote
+      '@axiomtext/plugin-columns':
+        specifier: workspace:*
+        version: link:../plugins/columns
+      '@axiomtext/plugin-font':
+        specifier: workspace:*
+        version: link:../plugins/font
+      '@axiomtext/plugin-heading':
+        specifier: workspace:*
+        version: link:../plugins/heading
+      '@axiomtext/plugin-image':
+        specifier: workspace:*
+        version: link:../plugins/image
+      '@axiomtext/plugin-link':
+        specifier: workspace:*
+        version: link:../plugins/link
+      '@axiomtext/plugin-list':
+        specifier: workspace:*
+        version: link:../plugins/list
+      '@axiomtext/plugin-table':
+        specifier: workspace:*
+        version: link:../plugins/table
+      '@axiomtext/ui':
+        specifier: workspace:*
+        version: link:../ui
+      '@axiomtext/view':
+        specifier: workspace:*
+        version: link:../view
 
   packages/bridge-protocol: {}
 
@@ -499,68 +596,7 @@ importers:
         specifier: workspace:*
         version: link:../../test-utils
 
-  packages/presets:
-    dependencies:
-      '@axiomtext/convert':
-        specifier: workspace:*
-        version: link:../convert
-      '@axiomtext/core':
-        specifier: workspace:*
-        version: link:../core
-      '@axiomtext/math':
-        specifier: workspace:*
-        version: link:../math
-      '@axiomtext/plugin-basic-styles':
-        specifier: workspace:*
-        version: link:../plugins/basic-styles
-      '@axiomtext/plugin-block-format':
-        specifier: workspace:*
-        version: link:../plugins/block-format
-      '@axiomtext/plugin-blockquote':
-        specifier: workspace:*
-        version: link:../plugins/blockquote
-      '@axiomtext/plugin-columns':
-        specifier: workspace:*
-        version: link:../plugins/columns
-      '@axiomtext/plugin-font':
-        specifier: workspace:*
-        version: link:../plugins/font
-      '@axiomtext/plugin-heading':
-        specifier: workspace:*
-        version: link:../plugins/heading
-      '@axiomtext/plugin-image':
-        specifier: workspace:*
-        version: link:../plugins/image
-      '@axiomtext/plugin-link':
-        specifier: workspace:*
-        version: link:../plugins/link
-      '@axiomtext/plugin-list':
-        specifier: workspace:*
-        version: link:../plugins/list
-      '@axiomtext/plugin-table':
-        specifier: workspace:*
-        version: link:../plugins/table
-      '@axiomtext/ui':
-        specifier: workspace:*
-        version: link:../ui
-      '@axiomtext/view':
-        specifier: workspace:*
-        version: link:../view
-      katex:
-        specifier: ^0.19.1
-        version: 0.19.1
-
   packages/react:
-    dependencies:
-      '@axiomtext/core':
-        specifier: workspace:*
-        version: link:../core
-      '@axiomtext/presets':
-        specifier: workspace:*
-        version: link:../presets
-      '@axiomtext/view':
-        specifier: workspace:*
-        version: link:../view
     devDependencies:
       '@types/react':
         specifier: ^19.3.0
@@ -568,6 +604,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.3.0
         version: 19.3.0(@types/react@19.3.0)
+      axiomtext:
+        specifier: workspace:*
+        version: link:../axiomtext
       react:
         specifier: ^19.3.1
         version: 19.3.1
@@ -660,17 +699,10 @@ importers:
         version: 1.43.0
 
   packages/vue:
-    dependencies:
-      '@axiomtext/core':
-        specifier: workspace:*
-        version: link:../core
-      '@axiomtext/presets':
-        specifier: workspace:*
-        version: link:../presets
-      '@axiomtext/view':
-        specifier: workspace:*
-        version: link:../view
     devDependencies:
+      axiomtext:
+        specifier: workspace:*
+        version: link:../axiomtext
       vue:
         specifier: ^3.5.46
         version: 3.5.46(typescript@6.0.3)

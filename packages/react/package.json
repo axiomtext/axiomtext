@@ -1,7 +1,7 @@
 {
   "name": "@axiomtext/react",
-  "version": "0.1.0",
-  "description": "React integration.",
+  "version": "0.1.1",
+  "description": "The AxiomText rich text and math editor as a React component.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -28,17 +28,14 @@
     "test": "vitest run --passWithNoTests"
   },
   "devDependencies": {
+    "axiomtext": "workspace:*",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
-  "dependencies": {
-    "@axiomtext/core": "workspace:*",
-    "@axiomtext/presets": "workspace:*",
-    "@axiomtext/view": "workspace:*"
-  },
   "peerDependencies": {
+    "axiomtext": "workspace:^",
     "react": ">=18",
     "react-dom": ">=18"
   },

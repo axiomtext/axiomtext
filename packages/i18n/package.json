@@ -1,7 +1,8 @@
 {
   "name": "@axiomtext/i18n",
   "version": "0.1.0",
-  "description": "Translation runtime and locale files.",
+  "private": true,
+  "description": "Translation runtime and locale files. Internal: published as part of the axiomtext package.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -26,8 +27,5 @@
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

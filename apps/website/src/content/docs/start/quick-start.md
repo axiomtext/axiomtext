@@ -8,9 +8,8 @@ description: Create your first editor in a minute.
 ```
 
 ```js
-import { createClassicEditor } from '@axiomtext/presets';
-import '@axiomtext/ui/styles.css';
-import 'katex/dist/katex.min.css';
+import { createClassicEditor } from 'axiomtext';
+import 'axiomtext/styles.css';
 
 const { editor } = createClassicEditor({
   element: document.querySelector('#editor'),

@@ -1,0 +1,100 @@
+{
+  "name": "axiomtext",
+  "version": "0.1.1",
+  "description": "Free, MIT-licensed rich text editor with a visual math editor built in. Classic, inline and balloon editors, tables, images, Markdown, 10 languages.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "homepage": "https://axiomtext.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/axiomtext/axiomtext.git",
+    "directory": "packages/axiomtext"
+  },
+  "bugs": "https://github.com/axiomtext/axiomtext/issues",
+  "keywords": [
+    "rich text editor",
+    "wysiwyg",
+    "math editor",
+    "equation editor",
+    "latex",
+    "katex",
+    "prosemirror",
+    "editor",
+    "markdown"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": {
+      "types": "./dist/styles.css.d.ts",
+      "default": "./dist/styles.css"
+    },
+    "./content.css": {
+      "types": "./dist/content.css.d.ts",
+      "default": "./dist/content.css"
+    },
+    "./locales/*": {
+      "types": "./dist/locales/*.d.ts",
+      "import": "./dist/locales/*.js"
+    },
+    "./cdn/*": "./dist/cdn/*",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "!dist/cdn/**/*.map"
+  ],
+  "scripts": {
+    "build": "tsup && node scripts/assets.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "katex": "^0.19.1",
+    "lucide": "^1.77.0",
+    "markdown-it": "^14.3.3",
+    "mathlive": "^0.111.4",
+    "prosemirror-commands": "^1.7.2",
+    "prosemirror-dropcursor": "^1.8.2",
+    "prosemirror-gapcursor": "^1.4.0",
+    "prosemirror-history": "^1.5.2",
+    "prosemirror-inputrules": "^1.7.0",
+    "prosemirror-keymap": "^1.2.3",
+    "prosemirror-model": "^1.25.13",
+    "prosemirror-schema-list": "^1.6.1",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-tables": "^1.8.5",
+    "prosemirror-transform": "^1.10.0",
+    "prosemirror-view": "^1.43.0"
+  },
+  "devDependencies": {
+    "@axiomtext/convert": "workspace:*",
+    "@axiomtext/core": "workspace:*",
+    "@axiomtext/i18n": "workspace:*",
+    "@axiomtext/math": "workspace:*",
+    "@axiomtext/plugin-basic-styles": "workspace:*",
+    "@axiomtext/plugin-block-format": "workspace:*",
+    "@axiomtext/plugin-blockquote": "workspace:*",
+    "@axiomtext/plugin-columns": "workspace:*",
+    "@axiomtext/plugin-font": "workspace:*",
+    "@axiomtext/plugin-heading": "workspace:*",
+    "@axiomtext/plugin-image": "workspace:*",
+    "@axiomtext/plugin-link": "workspace:*",
+    "@axiomtext/plugin-list": "workspace:*",
+    "@axiomtext/plugin-table": "workspace:*",
+    "@axiomtext/ui": "workspace:*",
+    "@axiomtext/view": "workspace:*"
+  },
+  "jsdelivr": "dist/cdn/axiomtext.iife.js",
+  "unpkg": "dist/cdn/axiomtext.iife.js",
+  "publishConfig": {
+    "access": "public"
+  }
+}

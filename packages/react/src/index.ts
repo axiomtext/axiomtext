@@ -2,22 +2,21 @@
  * @axiomtext/react — the AxiomText editor as a React component.
  *
  *   import { AxiomEditor } from '@axiomtext/react';
- *   import '@axiomtext/ui/styles.css';
- *   import 'katex/dist/katex.min.css';
+ *   import 'axiomtext/styles.css';
  *
  *   <AxiomEditor defaultValue={saved} onChange={(doc) => save(doc)} />
  */
 import { createElement, forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import type { CSSProperties, ForwardedRef, ReactElement } from 'react';
-import type { DocumentJSON } from '@axiomtext/core';
 import {
   createBalloonEditor,
   createClassicEditor,
   createInlineEditor,
   type ClassicEditorOptions,
   type FloatingEditorOptions,
-} from '@axiomtext/presets';
-import type { Editor } from '@axiomtext/view';
+  type Editor,
+  type DocumentJSON,
+} from 'axiomtext';
 
 type SharedOptions = Omit<ClassicEditorOptions, 'element' | 'content'> &
   Omit<FloatingEditorOptions, 'element' | 'content'>;
@@ -115,5 +114,4 @@ function AxiomEditorImpl(
 export const AxiomEditor = forwardRef<AxiomEditorHandle, AxiomEditorProps>(AxiomEditorImpl);
 AxiomEditor.displayName = 'AxiomEditor';
 
-export type { DocumentJSON } from '@axiomtext/core';
-export type { Editor } from '@axiomtext/view';
+export type { DocumentJSON, Editor } from 'axiomtext';

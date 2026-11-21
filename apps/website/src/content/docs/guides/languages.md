@@ -7,7 +7,7 @@ The interface ships in English, বাংলা (bn), हिन्दी (hi), �
 Deutsch (de), Português (pt), 简体中文 (zh) and 日本語 (ja).
 
 ```js
-import bn from '@axiomtext/ui/locales/bn';
+import bn from 'axiomtext/locales/bn';
 createClassicEditor({ element, language: 'bn', translations: bn });
 ```
 

@@ -11,7 +11,7 @@ description: JSON, HTML and Markdown, and autosave.
 | Text | `editor.getText()` | `editor.insertText(text)` | Search indexes, previews |
 
 ```js
-import { toMarkdown, fromMarkdown } from '@axiomtext/convert';
+import { toMarkdown, fromMarkdown } from 'axiomtext';
 
 const md = toMarkdown(editor.getJSON());           // GitHub-flavoured Markdown, maths as $…$
 editor.setJSON(fromMarkdown('# Hello\n\n$x^2$'));  // tables, task lists and maths supported

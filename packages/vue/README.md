@@ -3,14 +3,13 @@
 The [AxiomText](https://axiomtext.dev) editor (free rich text + math) as a Vue 3 component.
 
 ```bash
-npm install @axiomtext/vue katex
+npm install axiomtext @axiomtext/vue
 ```
 
 ```vue
 <script setup>
 import { AxiomEditor } from '@axiomtext/vue';
-import '@axiomtext/ui/styles.css';
-import 'katex/dist/katex.min.css';
+import 'axiomtext/styles.css';
 const doc = ref(saved);
 </script>
 

@@ -5,15 +5,21 @@ const banner = {
 };
 
 export default defineConfig([
-  // npm package
+  // npm package. The internal @axiomtext/* workspace packages are bundled in, so users install
+  // one package; ProseMirror, KaTeX, MathLive, markdown-it and Lucide stay normal dependencies.
+  // Splitting keeps the lazily loaded parts (visual math editor, languages) as separate chunks.
   {
-    entry: ['src/index.ts'],
+    entry: ['src/index.ts', 'src/locales/*.ts'],
     format: ['esm'],
-    dts: true,
+    dts: { resolve: [/^@axiomtext\//] },
+    noExternal: [/^@axiomtext\//],
+    splitting: true,
     sourcemap: true,
     clean: true,
     treeshake: true,
+    platform: 'browser',
     target: 'es2022',
+    banner,
   },
   // CDN, ES module: math (KaTeX, MathLive) and languages load as separate chunks on demand.
   {

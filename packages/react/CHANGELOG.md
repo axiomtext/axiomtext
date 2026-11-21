@@ -1,5 +1,9 @@
 # @axiomtext/react
 
+## 0.1.1
+
+- Now built on the single `axiomtext` package. Install with `npm install axiomtext @axiomtext/react`.
+
 ## 0.1.0
 
 ### Minor Changes
