@@ -29,7 +29,7 @@
     "@axiomtext/ui": "workspace:*",
     "@axiomtext/view": "workspace:*",
     "katex": "^0.19.1",
-    "lucide": "^1.77.0"
+    "lucide": "^1.78.0"
   },
   "devDependencies": {
     "vite": "^8.3.8"

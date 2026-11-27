@@ -75,7 +75,7 @@
   },
   "dependencies": {
     "katex": "^0.19.1",
-    "lucide": "^1.77.0",
+    "lucide": "^1.78.0",
     "markdown-it": "^14.3.3",
     "mathlive": "^0.111.4",
     "prosemirror-commands": "^1.7.2",

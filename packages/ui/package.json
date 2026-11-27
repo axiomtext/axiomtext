@@ -41,7 +41,7 @@
     "@axiomtext/core": "workspace:*",
     "@axiomtext/i18n": "workspace:*",
     "@axiomtext/view": "workspace:*",
-    "lucide": "^1.77.0",
+    "lucide": "^1.78.0",
     "@axiomtext/plugin-comments": "workspace:*",
     "@axiomtext/viewer": "workspace:*",
     "@axiomtext/plugin-marks": "workspace:*"
